@@ -147,6 +147,12 @@ export default function ConsultorioPage() {
   const canTurn1 = hecho.trim().length >= 3;
   const canTurn2 = rol.trim().length >= 2;
 
+  const progressLabel = useMemo(() => {
+    if (step === 4) return "Cierre";
+    if (step === 0) return "Encuadre";
+    return `Turno ${step}/3`;
+  }, [step]);
+
   function closeWithoutSaving() {
     if (!state.activeSessionId || !process) return;
     clearDraft();
@@ -189,20 +195,34 @@ export default function ConsultorioPage() {
     navigate("/sesion", { replace: true });
   }
 
+  function closeSession() {
+    if (step === 4 && canTurn1 && canTurn2) {
+      closeWithEntry();
+      return;
+    }
+    closeWithoutSaving();
+  }
+
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-14 pt-10">
-      <div className="flex items-center justify-between gap-3 text-white">
-        <div>
-          <div className="text-[26px] font-semibold tracking-tight">Consultorio</div>
-          <div className="mt-1 text-sm text-white/65">Diálogo guiado. 3 turnos. Cierre obligatorio.</div>
+    <div className="mx-auto max-w-2xl px-4 pb-14">
+      <div className="sticky top-0 z-20 -mx-4 px-4 pb-4 pt-10 bg-[#0b1220]/55 backdrop-blur-md">
+        <div className="flex items-start justify-between gap-4 text-white">
+          <div className="min-w-0">
+            <div className="text-[22px] font-semibold tracking-tight">Consultorio — Diálogo Guiado</div>
+            <div className="mt-1 text-xs text-white/65">Sesión activa</div>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/80 ring-1 ring-white/10">
+              <span className="inline-block h-2 w-2 rounded-full bg-white/60" aria-hidden />
+              {progressLabel}
+            </div>
+          </div>
+          <Button variant="primary" size="sm" onClick={closeSession} type="button">
+            Cerrar sesión
+          </Button>
         </div>
-        <Button variant="quiet" size="sm" onClick={closeWithoutSaving} type="button">
-          Cerrar
-        </Button>
       </div>
 
       {step === 0 ? (
-        <Card className="mt-7 p-6">
+        <Card className="mt-4 p-6">
           <div className="text-xs text-morning-blue">Encuadre</div>
           <div className="mt-3 text-lg font-semibold tracking-tight text-outer-space">
             No quiero una historia. Quiero el hecho.
@@ -219,7 +239,7 @@ export default function ConsultorioPage() {
       ) : null}
 
       {step === 1 ? (
-        <Card className="mt-7 p-6">
+        <Card className="mt-4 p-6">
           <div className="text-xs text-morning-blue">Turno 1</div>
           <div className="mt-2 text-sm font-semibold tracking-tight text-outer-space">¿Qué pasó?</div>
           <div className="mt-1 text-sm text-outer-space/70">Una línea. Observable. Sin justificar.</div>
@@ -241,7 +261,7 @@ export default function ConsultorioPage() {
       ) : null}
 
       {step === 2 ? (
-        <Card className="mt-7 p-6">
+        <Card className="mt-4 p-6">
           <div className="text-xs text-morning-blue">Turno 2</div>
           <div className="mt-2 text-sm font-semibold tracking-tight text-outer-space">Contexto y límite</div>
 
@@ -284,7 +304,7 @@ export default function ConsultorioPage() {
       ) : null}
 
       {step === 3 ? (
-        <Card className="mt-7 p-6">
+        <Card className="mt-4 p-6">
           <div className="text-xs text-morning-blue">Turno 3</div>
           <div className="mt-2 text-sm font-semibold tracking-tight text-outer-space">Peso y repetición</div>
 
@@ -320,7 +340,7 @@ export default function ConsultorioPage() {
       ) : null}
 
       {step === 4 ? (
-        <Card className="mt-7 p-6">
+        <Card className="mt-4 p-6">
           <div className="text-xs text-morning-blue">Cierre</div>
           <div className="mt-2 text-sm text-outer-space/70">Esto queda registrado como hecho.</div>
 
@@ -335,9 +355,7 @@ export default function ConsultorioPage() {
             <Button variant="quiet" onClick={() => setStep(3)} type="button">
               Editar
             </Button>
-            <Button variant="primary" onClick={closeWithEntry} type="button">
-              Cerrar consultorio
-            </Button>
+            <div className="text-sm text-outer-space/70">Cierra la sesión para salir.</div>
           </div>
         </Card>
       ) : null}

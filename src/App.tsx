@@ -10,6 +10,7 @@ import RegistroPage from "./pages/RegistroPage";
 import ConsultorioPage from "./pages/ConsultorioPage";
 import MesaPage from "./pages/MesaPage";
 import ProcesoPage from "./pages/ProcesoPage";
+import ObservacionPage from "./pages/ObservacionPage";
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ function AuthedApp() {
           <Route path="registro" element={<RegistroPage />} />
 
           <Route path="sesion" element={<SesionPage />} />
+          <Route path="observacion" element={<ObservacionPage />} />
           <Route path="consultorio" element={<ConsultorioPage />} />
           <Route path="mesa" element={<MesaPage />} />
           <Route path="proceso" element={<ProcesoPage />} />

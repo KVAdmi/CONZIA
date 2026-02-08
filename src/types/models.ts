@@ -156,18 +156,26 @@ export type ConziaSeedData = {
   mirrorStories: MirrorStory[];
 };
 
-export type DoorId = "sesion" | "consultorio" | "mesa" | "proceso";
+export type DoorId = "sesion" | "observacion" | "consultorio" | "mesa" | "proceso";
 
 export type ConziaArchetype = "guerrero" | "sabio_rey" | "amante" | "mago";
 
 export type ConziaDrivingStyle = "Directo" | "Sobrio" | "Relacional" | "Reflexivo";
+
+export type ConziaFriccion =
+  | "limites"
+  | "abandono_propio"
+  | "control"
+  | "verguenza"
+  | "dependencia"
+  | "autoengano";
 
 export type ConziaProfile = {
   alias: string;
   email?: string;
   tz: string;
   country: string;
-  tema_base: string;
+  tema_base: ConziaFriccion;
   costo_dominante: string;
   arquetipo_dominante: ConziaArchetype;
   arquetipo_secundario: ConziaArchetype;
@@ -180,7 +188,7 @@ export type ConziaProcessStatus = "open" | "closed";
 
 export type ConziaProcess = {
   id: string;
-  tema_activo: string;
+  tema_activo: ConziaFriccion;
   day_index: number;
   status: ConziaProcessStatus;
   started_at: ISODateString; // datetime ISO
@@ -198,18 +206,71 @@ export type ConziaSession = {
   summary_min?: string;
 };
 
-export type ConziaEntrySource = "consultorio" | "mesa";
+export type ConziaTrap =
+  | "ACTION_WITHOUT_TRUTH"
+  | "INFINITE_ANALYSIS"
+  | "GUILT_PERFORMANCE"
+  | "PRETTY_INSIGHT";
 
-export type ConziaEntry = {
+export type ConziaPace = "FAST" | "MEDIUM" | "MEDIUM_SLOW" | "VARIABLE";
+
+export type ConziaRecommendedDoor = "mesa" | "consultorio";
+
+export type ConziaGuidanceProfile = {
+  maxTurns: 3;
+  startWith: "HECHO";
+  mustClose: true;
+  pace: ConziaPace;
+  defaultDoor: ConziaRecommendedDoor;
+  trap: ConziaTrap;
+  mixed: boolean;
+};
+
+export type ConziaTodayPlan = {
+  pace: ConziaPace;
+  recommendedDoor: ConziaRecommendedDoor;
+  openingLine: string;
+  cutLine: string;
+  trap: ConziaTrap;
+  mixed: boolean;
+};
+
+export type ConziaEntrySource = "consultorio" | "mesa" | "puerta1_observacion";
+
+export type ConziaTherapyEntry = {
   id: string;
   process_id: string;
   session_id: string;
   source: ConziaEntrySource;
-  hecho: string;
-  contexto: EntryContext;
-  limite: EntryBoundary;
-  rol: string;
-  peso: number; // 0–10
-  repeticion_flag: RepeatSignal;
   created_at: ISODateString; // datetime ISO
 };
+
+export type ConziaObservationEntry = {
+  id: string;
+  process_id: string;
+  session_id: string;
+  source: "puerta1_observacion";
+  fact_line: string;
+  hecho_valido: boolean;
+  narrative_score: number;
+  friccion_hoy: ConziaFriccion;
+  friccion_variante: boolean;
+  trap_selected: ConziaTrap;
+  trap_matches_archetype: boolean;
+  today_plan: ConziaTodayPlan;
+  created_at: ISODateString; // datetime ISO
+  closed_at: ISODateString; // datetime ISO
+};
+
+export type ConziaEntry = (
+  | (ConziaTherapyEntry & {
+      source: "consultorio" | "mesa";
+      hecho: string;
+      contexto: EntryContext;
+      limite: EntryBoundary;
+      rol: string;
+      peso: number; // 0–10
+      repeticion_flag: RepeatSignal;
+    })
+  | ConziaObservationEntry
+);

@@ -14,6 +14,7 @@ import type {
   ConziaSeedData,
   ConziaSession,
   DoorId,
+  ConziaFriccion,
 } from "../types/models";
 
 type TruthFeedback = "me_sirve" | "no_me_sirve";
@@ -64,6 +65,30 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
+function migrateFriccionId(raw: unknown): ConziaFriccion {
+  const v = typeof raw === "string" ? raw : "";
+  if (
+    v === "limites" ||
+    v === "abandono_propio" ||
+    v === "control" ||
+    v === "verguenza" ||
+    v === "dependencia" ||
+    v === "autoengano"
+  ) {
+    return v;
+  }
+
+  // Back-compat (versiones previas)
+  if (v === "p_001") return "limites";
+  if (v === "p_005") return "abandono_propio";
+  if (v === "p_004") return "control";
+  if (v === "p_006") return "verguenza";
+  if (v === "p_002") return "dependencia";
+  if (v === "p_003") return "autoengano";
+
+  return "limites";
+}
+
 function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
   if (!isRecord(raw)) {
     return {
@@ -80,8 +105,18 @@ function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
   const version = typeof raw.schemaVersion === "number" ? raw.schemaVersion : 0;
 
   // Migración simple: si no hay schemaVersion (o es desconocida), intentamos leer campos compatibles.
-  const profile = (isRecord(raw.profile) ? (raw.profile as ConziaProfile) : null) as ConziaProfile | null;
-  const processes = (Array.isArray(raw.processes) ? (raw.processes as ConziaProcess[]) : []) as ConziaProcess[];
+  const rawProfile = (isRecord(raw.profile) ? (raw.profile as ConziaProfile) : null) as ConziaProfile | null;
+  const profile =
+    rawProfile && isRecord(rawProfile)
+      ? ({ ...rawProfile, tema_base: migrateFriccionId((rawProfile as unknown as Record<string, unknown>).tema_base) } as ConziaProfile)
+      : rawProfile;
+
+  const rawProcesses = (Array.isArray(raw.processes) ? (raw.processes as ConziaProcess[]) : []) as ConziaProcess[];
+  const processes = rawProcesses.map((p) => {
+    if (!isRecord(p)) return p;
+    const tema_activo = migrateFriccionId(p.tema_activo);
+    return { ...p, tema_activo };
+  }) as ConziaProcess[];
   const sessions = (Array.isArray(raw.sessions) ? (raw.sessions as ConziaSession[]) : []) as ConziaSession[];
   const entriesV1 = (Array.isArray(raw.entriesV1) ? (raw.entriesV1 as ConziaEntry[]) : []) as ConziaEntry[];
   const activeProcessId = (typeof raw.activeProcessId === "string" ? raw.activeProcessId : null) as string | null;

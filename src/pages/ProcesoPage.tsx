@@ -7,12 +7,12 @@ import { createId } from "../utils/id";
 import { toISODateOnly } from "../utils/dates";
 
 const THEME_LABEL: Record<string, string> = {
-  p_001: "Falta de límites",
-  p_002: "Apego a aprobación",
-  p_003: "Evitación activa",
-  p_004: "Rumiación circular",
-  p_005: "Autoanulación",
-  p_006: "Qué dirán estructural",
+  limites: "Límites",
+  abandono_propio: "Abandono propio",
+  control: "Control",
+  verguenza: "Vergüenza",
+  dependencia: "Dependencia",
+  autoengano: "Autoengaño",
 };
 
 export default function ProcesoPage() {
@@ -124,27 +124,39 @@ export default function ProcesoPage() {
   }, [devStatus]);
 
   return (
-    <div className="min-h-[100svh] px-6 pb-10 pt-14">
-      <div className="flex items-center justify-between gap-3 text-white">
-        <div>
-          <div className="text-[26px] font-semibold tracking-tight">Proceso</div>
-          <div className="mt-1 text-sm text-white/65">Estado mínimo. Avance por cierres.</div>
+    <div className="min-h-[100svh] px-4 pb-14">
+      <div className="sticky top-0 z-20 -mx-4 px-4 pb-4 pt-10 bg-[#0b1220]/55 backdrop-blur-md">
+        <div className="flex items-start justify-between gap-4 text-white">
+          <div className="min-w-0">
+            <div className="text-[22px] font-semibold tracking-tight">Proceso — Estado del Día</div>
+            <div className="mt-1 text-xs text-white/65">Sesión activa</div>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/80 ring-1 ring-white/10">
+              <span className="inline-block h-2 w-2 rounded-full bg-white/60" aria-hidden />
+              Revisión → Cierre del día
+            </div>
+          </div>
+          <Button variant="primary" size="sm" onClick={closeDoor} type="button">
+            Cerrar sesión
+          </Button>
         </div>
-        <Button variant="quiet" size="sm" onClick={closeDoor} type="button">
-          Cerrar
-        </Button>
       </div>
 
-      <Card className="mt-7 p-6">
-        <div className="text-xs text-morning-blue">Proceso activo</div>
+      <Card className="mt-4 p-6">
+        <div className="text-xs text-morning-blue">Estado del día</div>
         <div className="mt-2 text-lg font-semibold tracking-tight text-outer-space">{themeLabel}</div>
-        <div className="mt-2 text-sm text-outer-space/70">
-          Día {process?.day_index ?? 1} · Entradas guardadas: {entryCount}
-        </div>
+        <div className="mt-2 text-sm text-outer-space/70">Día {process?.day_index ?? 1}</div>
+        <div className="mt-2 text-sm text-outer-space/70">Entradas guardadas: {entryCount}</div>
         <div className="mt-4 text-xs text-outer-space/60">
           Último cierre: {process?.last_closed_at ? process.last_closed_at : "—"}
         </div>
         <div className="mt-2 text-xs text-outer-space/60">Estado: {process?.status === "closed" ? "cerrado" : "abierto"}</div>
+      </Card>
+
+      <Card className="mt-4 p-6">
+        <div className="text-xs text-morning-blue">Cierre del día</div>
+        <div className="mt-2 text-sm text-outer-space/70">
+          “Cerrar día” marca el proceso como cerrado. No es obligatorio en cada puerta.
+        </div>
 
         <div className="mt-6 flex justify-end">
           <Button variant="primary" onClick={closeDay} disabled={process?.status === "closed"} type="button">
@@ -185,12 +197,6 @@ export default function ProcesoPage() {
           ) : (
             <div className="text-sm text-outer-space/70">Aún no hay cierres.</div>
           )}
-        </div>
-
-        <div className="mt-6 flex justify-end">
-          <Button variant="primary" onClick={closeDoor} type="button">
-            Volver a Sesión
-          </Button>
         </div>
       </Card>
     </div>

@@ -2,6 +2,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import BottomNav from "./BottomNav";
 import { useConzia } from "../state/conziaStore";
 import type { DoorId } from "../types/models";
+import { toISODateOnly } from "../utils/dates";
 
 const ONBOARDING_DONE_KEY = "conzia_v1_onboarding_done";
 
@@ -15,6 +16,7 @@ function getFlag(key: string): boolean {
 
 function doorFromPathname(pathname: string): DoorId | null {
   if (pathname.startsWith("/sesion")) return "sesion";
+  if (pathname.startsWith("/observacion")) return "observacion";
   if (pathname.startsWith("/consultorio")) return "consultorio";
   if (pathname.startsWith("/mesa")) return "mesa";
   if (pathname.startsWith("/proceso")) return "proceso";
@@ -35,6 +37,28 @@ export default function AppLayout() {
 
   if (onboardingDone && !registrationDone && !pathname.startsWith("/registro") && !pathname.startsWith("/onboarding")) {
     return <Navigate to="/registro" replace />;
+  }
+
+  const activeProcess = state.activeProcessId
+    ? state.processes.find((p) => p.id === state.activeProcessId) ?? null
+    : state.processes[0] ?? null;
+
+  const todayKey = toISODateOnly(new Date());
+  const observationDoneToday = Boolean(
+    activeProcess &&
+      state.sessions.some(
+        (s) => s.process_id === activeProcess.id && s.date_key === todayKey && s.door === "observacion" && s.closed,
+      ),
+  );
+
+  if (
+    registrationDone &&
+    activeProcess &&
+    !observationDoneToday &&
+    !state.activeDoor &&
+    (pathname.startsWith("/consultorio") || pathname.startsWith("/mesa") || pathname.startsWith("/proceso"))
+  ) {
+    return <Navigate to="/observacion" replace />;
   }
 
   if (registrationDone && state.activeDoor) {

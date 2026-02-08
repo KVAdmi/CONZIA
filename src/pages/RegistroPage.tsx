@@ -6,20 +6,20 @@ import Input from "../components/ui/Input";
 import Select from "../components/ui/Select";
 import { useConzia } from "../state/conziaStore";
 import { createId } from "../utils/id";
-import type { ConziaArchetype, ConziaDrivingStyle, ConziaProfile } from "../types/models";
+import type { ConziaArchetype, ConziaDrivingStyle, ConziaFriccion, ConziaProfile } from "../types/models";
 
 type StepId = "r1" | "r2" | "r3" | "resumen";
 
-type ThemeOption = { id: string; label: string };
+type ThemeOption = { id: ConziaFriccion; label: string };
 type CostOption = { id: string; label: string };
 
 const THEMES: ThemeOption[] = [
-  { id: "p_001", label: "Falta de límites" },
-  { id: "p_002", label: "Apego a aprobación" },
-  { id: "p_003", label: "Evitación activa" },
-  { id: "p_004", label: "Rumiación circular" },
-  { id: "p_005", label: "Autoanulación" },
-  { id: "p_006", label: "Qué dirán estructural" },
+  { id: "limites", label: "Límites" },
+  { id: "abandono_propio", label: "Abandono propio" },
+  { id: "control", label: "Control" },
+  { id: "verguenza", label: "Vergüenza" },
+  { id: "dependencia", label: "Dependencia" },
+  { id: "autoengano", label: "Autoengaño" },
 ];
 
 const COSTS: CostOption[] = [
@@ -260,7 +260,7 @@ export default function RegistroPage() {
   const [tz, setTz] = useState(() => detectTimeZone());
   const [country, setCountry] = useState(() => detectCountry());
 
-  const [temaBase, setTemaBase] = useState<string>(THEMES[0]?.id ?? "");
+  const [temaBase, setTemaBase] = useState<ConziaFriccion>(THEMES[0]?.id ?? "limites");
   const [costoDominante, setCostoDominante] = useState<string>(COSTS[0]?.id ?? "");
 
   const [qIdx, setQIdx] = useState(0);
@@ -347,7 +347,7 @@ export default function RegistroPage() {
           <div className="mt-6 space-y-5">
             <div>
               <div className="text-sm font-semibold tracking-tight text-outer-space">Hoy lo que más se me repite es…</div>
-              <Select className="mt-2" value={temaBase} onChange={(e) => setTemaBase(e.target.value)}>
+              <Select className="mt-2" value={temaBase} onChange={(e) => setTemaBase(e.target.value as ConziaFriccion)}>
                 {THEMES.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.label}

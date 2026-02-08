@@ -1,27 +1,40 @@
 import { NavLink } from "react-router-dom";
-import { FilePenLine, Home, MessageCircle, Route } from "lucide-react";
-import type { ComponentType } from "react";
+import { DoorClosed, DoorOpen } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "../utils/cn";
 import { useConzia } from "../state/conziaStore";
+import { toISODateOnly } from "../utils/dates";
 
 type Item = {
   to: string;
   label: string;
-  icon: ComponentType<{ className?: string }>;
-  kind?: "primary";
 };
 
 const ITEMS: Item[] = [
-  { to: "/sesion", label: "Sesión", icon: Home },
-  { to: "/consultorio", label: "Consultorio", icon: MessageCircle, kind: "primary" },
-  { to: "/mesa", label: "Mesa", icon: FilePenLine },
-  { to: "/proceso", label: "Proceso", icon: Route },
+  { to: "/sesion", label: "Sesión" },
+  { to: "/consultorio", label: "Consultorio" },
+  { to: "/mesa", label: "Mesa" },
+  { to: "/proceso", label: "Proceso" },
 ];
 
 export default function BottomNav() {
   const { state } = useConzia();
   const [blocked, setBlocked] = useState<string | null>(null);
+  const todayKey = toISODateOnly(new Date());
+
+  const activeProcessId =
+    state.activeProcessId ?? state.processes[0]?.id ?? null;
+
+  const observationDoneToday = useMemo(() => {
+    if (!activeProcessId) return true;
+    return state.sessions.some(
+      (s) =>
+        s.process_id === activeProcessId &&
+        s.date_key === todayKey &&
+        s.door === "observacion" &&
+        s.closed,
+    );
+  }, [activeProcessId, state.sessions, todayKey]);
 
   const activeDoorLabel = useMemo(() => {
     if (!state.activeDoor) return null;
@@ -45,34 +58,9 @@ export default function BottomNav() {
       ) : null}
       <div className="mx-auto flex items-end justify-between rounded-[30px] bg-[#0b1220]/75 backdrop-blur-md ring-1 ring-white/10 px-3 py-3">
         {ITEMS.map((item) => {
-          const Icon = item.icon;
-          const isBlocked = Boolean(state.activeDoor && item.to !== `/${state.activeDoor}`);
-
-          if (item.kind === "primary") {
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                onClick={(e) => {
-                  if (!isBlocked) return;
-                  e.preventDefault();
-                  setBlocked(`Cierra ${activeDoorLabel ?? "la puerta actual"} antes de entrar a otra.`);
-                }}
-                className={({ isActive }) =>
-                  cn(
-                    "flex flex-col items-center gap-1.5 px-2",
-                    isActive ? "text-white" : "text-white/80 hover:text-white",
-                  )
-                }
-                aria-label={item.label}
-              >
-                <div className="h-14 w-14 rounded-2xl bg-[#7D5C6B] ring-1 ring-white/15 shadow-[0_12px_30px_rgba(0,0,0,0.35)] grid place-items-center">
-                  <Icon className="h-6 w-6 text-white" aria-hidden />
-                </div>
-                <div className="text-[11px] tracking-tight">{item.label}</div>
-              </NavLink>
-            );
-          }
+          const blockedByDoor = Boolean(state.activeDoor && item.to !== `/${state.activeDoor}`);
+          const blockedByObservation = !observationDoneToday && (item.to === "/consultorio" || item.to === "/mesa" || item.to === "/proceso");
+          const isBlocked = blockedByDoor || blockedByObservation;
 
           return (
             <NavLink
@@ -81,18 +69,38 @@ export default function BottomNav() {
               onClick={(e) => {
                 if (!isBlocked) return;
                 e.preventDefault();
+                if (blockedByObservation) {
+                  setBlocked("Completa Observación Inicial para desbloquear.");
+                  return;
+                }
                 setBlocked(`Cierra ${activeDoorLabel ?? "la puerta actual"} antes de entrar a otra.`);
               }}
+              aria-label={item.label}
+              aria-disabled={isBlocked}
               className={({ isActive }) =>
                 cn(
                   "flex w-16 flex-col items-center gap-1 rounded-2xl px-2 py-2 transition",
                   isActive ? "text-white" : "text-white/75 hover:text-white",
+                  isBlocked ? "opacity-40 cursor-not-allowed hover:text-white/75" : "",
                 )
               }
-              aria-label={item.label}
             >
-              <Icon className="h-6 w-6" aria-hidden />
-              <div className="text-[11px] tracking-tight">{item.label}</div>
+              {({ isActive }) => {
+                const Icon = isActive ? DoorOpen : DoorClosed;
+                return (
+                  <>
+                    <div
+                      className={cn(
+                        "grid place-items-center h-12 w-12 rounded-2xl ring-1 ring-white/10 transition",
+                        isActive ? "bg-camel text-white ring-white/15" : "bg-white/10 text-white/80",
+                      )}
+                    >
+                      <Icon className="h-6 w-6" aria-hidden />
+                    </div>
+                    <div className="text-[11px] tracking-tight">{item.label}</div>
+                  </>
+                );
+              }}
             </NavLink>
           );
         })}

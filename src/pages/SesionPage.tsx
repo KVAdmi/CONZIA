@@ -1,25 +1,18 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, FilePenLine, MessageCircle, Route } from "lucide-react";
+import { DoorClosed } from "lucide-react";
+import RadialProgress from "../components/ui/RadialProgress";
 import { useConzia } from "../state/conziaStore";
 import { createId } from "../utils/id";
 import { toISODateOnly } from "../utils/dates";
-import type { DoorId } from "../types/models";
-
-const THEME_LABEL: Record<string, string> = {
-  p_001: "Falta de límites",
-  p_002: "Apego a aprobación",
-  p_003: "Evitación activa",
-  p_004: "Rumiación circular",
-  p_005: "Autoanulación",
-  p_006: "Qué dirán estructural",
-};
+import type { ConziaObservationEntry, DoorId } from "../types/models";
 
 export default function SesionPage() {
   const navigate = useNavigate();
   const { state, dispatch } = useConzia();
 
-  const profile = state.profile;
+  const todayKey = toISODateOnly(new Date());
+
   const process = useMemo(() => {
     const pick = state.activeProcessId
       ? state.processes.find((p) => p.id === state.activeProcessId)
@@ -27,12 +20,39 @@ export default function SesionPage() {
     return pick ?? state.processes[0] ?? null;
   }, [state.activeProcessId, state.processes]);
 
-  const themeId = process?.tema_activo ?? profile?.tema_base ?? "";
-  const themeLabel = THEME_LABEL[themeId] ?? "Proceso activo";
+  const closedDoorsToday = useMemo(() => {
+    if (!process) return new Set<DoorId>();
+    return new Set(
+      state.sessions
+        .filter((s) => s.process_id === process.id && s.date_key === todayKey && s.closed)
+        .map((s) => s.door),
+    );
+  }, [process, state.sessions, todayKey]);
+
+  const observationDoneToday = closedDoorsToday.has("observacion");
+
+  const latestObservation = useMemo(() => {
+    if (!process) return null;
+    const entries = state.entriesV1.filter(
+      (e): e is ConziaObservationEntry => e.source === "puerta1_observacion" && e.process_id === process.id,
+    );
+    const byToday = entries.filter((e) => toISODateOnly(new Date(e.created_at)) === todayKey);
+    byToday.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+    return byToday[0] ?? null;
+  }, [process, state.entriesV1, todayKey]);
+
+  const recommendedDoor = latestObservation?.today_plan.recommendedDoor ?? null;
+
+  const overallProgress = useMemo(() => {
+    const doors: DoorId[] = ["observacion", "consultorio", "mesa", "proceso"];
+    const done = doors.filter((d) => closedDoorsToday.has(d)).length;
+    return done / doors.length;
+  }, [closedDoorsToday]);
 
   function startDoor(door: DoorId) {
     if (!process) return;
     if (state.activeDoor) return;
+    if (!observationDoneToday && door !== "observacion") return;
 
     if (process.status === "closed") {
       dispatch({
@@ -49,7 +69,7 @@ export default function SesionPage() {
       session: {
         id: sessionId,
         process_id: process.id,
-        date_key: toISODateOnly(new Date()),
+        date_key: todayKey,
         door,
         closed: false,
         started_at: nowISO,
@@ -61,73 +81,115 @@ export default function SesionPage() {
   return (
     <div className="min-h-[100svh] px-6 pb-10 pt-14">
       <div className="text-white">
-        <div className="text-[28px] font-semibold tracking-tight">Hola, {profile?.alias ?? "—"}.</div>
-        <div className="mt-2 text-sm text-white/65">Una cosa por sesión. Entra. Sostén. Cierra.</div>
+        <div className="text-[24px] font-semibold tracking-tight">Dashboard</div>
+        <div className="mt-2 text-sm text-white/65">Día {process?.day_index ?? 1}</div>
+        {process?.status === "closed" ? <div className="mt-3 text-sm text-white/70">El día anterior fue cerrado.</div> : null}
       </div>
 
-      <div className="mt-7 rounded-[34px] bg-[#0b1220]/72 ring-1 ring-white/10 backdrop-blur-xl px-6 pb-6 pt-5 shadow-[0_18px_60px_rgba(0,0,0,0.45)]">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="text-[11px] tracking-[0.18em] text-white/55">PROCESO ACTIVO</div>
-            <div className="mt-3 text-2xl font-semibold tracking-tight text-white">
-              {themeLabel}
+      <div className="mt-7 flex justify-center">
+        <RadialProgress value={overallProgress} size={260} strokeWidth={18}>
+          <div className="text-center text-white">
+            <div className="text-xs tracking-[0.18em] text-white/60">TU PROCESO</div>
+            <div className="mt-2 text-4xl font-semibold tracking-tight">{Math.round(overallProgress * 100)}%</div>
+            <div className="mt-2 text-xs text-white/70">Tu proceso está activo</div>
+            <div className="mt-1 text-xs text-white/55">No es lineal. Es acumulativo.</div>
+          </div>
+        </RadialProgress>
+      </div>
+
+      <div className="mt-8 space-y-3">
+        <button
+          type="button"
+          onClick={() => startDoor("observacion")}
+          className="w-full rounded-[26px] bg-[#0b1220]/72 ring-1 ring-white/12 backdrop-blur-xl px-5 py-5 text-left text-white shadow-[0_18px_60px_rgba(0,0,0,0.45)] transition hover:bg-[#0b1220]/80 active:scale-[0.99]"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-sm font-semibold tracking-tight">PUERTA 1 — Observación Inicial</div>
+              <div className="mt-1 text-xs text-white/65">Ver sin intervenir</div>
             </div>
-            <div className="mt-3 text-sm leading-relaxed text-white/70">
-              Día {process?.day_index ?? 1}. No buscamos “sentirse bien”. Buscamos ver claro.
+            <RadialProgress value={observationDoneToday ? 1 : 0} size={44} strokeWidth={6} />
+          </div>
+        </button>
+
+        <button
+          type="button"
+          disabled={!observationDoneToday}
+          onClick={() => startDoor("consultorio")}
+          className={
+            observationDoneToday
+              ? "w-full rounded-[26px] bg-white/10 ring-1 ring-white/10 px-5 py-5 text-left text-white transition hover:bg-white/12 active:scale-[0.99]"
+              : "w-full rounded-[26px] bg-white/10 ring-1 ring-white/10 px-5 py-5 text-left text-white opacity-50 cursor-not-allowed"
+          }
+          aria-disabled={!observationDoneToday}
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-sm font-semibold tracking-tight">
+                Consultorio{recommendedDoor === "consultorio" && observationDoneToday ? " (recomendado)" : ""}
+              </div>
+              <div className="mt-1 text-xs text-white/65">
+                {observationDoneToday ? "Diálogo guiado" : "Bloqueada hasta cerrar Observación Inicial"}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <DoorClosed className="h-5 w-5 text-white/70" aria-hidden />
+              <RadialProgress value={closedDoorsToday.has("consultorio") ? 1 : 0} size={44} strokeWidth={6} />
             </div>
           </div>
-          <div className="mt-1 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/80 ring-1 ring-white/10">
-            <span className="inline-block h-2 w-2 rounded-full bg-white/60" aria-hidden />
-            Fase 1
+        </button>
+
+        <button
+          type="button"
+          disabled={!observationDoneToday}
+          onClick={() => startDoor("mesa")}
+          className={
+            observationDoneToday
+              ? "w-full rounded-[26px] bg-white/10 ring-1 ring-white/10 px-5 py-5 text-left text-white transition hover:bg-white/12 active:scale-[0.99]"
+              : "w-full rounded-[26px] bg-white/10 ring-1 ring-white/10 px-5 py-5 text-left text-white opacity-50 cursor-not-allowed"
+          }
+          aria-disabled={!observationDoneToday}
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-sm font-semibold tracking-tight">
+                Mesa{recommendedDoor === "mesa" && observationDoneToday ? " (recomendado)" : ""}
+              </div>
+              <div className="mt-1 text-xs text-white/65">
+                {observationDoneToday ? "Escritura estructurada" : "Bloqueada hasta cerrar Observación Inicial"}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <DoorClosed className="h-5 w-5 text-white/70" aria-hidden />
+              <RadialProgress value={closedDoorsToday.has("mesa") ? 1 : 0} size={44} strokeWidth={6} />
+            </div>
           </div>
-        </div>
+        </button>
 
-        <div className="mt-6 grid grid-cols-1 gap-3">
-          <button
-            type="button"
-            onClick={() => startDoor("consultorio")}
-            className="w-full rounded-2xl bg-[#7D5C6B] px-5 py-4 text-left text-sm font-semibold tracking-wide text-white ring-1 ring-white/15 shadow-[0_14px_40px_rgba(0,0,0,0.35)] transition hover:bg-[#6f5160] active:scale-[0.99]"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <span className="inline-flex items-center gap-2">
-                <MessageCircle className="h-4 w-4" aria-hidden />
-                CONSULTORIO
-              </span>
-              <ArrowRight className="h-4 w-4 text-white/85" aria-hidden />
+        <button
+          type="button"
+          disabled={!observationDoneToday}
+          onClick={() => startDoor("proceso")}
+          className={
+            observationDoneToday
+              ? "w-full rounded-[26px] bg-white/10 ring-1 ring-white/10 px-5 py-5 text-left text-white transition hover:bg-white/12 active:scale-[0.99]"
+              : "w-full rounded-[26px] bg-white/10 ring-1 ring-white/10 px-5 py-5 text-left text-white opacity-50 cursor-not-allowed"
+          }
+          aria-disabled={!observationDoneToday}
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-sm font-semibold tracking-tight">Proceso</div>
+              <div className="mt-1 text-xs text-white/65">
+                {observationDoneToday ? "Estado del día" : "Bloqueada hasta cerrar Observación Inicial"}
+              </div>
             </div>
-            <div className="mt-2 text-xs text-white/60">Diálogo guiado (3 turnos) + cierre.</div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => startDoor("mesa")}
-            className="w-full rounded-2xl bg-white/5 px-5 py-4 text-left text-sm font-semibold tracking-wide text-white ring-1 ring-white/10 transition hover:bg-white/8 active:scale-[0.99]"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <span className="inline-flex items-center gap-2">
-                <FilePenLine className="h-4 w-4" aria-hidden />
-                MESA
-              </span>
-              <ArrowRight className="h-4 w-4 text-white/70" aria-hidden />
+            <div className="flex items-center gap-3">
+              <DoorClosed className="h-5 w-5 text-white/70" aria-hidden />
+              <RadialProgress value={closedDoorsToday.has("proceso") ? 1 : 0} size={44} strokeWidth={6} />
             </div>
-            <div className="mt-2 text-xs text-white/60">Escritura estructurada + cierre.</div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => startDoor("proceso")}
-            className="w-full rounded-2xl bg-white/5 px-5 py-4 text-left text-sm font-semibold tracking-wide text-white ring-1 ring-white/10 transition hover:bg-white/8 active:scale-[0.99]"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <span className="inline-flex items-center gap-2">
-                <Route className="h-4 w-4" aria-hidden />
-                PROCESO
-              </span>
-              <ArrowRight className="h-4 w-4 text-white/70" aria-hidden />
-            </div>
-            <div className="mt-2 text-xs text-white/60">Estado mínimo + avance por cierres.</div>
-          </button>
-        </div>
+          </div>
+        </button>
       </div>
     </div>
   );

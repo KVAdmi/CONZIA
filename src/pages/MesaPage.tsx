@@ -51,7 +51,7 @@ export default function MesaPage() {
     });
   }, [dispatch, process, state.activeDoor, state.activeSessionId]);
 
-  const [step, setStep] = useState<0 | 1>(0);
+  const [step, setStep] = useState<0 | 1 | 2>(0);
   const [hecho, setHecho] = useState("");
   const [contexto, setContexto] = useState<EntryContext>("yo");
   const [limite, setLimite] = useState<EntryBoundary>("respeto");
@@ -80,8 +80,8 @@ export default function MesaPage() {
       const parsed = parsedUnknown as Record<string, unknown>;
 
       const parsedStep = parsed.step;
-      if (typeof parsedStep === "number" && [0, 1].includes(parsedStep)) {
-        setStep(parsedStep as 0 | 1);
+      if (typeof parsedStep === "number" && [0, 1, 2].includes(parsedStep)) {
+        setStep(parsedStep as 0 | 1 | 2);
       }
 
       const parsedHecho = parsed.hecho;
@@ -146,6 +146,12 @@ export default function MesaPage() {
 
   const canContinue = hecho.trim().length >= 3 && rol.trim().length >= 2;
 
+  const progressLabel = useMemo(() => {
+    if (step === 0) return "Preparación";
+    if (step === 1) return "Escritura";
+    return "Cierre";
+  }, [step]);
+
   function closeWithoutSaving() {
     if (!state.activeSessionId || !process) return;
     clearDraft();
@@ -153,6 +159,14 @@ export default function MesaPage() {
     dispatch({ type: "close_session", sessionId: state.activeSessionId, closedAt: nowISO });
     dispatch({ type: "update_process", processId: process.id, patch: { last_closed_at: nowISO } });
     navigate("/sesion", { replace: true });
+  }
+
+  function closeSession() {
+    if (step === 2 && canContinue) {
+      saveAndClose();
+      return;
+    }
+    closeWithoutSaving();
   }
 
   function saveAndClose() {
@@ -195,24 +209,43 @@ export default function MesaPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-14 pt-10">
-      <div className="flex items-center justify-between gap-3 text-white">
-        <div>
-          <div className="text-[26px] font-semibold tracking-tight">Mesa</div>
-          <div className="mt-1 text-sm text-white/65">Escritura estructurada. Cierre obligatorio.</div>
+    <div className="mx-auto max-w-2xl px-4 pb-14">
+      <div className="sticky top-0 z-20 -mx-4 px-4 pb-4 pt-10 bg-[#0b1220]/55 backdrop-blur-md">
+        <div className="flex items-start justify-between gap-4 text-white">
+          <div className="min-w-0">
+            <div className="text-[22px] font-semibold tracking-tight">Mesa — Escritura Estructurada</div>
+            <div className="mt-1 text-xs text-white/65">Sesión activa</div>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/80 ring-1 ring-white/10">
+              <span className="inline-block h-2 w-2 rounded-full bg-white/60" aria-hidden />
+              {progressLabel} · Preparación → Escritura → Cierre
+            </div>
+          </div>
+          <Button variant="primary" size="sm" onClick={closeSession} type="button">
+            Cerrar sesión
+          </Button>
         </div>
-        <Button variant="quiet" size="sm" onClick={closeWithoutSaving} type="button">
-          Cerrar
-        </Button>
       </div>
 
       {step === 0 ? (
-        <Card className="mt-7 p-6">
-          <div className="text-xs text-morning-blue">Instrucción</div>
+        <Card className="mt-4 p-6">
+          <div className="text-xs text-morning-blue">Preparación</div>
           <div className="mt-3 text-lg font-semibold tracking-tight text-outer-space">
-            Escribe el hecho. No lo negocies con explicación.
+            Una línea. Un hecho. Sin explicar.
           </div>
-          <div className="mt-3 text-sm text-outer-space/70">Campos obligatorios. Luego cierras.</div>
+          <div className="mt-3 text-sm text-outer-space/70">Entras, escribes, cierras.</div>
+
+          <div className="mt-6 flex justify-end">
+            <Button variant="primary" onClick={() => setStep(1)} type="button">
+              Empezar
+            </Button>
+          </div>
+        </Card>
+      ) : null}
+
+      {step === 1 ? (
+        <Card className="mt-4 p-6">
+          <div className="text-xs text-morning-blue">Escritura</div>
+          <div className="mt-2 text-sm text-outer-space/70">Campos obligatorios. Sin narrativa.</div>
 
           <div className="mt-6 space-y-4">
             <div>
@@ -274,18 +307,21 @@ export default function MesaPage() {
 
           {status ? <div className="mt-4 text-sm text-outer-space/75">{status}</div> : null}
 
-          <div className="mt-6 flex justify-end">
-            <Button variant="primary" disabled={!canContinue} onClick={() => setStep(1)} type="button">
-              Continuar a cierre
+          <div className="mt-6 flex items-center justify-between gap-3">
+            <Button variant="quiet" onClick={() => setStep(0)} type="button">
+              Atrás
+            </Button>
+            <Button variant="primary" disabled={!canContinue} onClick={() => setStep(2)} type="button">
+              Ver cierre
             </Button>
           </div>
         </Card>
       ) : null}
 
-      {step === 1 ? (
-        <Card className="mt-7 p-6">
+      {step === 2 ? (
+        <Card className="mt-4 p-6">
           <div className="text-xs text-morning-blue">Cierre</div>
-          <div className="mt-2 text-sm text-outer-space/70">Guardas una entrada. Luego cierras.</div>
+          <div className="mt-2 text-sm text-outer-space/70">Esto queda registrado como hecho.</div>
 
           <div className="mt-5 rounded-2xl bg-mint-cream/70 ring-1 ring-gainsboro/60 px-5 py-4">
             <div className="text-sm font-semibold tracking-tight text-outer-space">{hecho.trim()}</div>
@@ -295,12 +331,10 @@ export default function MesaPage() {
           </div>
 
           <div className="mt-6 flex items-center justify-between gap-3">
-            <Button variant="quiet" onClick={() => setStep(0)} type="button">
+            <Button variant="quiet" onClick={() => setStep(1)} type="button">
               Editar
             </Button>
-            <Button variant="primary" onClick={saveAndClose} type="button">
-              Guardar y cerrar
-            </Button>
+            <div className="text-sm text-outer-space/70">Cierra la sesión para salir.</div>
           </div>
         </Card>
       ) : null}
