@@ -40,8 +40,8 @@ export function generateAlerts(params: {
       kind: "pattern_estructural_activo",
       title: `Patrón estructural activo: ${pattern.name}`,
       detail: `${evidenceCount14d} eventos / 14 días`,
-      ctaLabel: "Entrar a la Caja de Enfrentamiento",
-      ctaTo: `/caja?patternId=${pattern.id}`,
+      ctaLabel: "Entrar al Consultorio",
+      ctaTo: `/consultorio?patternId=${pattern.id}`,
       patternId: pattern.id,
     });
   }
@@ -66,8 +66,8 @@ export function generateAlerts(params: {
       kind: "estancamiento_intencion",
       title: "Estancamiento detectado",
       detail: `Intención recurrente: ${type} (${misses} de ${list.length} sin cierre real)`,
-      ctaLabel: "Ver en Caja de Enfrentamiento",
-      ctaTo: "/caja",
+      ctaLabel: "Ver en Consultorio",
+      ctaTo: "/consultorio",
     });
   }
 
@@ -79,11 +79,10 @@ export function generateAlerts(params: {
       kind: "silencio_prolongado",
       title: "Silencio prolongado",
       detail: "Sin registros recientes. Esto también es dato.",
-      ctaLabel: "Abrir Escribir (modo silencio)",
-      ctaTo: "/escribir?silencio=1",
+      ctaLabel: "Abrir Mesa (modo silencio)",
+      ctaTo: "/mesa?silencio=1",
     });
   }
 
   return alerts;
 }
-

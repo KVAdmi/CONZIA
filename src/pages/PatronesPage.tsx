@@ -4,7 +4,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Collapsible from "../components/ui/Collapsible";
 import { useSubscription } from "../state/subscriptionStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { Pattern } from "../types/models";
 import { addDays, parseISODate, toISODateOnly } from "../utils/dates";
 
@@ -21,7 +21,7 @@ function trendLabel(t: Pattern["trend"]): string {
 }
 
 export default function PatronesPage() {
-  const { state } = useXmi();
+  const { state } = useConzia();
   const sub = useSubscription();
   const navigate = useNavigate();
   const locked = !sub.derived.hasSystem;

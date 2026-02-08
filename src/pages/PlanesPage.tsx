@@ -22,9 +22,9 @@ export default function PlanesPage() {
 
   const statusLine = useMemo(() => {
     if (state.selectedPlan !== "none") {
-      return derived.effectivePlan === "xmi_asistencia"
-        ? "Activo: Concia + Asistencia"
-        : "Activo: Concia Sistema";
+      return derived.effectivePlan === "conzia_asistencia"
+        ? "Activo: CONZIA + Asistencia"
+        : "Activo: CONZIA Sistema";
     }
     if (derived.trialActive && derived.trialEndsAtISO) {
       return `Trial activo (7 días). Termina: ${formatDateShort(derived.trialEndsAtISO)}.`;
@@ -56,7 +56,7 @@ export default function PlanesPage() {
 
       <div className="grid grid-cols-1 gap-4">
         <Card className="p-6">
-          <div className="text-xs text-morning-blue">Concia Sistema</div>
+          <div className="text-xs text-morning-blue">CONZIA Sistema</div>
           <div className="mt-2 text-lg font-semibold tracking-tight text-outer-space">
             {formatMoneyMx(99)} <span className="text-sm font-medium text-outer-space/70">/ mes</span>
           </div>
@@ -77,7 +77,7 @@ export default function PlanesPage() {
             <Button
               variant="primary"
               onClick={() => {
-                dispatch({ type: "select_plan", plan: "xmi_total" });
+                dispatch({ type: "select_plan", plan: "conzia_total" });
                 navigate("/sesion");
               }}
             >
@@ -88,7 +88,7 @@ export default function PlanesPage() {
 
         <Card className="p-6">
           <div className="inline-flex items-center gap-2">
-            <div className="text-xs text-morning-blue">Concia + Asistencia</div>
+            <div className="text-xs text-morning-blue">CONZIA + Asistencia</div>
             <div className="rounded-full bg-camel/15 px-2 py-0.5 text-[11px] text-outer-space/80 ring-1 ring-camel/20">
               Soporte adicional
             </div>
@@ -101,10 +101,10 @@ export default function PlanesPage() {
           <div className="mt-4 text-xs text-outer-space/60">IA + apoyo cuando lo necesitas</div>
 
           <ul className="mt-4 space-y-2 text-sm text-outer-space/80">
-            <li>Todo Concia Sistema</li>
+            <li>Todo CONZIA Sistema</li>
             <li>Orientación emocional 24/7 (terceros)</li>
             <li>Voz (lecturas, caja, dictado)</li>
-            <li>Red indirecta sin exposición de Concia</li>
+            <li>Red indirecta sin exposición de CONZIA</li>
           </ul>
 
           <div className="mt-4 rounded-xl bg-mint-cream/70 ring-1 ring-gainsboro/60 px-4 py-3 text-xs text-outer-space/70">
@@ -116,7 +116,7 @@ export default function PlanesPage() {
             <Button
               variant="primary"
               onClick={() => {
-                dispatch({ type: "select_plan", plan: "xmi_asistencia" });
+                dispatch({ type: "select_plan", plan: "conzia_asistencia" });
                 navigate("/sesion");
               }}
             >
@@ -129,7 +129,7 @@ export default function PlanesPage() {
       <Card className="p-6">
         <div className="text-sm font-semibold tracking-tight text-outer-space">Modo básico</div>
         <div className="mt-1 text-sm text-outer-space/70">
-          Si no estás listo para suscripción, Concia no te castiga: te deja escribir y guardar.
+          Si no estás listo para suscripción, CONZIA no te castiga: te deja escribir y guardar.
         </div>
         <div className="mt-4 flex flex-col gap-2">
           <div className="text-xs text-outer-space/60">

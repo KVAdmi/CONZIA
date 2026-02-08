@@ -8,7 +8,7 @@ import Select from "../components/ui/Select";
 import Toggle from "../components/ui/Toggle";
 import { UNCOMFORTABLE_TRUTHS } from "../content/truths";
 import { useSubscription } from "../state/subscriptionStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { Entry, EntryType, Pattern, Reading } from "../types/models";
 import { formatDateLongEsMX, parseISODate, toISODateOnly } from "../utils/dates";
 
@@ -54,14 +54,14 @@ function computeSilenceMarkers(entries: Entry[]): Array<{ kind: "silence"; from:
 
 function getReadingMotiveFlag(): boolean {
   try {
-    return localStorage.getItem("concia_v1_motivo_lectura") === "1";
+    return localStorage.getItem("conzia_v1_motivo_lectura") === "1";
   } catch {
     return false;
   }
 }
 
 export default function LecturasPage() {
-  const { state, dispatch } = useXmi();
+  const { state, dispatch } = useConzia();
   const sub = useSubscription();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

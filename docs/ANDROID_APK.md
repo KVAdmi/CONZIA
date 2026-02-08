@@ -1,4 +1,4 @@
-# Concia — APK Android (wrapper WebView)
+# CONZIA — APK Android (wrapper WebView)
 
 Este repo es un **visor web** (React + Vite). Para verlo como app Android, incluí un wrapper mínimo en `android/` que sirve el build desde assets usando `https://appassets.androidplatform.net/` (WebViewAssetLoader) para evitar problemas con módulos ES en `file://`.
 

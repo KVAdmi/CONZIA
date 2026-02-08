@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 
-export type PlanId = "none" | "xmi_total" | "xmi_asistencia";
+export type PlanId = "none" | "conzia_total" | "conzia_asistencia";
 
 type SubscriptionState = {
   selectedPlan: PlanId;
@@ -14,7 +14,7 @@ type SubscriptionAction =
   | { type: "reset" };
 
 const TRIAL_DAYS = 7;
-const PENDING_SUBSCRIPTION_KEY = "concia_v1_pending_subscription";
+const PENDING_SUBSCRIPTION_KEY = "conzia_v1_pending_subscription";
 
 function addDays(date: Date, days: number): Date {
   const copy = new Date(date);
@@ -33,7 +33,7 @@ function parseISO(iso: string): Date | null {
 }
 
 function makeStorageKey(actorId: string): string {
-  return `concia_v1_subscription_${actorId || "local"}`;
+  return `conzia_v1_subscription_${actorId || "local"}`;
 }
 
 function loadPendingSubscription(): SubscriptionState | null {
@@ -43,7 +43,7 @@ function loadPendingSubscription(): SubscriptionState | null {
     const parsed = JSON.parse(raw) as SubscriptionState;
     if (!parsed || typeof parsed !== "object") return null;
     const selectedPlan = (parsed.selectedPlan ?? "none") as PlanId;
-    if (selectedPlan !== "none" && selectedPlan !== "xmi_total" && selectedPlan !== "xmi_asistencia") return null;
+    if (selectedPlan !== "none" && selectedPlan !== "conzia_total" && selectedPlan !== "conzia_asistencia") return null;
     const trialStartedAt = typeof parsed.trialStartedAt === "string" ? parsed.trialStartedAt : undefined;
     return { selectedPlan, trialStartedAt };
   } catch {
@@ -142,14 +142,14 @@ export function SubscriptionProvider({
     const ends = started ? addDays(started, TRIAL_DAYS) : null;
     const trialActive = Boolean(ends && ends.getTime() > Date.now());
     const effectivePlan: PlanId =
-      state.selectedPlan !== "none" ? state.selectedPlan : trialActive ? "xmi_total" : "none";
+      state.selectedPlan !== "none" ? state.selectedPlan : trialActive ? "conzia_total" : "none";
 
     return {
       trialActive,
       trialEndsAtISO: ends ? ends.toISOString() : null,
       effectivePlan,
       hasSystem: effectivePlan !== "none",
-      hasAssistance: effectivePlan === "xmi_asistencia",
+      hasAssistance: effectivePlan === "conzia_asistencia",
     };
   }, [state.selectedPlan, state.trialStartedAt]);
 

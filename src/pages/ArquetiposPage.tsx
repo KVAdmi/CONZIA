@@ -56,7 +56,7 @@ export default function ArquetiposPage() {
         <div className="mt-6 border-t border-white/10 pt-5">
           <div className="text-[11px] tracking-[0.18em] text-white/55">TEATRO DE SOMBRAS</div>
           <div className="mt-3 text-sm text-white/70">
-            No hablas con tu sombra: actúas como ella. Luego Concia te devuelve lo que quedó al descubierto.
+            No hablas con tu sombra: actúas como ella. Luego CONZIA te devuelve lo que quedó al descubierto.
           </div>
           <button
             type="button"

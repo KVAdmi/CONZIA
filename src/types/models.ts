@@ -146,7 +146,7 @@ export type CheckIn = {
   clarity: ClarityLevel;
 };
 
-export type XmiSeedData = {
+export type ConziaSeedData = {
   checkIns: CheckIn[];
   entries: Entry[];
   intentions: Intention[];
@@ -154,4 +154,62 @@ export type XmiSeedData = {
   readings: Reading[];
   vaultNotes: VaultNote[];
   mirrorStories: MirrorStory[];
+};
+
+export type DoorId = "sesion" | "consultorio" | "mesa" | "proceso";
+
+export type ConziaArchetype = "guerrero" | "sabio_rey" | "amante" | "mago";
+
+export type ConziaDrivingStyle = "Directo" | "Sobrio" | "Relacional" | "Reflexivo";
+
+export type ConziaProfile = {
+  alias: string;
+  email?: string;
+  tz: string;
+  country: string;
+  tema_base: string;
+  costo_dominante: string;
+  arquetipo_dominante: ConziaArchetype;
+  arquetipo_secundario: ConziaArchetype;
+  confianza: number;
+  estilo_conduccion: ConziaDrivingStyle;
+  registrationDone: true;
+};
+
+export type ConziaProcessStatus = "open" | "closed";
+
+export type ConziaProcess = {
+  id: string;
+  tema_activo: string;
+  day_index: number;
+  status: ConziaProcessStatus;
+  started_at: ISODateString; // datetime ISO
+  last_closed_at?: ISODateString; // datetime ISO
+};
+
+export type ConziaSession = {
+  id: string;
+  process_id: string;
+  date_key: ISODateString; // YYYY-MM-DD
+  door: DoorId;
+  closed: boolean;
+  started_at: ISODateString; // datetime ISO
+  closed_at?: ISODateString; // datetime ISO
+  summary_min?: string;
+};
+
+export type ConziaEntrySource = "consultorio" | "mesa";
+
+export type ConziaEntry = {
+  id: string;
+  process_id: string;
+  session_id: string;
+  source: ConziaEntrySource;
+  hecho: string;
+  contexto: EntryContext;
+  limite: EntryBoundary;
+  rol: string;
+  peso: number; // 0–10
+  repeticion_flag: RepeatSignal;
+  created_at: ISODateString; // datetime ISO
 };

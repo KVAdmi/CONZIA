@@ -55,10 +55,10 @@ export default function CrisisPage() {
       </button>
 
       <div className="mt-6 rounded-[34px] bg-[#0b1220]/72 ring-1 ring-white/10 backdrop-blur-xl px-6 pb-6 pt-5 shadow-[0_18px_60px_rgba(0,0,0,0.45)]">
-        <div className="text-[11px] tracking-[0.18em] text-white/55">CRISIS</div>
+        <div className="text-[11px] tracking-[0.18em] text-white/55">SALA</div>
         <div className="mt-3 text-2xl font-semibold tracking-tight text-white">Sin drama. Con acción.</div>
         <div className="mt-3 text-sm leading-relaxed text-white/70">
-          Concia no promete salvar. Contiene. Te regresa al cuerpo. Y luego a una línea de verdad.
+          CONZIA no promete salvar. Contiene. Te regresa al cuerpo. Y luego a una línea de verdad.
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-3">

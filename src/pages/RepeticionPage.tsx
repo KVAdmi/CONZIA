@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { Entry, Pattern } from "../types/models";
 
 function oneLine(text: string): string {
@@ -21,7 +21,7 @@ function contextsLabel(p: Pattern): string {
 
 export default function RepeticionPage() {
   const navigate = useNavigate();
-  const { state } = useXmi();
+  const { state } = useConzia();
 
   const patterns = useMemo(() => [...state.patterns].sort((a, b) => b.frequency30d - a.frequency30d), [state.patterns]);
   const [selectedId, setSelectedId] = useState<string>(patterns[0]?.id ?? "");
@@ -49,11 +49,11 @@ export default function RepeticionPage() {
         <div className="mt-10">
           <h1 className="text-2xl font-semibold tracking-tight text-outer-space">Algo se repite</h1>
           <p className="mt-3 text-sm text-outer-space/70">
-            Aún no hay evidencia suficiente para abrir Caja con honestidad.
+            Aún no hay evidencia suficiente para abrir Consultorio con honestidad.
           </p>
           <div className="mt-6 flex justify-end">
-            <Button variant="primary" onClick={() => navigate("/descarga")}>
-              Escribir
+            <Button variant="primary" onClick={() => navigate("/mesa")}>
+              Mesa
             </Button>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function RepeticionPage() {
       </div>
 
       <div className="mt-10">
-        <div className="text-xs text-morning-blue">Repetición</div>
+        <div className="text-xs text-morning-blue">Proceso</div>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-outer-space">Algo se repite.</h1>
         <p className="mt-3 text-sm text-outer-space/70 leading-relaxed">
           La sombra no es un problema a resolver. Es información que no habías querido ver. Aquí solo la iluminamos con evidencia.

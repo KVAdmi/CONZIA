@@ -8,7 +8,7 @@ import GlassSheet from "../components/ui/GlassSheet";
 import { SHADOW_PRACTICES } from "../content/shadowPractices";
 import { TESTS } from "../content/tests";
 import { useSubscription } from "../state/subscriptionStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { CheckIn, Entry, EntryReaction, EntryType, Intention, Pattern } from "../types/models";
 import { addDays, formatDateLongEsMX, parseISODate, toISODateOnly } from "../utils/dates";
 import { ChevronRight } from "lucide-react";
@@ -195,7 +195,7 @@ function pickRecommendedPracticeId(params: { shadow?: Pattern; indicators: Indic
 }
 
 export default function ArchivoPage() {
-  const { state } = useXmi();
+  const { state } = useConzia();
   const sub = useSubscription();
   const navigate = useNavigate();
   const locked = !sub.derived.hasSystem;
@@ -557,14 +557,14 @@ export default function ArchivoPage() {
           </div>
 
           <div className="mt-6 flex flex-wrap gap-2">
-            <button type="button" onClick={() => navigate("/crisis")} className={pillClassName()}>
-              Crisis
+            <button type="button" onClick={() => navigate("/sala")} className={pillClassName()}>
+              Sala
             </button>
             <button type="button" onClick={() => navigate("/boveda")} className={pillClassName()}>
               Bóveda
             </button>
-            <button type="button" onClick={() => navigate("/mas")} className={pillClassName()}>
-              Más
+            <button type="button" onClick={() => navigate("/proceso")} className={pillClassName()}>
+              Proceso
             </button>
           </div>
         </div>

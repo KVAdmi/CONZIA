@@ -1,10 +1,8 @@
-# Concia — Matriz de implementación (Documento maestro vs visor web)
+# CONZIA — Matriz de implementación (Documento maestro vs visor web)
 
 Este repo es un **visor web** para validar **flujo / estructura / ritual**. El producto final es **100% app nativa**.
 
-Fuente de verdad (producto): `CONCIA_DOCUMENTO_MAESTRO.md`.
-
-Nota: `XMI_MANIFIESTO_DE_PRODUCTO.md` queda como documento legado/histórico (la marca cambió a Concia).
+Fuente de verdad (producto): `CONZIA_DOCUMENTO_MAESTRO.md`.
 
 ## Leyenda de estado
 
@@ -20,9 +18,9 @@ Nota: `XMI_MANIFIESTO_DE_PRODUCTO.md` queda como documento legado/histórico (la
 - **Espejo Negro** (`/espejo`): entrada por voz (mock) → transcripción → guardar → espejo opcional.
 - **Descarga** (`/descarga`) y **Escribir** (`/escribir`) siguen: estructura es **opcional** y secuencial.
 - **Mapa** (`/mapa`): tablero duro (Agenda + Indicadores + gráficas). No se abre por defecto.
-- **Caja** (`/caja`): sala (sin navegación visible).
-- **Más** (`/mas`): Lecturas · Integración · Arquetipos · Tests · Perfil · Configuración.
-- **Crisis** (`/crisis`): contención sin drama (mock).
+- **Consultorio** (`/consultorio`): confrontación guiada (alias de Caja por ahora).
+- **Proceso** (`/proceso`): ruta activa (qué sigue).
+- **Sala** (`/sala`): contención sin drama (mock).
 - IA real:
   - **Lecturas**: **Parcial (visor)**. Se puede pedir lectura desde **Escribir** y se genera por **proxy local** (dev server) con fallback a mock.
   - **Historia espejo (Caja)**: **Parcial (visor)**. Botón “Generar (IA)” (proxy local) con fallback a mock.
@@ -36,7 +34,7 @@ Nota: `XMI_MANIFIESTO_DE_PRODUCTO.md` queda como documento legado/histórico (la
 |---|---|---|
 | Stack visor: React + Vite + TS + Tailwind | Hecho (visor) | `package.json`, `vite.config.ts`, `tailwind.config.ts` |
 | UI sin librerías pesadas | Hecho (visor) | Componentes propios en `src/components/ui/` |
-| Data mock desde día 1 (app “llena”) | Hecho (visor) | `src/data/seeds.json`, `src/data/seed.ts`, store `localStorage` en `src/state/xmiStore.tsx` (key `concia_v1_state` en `src/App.tsx`) |
+| Data mock desde día 1 (app “llena”) | Hecho (visor) | `src/data/seeds.json`, `src/data/seed.ts`, store `localStorage` en `src/state/conziaStore.tsx` (key `conzia_v1_state` en `src/App.tsx`) |
 | Animaciones suaves (gráficas/transiciones) | Hecho (visor) | `src/components/charts/*` + `framer-motion` |
 | Todo en español MX, tono sobrio | Parcial (visor) | Copy UI mayormente sobrio; faltan ajustes finos (microcopy uniforme, menos “UI empresarial”) |
 | No gamifica / no infantiliza / sin emojis en UI | Parcial (visor) | UI sin gamificación; algunos docs tienen emojis (no afecta UI). Revisión final de copy pendiente |
@@ -44,16 +42,16 @@ Nota: `XMI_MANIFIESTO_DE_PRODUCTO.md` queda como documento legado/histórico (la
 
 ---
 
-## 1) Navegación (Concia)
+## 1) Navegación (CONZIA)
 
 | Elemento | Estado | Dónde vive / notas |
 |---|---|---|
-| Navegación inferior: Sesión / Mapa / Hablar / Bóveda / Más | Hecho (visor) | `src/app/AppLayout.tsx` + `src/app/BottomNav.tsx` |
+| Navegación inferior: Sesión / Proceso / Espejo / Mapa / Bóveda | Hecho (visor) | `src/app/AppLayout.tsx` + `src/app/BottomNav.tsx` |
 | Inicio (onboarding) | Hecho (visor) | `src/pages/InicioPage.tsx` (`/inicio`) |
 | Sesión (tu próximo paso) | Hecho (visor) | `src/pages/SesionPage.tsx` (`/sesion`) |
 | Espejo Negro (voz mock) | Mock (visor) | `src/pages/EspejoNegroPage.tsx` (`/espejo`) |
-| Más (módulos secundarios) | Hecho (visor) | `src/pages/MasPage.tsx` (`/mas`) |
-| Caja (modo sala, sin nav visible) | Hecho (visor) | `src/pages/CajaEnfrentamientoPage.tsx` (`/caja`), `src/app/AppLayout.tsx` oculta nav |
+| Proceso (ruta activa) | Hecho (visor) | `src/pages/RepeticionPage.tsx` (`/proceso`) |
+| Consultorio (alias de Caja) | Hecho (visor) | `src/pages/CajaEnfrentamientoPage.tsx` (`/consultorio`) |
 | Rutas legacy (compat) | Hecho (visor) | `/hoy → /sesion`, `/archivo → /mapa`, `/patrones → /mapa` (redirects en `src/App.tsx`) |
 
 ---
@@ -78,9 +76,9 @@ Nota: `XMI_MANIFIESTO_DE_PRODUCTO.md` queda como documento legado/histórico (la
 
 | Entregable del manifiesto | Estado | Dónde vive / notas |
 |---|---|---|
-| “Tu próximo paso” (1 CTA) | Hecho (visor) | `src/pages/SesionPage.tsx` (Hablar/Escribir, Caja sugerida con evidencia) |
+| “Tu próximo paso” (1 CTA) | Hecho (visor) | `src/pages/SesionPage.tsx` (Espejo/Mesa, Consultorio sugerido con evidencia) |
 | Espejo Negro como entrada principal | Mock (visor) | `src/pages/EspejoNegroPage.tsx` (voz simulada + transcripción) |
-| Crisis (sin drama) | Mock (visor) | `src/pages/CrisisPage.tsx` (`/crisis`) |
+| Sala (sin drama) | Mock (visor) | `src/pages/CrisisPage.tsx` (`/sala`) |
 | Safety pipeline automático (bloquea confrontación si hay riesgo) | Pendiente (fase 2) | Requiere backend/orquestador + detección real |
 
 ---
@@ -109,7 +107,7 @@ Nota: `XMI_MANIFIESTO_DE_PRODUCTO.md` queda como documento legado/histórico (la
 | Lectura del día (formato fijo) | Hecho (visor) | `src/pages/LecturasPage.tsx` (muestra lectura seed y lecturas generadas) |
 | 6 bloques: contención / lo que veo / patrón / evitación / pregunta / acción mínima | Hecho (visor) | Render en `src/pages/LecturasPage.tsx` |
 | Trazabilidad “Basado en: [IDs]” | Parcial (visor) | Para lecturas generadas: `basedOnEntryIds`; en seed no siempre existe |
-| Verdades incómodas + feedback | Hecho (visor) | `src/content/truths.ts` + `truthFeedback` en `src/state/xmiStore.tsx` |
+| Verdades incómodas + feedback | Hecho (visor) | `src/content/truths.ts` + `truthFeedback` en `src/state/conziaStore.tsx` |
 | Narrativa personal (timeline filtrable) | Hecho (visor) | `src/pages/LecturasPage.tsx` (filtros + picos + silencios) |
 | Lecturas semanal/mensual agregadas | Pendiente (fase 2) | Requiere orquestación y jobs/backend |
 | “Capítulos” de narrativa personal | Pendiente (fase 2) | Requiere motor y persistencia real |
@@ -209,6 +207,6 @@ Esto no es “faltante funcional”; es **jerarquía/ritual**.
 Acciones recomendadas (visor → nativo):
 
 1) **Progresive disclosure**: en HOY mostrar 1 gráfica + 1 card clave y mover el resto a “Ver detalle”.
-2) **Chips**: limitar sugerencias visibles (ej. 6) y usar “Más” (drawer/modal) para el resto.
+2) **Chips**: limitar sugerencias visibles (ej. 6) y usar un panel secundario (drawer/modal) para el resto.
 3) **Secuencia**: HOY debe sentirse como sesión: *Estado → Pulso → Intención → (opcional) Alertas → Cierre*.
 4) **Evidencia > KPI**: menos contadores, más texto con peso y trazabilidad.

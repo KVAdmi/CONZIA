@@ -9,7 +9,7 @@ export default function InicioPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem("concia_onboarded") === "1") {
+    if (localStorage.getItem("conzia_onboarded") === "1") {
       navigate("/sesion", { replace: true });
     }
   }, [navigate]);
@@ -20,13 +20,13 @@ export default function InicioPage() {
         <div className="flex items-center gap-3">
           <div className="grid h-[72px] w-[72px] place-items-center overflow-hidden rounded-[28px] bg-white/10 ring-1 ring-white/12 backdrop-blur-md shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
             <img
-              src={`${import.meta.env.BASE_URL}brand/concia-logo.png`}
-              alt="Concia"
+              src={`${import.meta.env.BASE_URL}brand/conzia-logo.png`}
+              alt="CONZIA"
               className="h-[60px] w-[60px] object-contain"
               loading="eager"
             />
           </div>
-          <div className="mt-1 text-sm text-white/70">Volver a ti.</div>
+          <div className="mt-1 text-sm text-white/70">Ver claro.</div>
         </div>
         <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/80 ring-1 ring-white/10 backdrop-blur-md">
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-200/80" aria-hidden />
@@ -51,7 +51,7 @@ export default function InicioPage() {
           <button
             type="button"
             onClick={() => {
-              localStorage.setItem("concia_onboarded", "1");
+              localStorage.setItem("conzia_onboarded", "1");
               navigate("/sesion");
             }}
             className="mt-7 w-full rounded-2xl bg-[#7D5C6B] px-5 py-4 text-center text-sm font-semibold tracking-wide text-white ring-1 ring-white/15 shadow-[0_14px_40px_rgba(0,0,0,0.35)] transition hover:bg-[#6f5160] active:scale-[0.99]"

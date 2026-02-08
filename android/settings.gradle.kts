@@ -14,6 +14,5 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "concia-android"
+rootProject.name = "conzia-android"
 include(":app")
-

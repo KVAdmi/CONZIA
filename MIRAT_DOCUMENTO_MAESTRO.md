@@ -1,4 +1,3 @@
 # Documento movido
 
-Este documento fue renombrado a `CONCIA_DOCUMENTO_MAESTRO.md`.
-
+Este documento fue renombrado a `CONZIA_DOCUMENTO_MAESTRO.md`.

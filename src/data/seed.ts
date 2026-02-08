@@ -1,6 +1,6 @@
 import raw from "./seeds.json";
 import { addDays, diffDays, parseISODate, toISODateOnly } from "../utils/dates";
-import type { XmiSeedData } from "../types/models";
+import type { ConziaSeedData } from "../types/models";
 
 function maxDateISO(values: Array<{ date: string }>): string {
   return values
@@ -13,8 +13,8 @@ function shiftISODateOnly(iso: string, days: number): string {
   return toISODateOnly(shifted);
 }
 
-export function loadSeedData(): XmiSeedData {
-  const seed = raw as unknown as XmiSeedData;
+export function loadSeedData(): ConziaSeedData {
+  const seed = raw as unknown as ConziaSeedData;
 
   const dates = [
     ...seed.checkIns,
@@ -40,4 +40,3 @@ export function loadSeedData(): XmiSeedData {
     mirrorStories: seed.mirrorStories,
   };
 }
-

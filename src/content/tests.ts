@@ -14,7 +14,7 @@ export type TestQuestion = {
   reverse?: boolean;
 };
 
-export type XmiTest = {
+export type ConziaTest = {
   id: string;
   theme: TestTheme;
   length: TestLength;
@@ -28,7 +28,7 @@ function q(id: string, text: string, reverse?: boolean): TestQuestion {
   return reverse ? { id, text, reverse } : { id, text };
 }
 
-export const TESTS: XmiTest[] = [
+export const TESTS: ConziaTest[] = [
   {
     id: "t_limites_corto",
     theme: "límites",
@@ -204,4 +204,3 @@ export const TESTS: XmiTest[] = [
     ]
   }
 ];
-

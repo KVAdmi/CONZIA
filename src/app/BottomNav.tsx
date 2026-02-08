@@ -1,7 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { Home, Lock, MapPin, Mic, MoreHorizontal } from "lucide-react";
+import { FilePenLine, Home, MessageCircle, Route, UserRound } from "lucide-react";
 import type { ComponentType } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "../utils/cn";
+import { useConzia } from "../state/conziaStore";
+import type { DoorId } from "../types/models";
 
 type Item = {
   to: string;
@@ -12,23 +15,59 @@ type Item = {
 
 const ITEMS: Item[] = [
   { to: "/sesion", label: "Sesión", icon: Home },
-  { to: "/mapa", label: "Mapa", icon: MapPin },
-  { to: "/espejo", label: "Hablar", icon: Mic, kind: "primary" },
-  { to: "/boveda", label: "Bóveda", icon: Lock },
-  { to: "/mas", label: "Más", icon: MoreHorizontal },
+  { to: "/proceso", label: "Proceso", icon: Route },
+  { to: "/consultorio", label: "Consultorio", icon: MessageCircle, kind: "primary" },
+  { to: "/mesa", label: "Mesa", icon: FilePenLine },
+  { to: "/registro", label: "Registro", icon: UserRound },
 ];
 
+function doorIdFromPath(path: string): DoorId | null {
+  if (path === "/sesion") return "sesion";
+  if (path === "/consultorio") return "consultorio";
+  if (path === "/mesa") return "mesa";
+  if (path === "/proceso") return "proceso";
+  return null;
+}
+
 export default function BottomNav() {
+  const { state } = useConzia();
+  const [blocked, setBlocked] = useState<string | null>(null);
+
+  const activeDoorLabel = useMemo(() => {
+    if (!state.activeDoor) return null;
+    return ITEMS.find((i) => doorIdFromPath(i.to) === state.activeDoor)?.label ?? null;
+  }, [state.activeDoor]);
+
+  useEffect(() => {
+    if (!blocked) return;
+    const t = window.setTimeout(() => setBlocked(null), 2200);
+    return () => window.clearTimeout(t);
+  }, [blocked]);
+
   return (
     <nav className="absolute bottom-0 left-0 right-0 z-30 px-4 pb-5 pt-3">
+      {blocked ? (
+        <div className="mb-2 flex justify-center">
+          <div className="rounded-full bg-white/10 px-3 py-2 text-xs text-white/85 ring-1 ring-white/10 backdrop-blur-md">
+            {blocked}
+          </div>
+        </div>
+      ) : null}
       <div className="mx-auto flex items-end justify-between rounded-[30px] bg-[#0b1220]/75 backdrop-blur-md ring-1 ring-white/10 px-3 py-3">
         {ITEMS.map((item) => {
           const Icon = item.icon;
+          const isBlocked = Boolean(state.activeDoor && item.to !== `/${state.activeDoor}`);
+
           if (item.kind === "primary") {
             return (
               <NavLink
                 key={item.to}
                 to={item.to}
+                onClick={(e) => {
+                  if (!isBlocked) return;
+                  e.preventDefault();
+                  setBlocked(`Cierra ${activeDoorLabel ?? "la puerta actual"} antes de entrar a otra.`);
+                }}
                 className={({ isActive }) =>
                   cn(
                     "flex flex-col items-center gap-1.5 px-2",
@@ -49,6 +88,11 @@ export default function BottomNav() {
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={(e) => {
+                if (!isBlocked) return;
+                e.preventDefault();
+                setBlocked(`Cierra ${activeDoorLabel ?? "la puerta actual"} antes de entrar a otra.`);
+              }}
               className={({ isActive }) =>
                 cn(
                   "flex w-16 flex-col items-center gap-1 rounded-2xl px-2 py-2 transition",

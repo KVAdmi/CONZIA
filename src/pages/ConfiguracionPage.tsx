@@ -7,23 +7,23 @@ import { useAuth } from "../state/authStore";
 import { useSubscription } from "../state/subscriptionStore";
 
 function makeStateKey(actorId: string) {
-  return actorId === "local" ? "concia_v1_state" : `concia_v1_state_${actorId}`;
+  return actorId === "local" ? "conzia_v1_state" : `conzia_v1_state_${actorId}`;
 }
 
 function makeVaultKey(actorId: string) {
-  return actorId === "local" ? "concia_v1_vault_unlocked" : `concia_v1_vault_unlocked_${actorId}`;
+  return actorId === "local" ? "conzia_v1_vault_unlocked" : `conzia_v1_vault_unlocked_${actorId}`;
 }
 
 function makeSubscriptionKey(actorId: string) {
-  return `concia_v1_subscription_${actorId || "local"}`;
+  return `conzia_v1_subscription_${actorId || "local"}`;
 }
 
 const RESET_KEYS = [
-  "concia_v1_onboarding_done",
-  "concia_v1_plan_intent",
-  "concia_v1_checkout_plan",
-  "concia_v1_pending_subscription",
-  "concia_v1_access_done",
+  "conzia_v1_onboarding_done",
+  "conzia_v1_plan_intent",
+  "conzia_v1_checkout_plan",
+  "conzia_v1_pending_subscription",
+  "conzia_v1_access_done",
 ] as const;
 
 export default function ConfiguracionPage() {
@@ -31,7 +31,7 @@ export default function ConfiguracionPage() {
   const sub = useSubscription();
   const [readingMotive, setReadingMotive] = useState<boolean>(() => {
     try {
-      return localStorage.getItem("concia_v1_motivo_lectura") === "1";
+      return localStorage.getItem("conzia_v1_motivo_lectura") === "1";
     } catch {
       return false;
     }
@@ -86,7 +86,7 @@ export default function ConfiguracionPage() {
       <Card className="p-6">
         <h2 className="text-sm font-semibold tracking-tight">Configuración</h2>
         <p className="mt-1 text-sm text-outer-space/70">
-          Este build es visor web. Concia final es app nativa. Aquí validamos flujo, estructura y ritual.
+          Este build es visor web. CONZIA final es app nativa. Aquí validamos flujo, estructura y ritual.
         </p>
 
         <div className="mt-5 space-y-3">
@@ -107,7 +107,7 @@ export default function ConfiguracionPage() {
             onChange={(next) => {
               setReadingMotive(next);
               try {
-                localStorage.setItem("concia_v1_motivo_lectura", next ? "1" : "0");
+                localStorage.setItem("conzia_v1_motivo_lectura", next ? "1" : "0");
               } catch {
                 // ignore
               }
@@ -144,33 +144,33 @@ export default function ConfiguracionPage() {
                   ? "trial"
                   : "basic"
             }
-              onChange={(e) => {
-                const v = e.target.value;
-                if (v === "trial") {
-                  sub.dispatch({ type: "select_plan", plan: "none" });
-                  sub.dispatch({ type: "start_trial", startedAt: new Date().toISOString() });
-                  return;
-                }
-                if (v === "basic") {
-                  sub.dispatch({ type: "select_plan", plan: "none" });
-                  sub.dispatch({ type: "end_trial" });
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === "trial") {
+                sub.dispatch({ type: "select_plan", plan: "none" });
+                sub.dispatch({ type: "start_trial", startedAt: new Date().toISOString() });
                 return;
               }
-              if (v === "xmi_total") {
-                sub.dispatch({ type: "select_plan", plan: "xmi_total" });
+              if (v === "basic") {
+                sub.dispatch({ type: "select_plan", plan: "none" });
                 sub.dispatch({ type: "end_trial" });
                 return;
               }
-              if (v === "xmi_asistencia") {
-                sub.dispatch({ type: "select_plan", plan: "xmi_asistencia" });
+              if (v === "conzia_total") {
+                sub.dispatch({ type: "select_plan", plan: "conzia_total" });
+                sub.dispatch({ type: "end_trial" });
+                return;
+              }
+              if (v === "conzia_asistencia") {
+                sub.dispatch({ type: "select_plan", plan: "conzia_asistencia" });
                 sub.dispatch({ type: "end_trial" });
               }
             }}
           >
             <option value="trial">Trial activo (7 días)</option>
             <option value="basic">Modo básico</option>
-            <option value="xmi_total">Plan Concia Sistema (99)</option>
-            <option value="xmi_asistencia">Plan Concia + Asistencia (129)</option>
+            <option value="conzia_total">Plan CONZIA Sistema (99)</option>
+            <option value="conzia_asistencia">Plan CONZIA + Asistencia (129)</option>
           </Select>
         </div>
       </Card>

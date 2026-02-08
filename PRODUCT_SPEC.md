@@ -1,8 +1,8 @@
-# Concia — PRODUCT_SPEC (resumen técnico)
+# CONZIA — PRODUCT_SPEC (resumen técnico)
 
 ## Propósito
 
-Concia no busca que el usuario se sienta bien. Busca que vea claro.
+CONZIA no busca que el usuario se sienta bien. Busca que vea claro.
 
 No es:
 

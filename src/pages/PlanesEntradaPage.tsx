@@ -5,10 +5,10 @@ import { useNavigate } from "react-router-dom";
 import type { PlanId } from "../state/subscriptionStore";
 import { useSubscription } from "../state/subscriptionStore";
 
-const PLAN_INTENT_KEY = "concia_v1_plan_intent";
-const PENDING_SUBSCRIPTION_KEY = "concia_v1_pending_subscription";
-const CHECKOUT_PLAN_KEY = "concia_v1_checkout_plan";
-const ACCESS_DONE_KEY = "concia_v1_access_done";
+const PLAN_INTENT_KEY = "conzia_v1_plan_intent";
+const PENDING_SUBSCRIPTION_KEY = "conzia_v1_pending_subscription";
+const CHECKOUT_PLAN_KEY = "conzia_v1_checkout_plan";
+const ACCESS_DONE_KEY = "conzia_v1_access_done";
 
 function glassCardClassName(): string {
   return [
@@ -96,8 +96,8 @@ export default function PlanesEntradaPage() {
     clearAccessDone();
     sub.dispatch({ type: "select_plan", plan: "none" });
     sub.dispatch({ type: "end_trial" });
-    setPlanIntent("paid_xmi_total");
-    setCheckoutPlan("xmi_total");
+    setPlanIntent("paid_conzia_total");
+    setCheckoutPlan("conzia_total");
     clearPendingSubscription();
     navigate(`/acceso?next=${encodeURIComponent("/checkout")}`, { replace: true });
   }
@@ -110,7 +110,7 @@ export default function PlanesEntradaPage() {
         transition={{ duration: 38, ease: "linear", repeat: Infinity, repeatType: "mirror" }}
       >
         <img
-          src={`${import.meta.env.BASE_URL}brand/concia-onboarding-bg.png`}
+          src={`${import.meta.env.BASE_URL}brand/conzia-onboarding-bg.png`}
           alt=""
           aria-hidden
           className="h-full w-full object-cover"
@@ -143,7 +143,7 @@ export default function PlanesEntradaPage() {
               <div>
                 <div className="font-serif text-[22px] leading-[1.15]">Trial 7 días</div>
                 <div className="mt-2 text-sm text-[#EAE6DF]/72 leading-relaxed">
-                  Acceso completo a Concia Sistema por 7 días. Luego eliges si continúas.
+                  Acceso completo a CONZIA Sistema por 7 días. Luego eliges si continúas.
                 </div>
               </div>
               <div className="shrink-0 text-sm text-[#EAE6DF]/70">Gratis</div>
@@ -156,7 +156,7 @@ export default function PlanesEntradaPage() {
           <button type="button" onClick={choosePaid} className={glassCardClassName()} disabled={busy}>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="font-serif text-[22px] leading-[1.15]">Concia Sistema</div>
+                <div className="font-serif text-[22px] leading-[1.15]">CONZIA Sistema</div>
                 <div className="mt-2 text-sm text-[#EAE6DF]/72 leading-relaxed">
                   Pago directo con Mercado Pago. Cancelas cuando quieras.
                 </div>

@@ -20,7 +20,7 @@ import { QUICK_TOOLS, type QuickTool } from "../content/tools";
 import { TESTS } from "../content/tests";
 import { generateAlerts } from "../services/ai";
 import { useSubscription } from "../state/subscriptionStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type {
   CheckIn,
   ClarityLevel,
@@ -141,7 +141,7 @@ function featuredTestIdFor(date: Date): string | null {
 }
 
 export default function HoyPage() {
-  const { state, dispatch } = useXmi();
+  const { state, dispatch } = useConzia();
   const sub = useSubscription();
   const navigate = useNavigate();
   const todayISO = toISODateOnly(new Date());
@@ -1082,14 +1082,14 @@ export default function HoyPage() {
               Si estás en peligro inmediato o piensas hacerte daño, contacta servicios de emergencia locales.
             </div>
             <div className="mt-2 text-xs text-outer-space/60">
-              Concia no sustituye atención de emergencia.
+              CONZIA no sustituye atención de emergencia.
             </div>
           </div>
 
           <div className="rounded-xl bg-mint-cream/70 px-4 py-3 ring-1 ring-gainsboro/60">
             <div className="text-sm font-medium text-outer-space">Hablar con un orientador</div>
             <div className="mt-1 text-sm text-outer-space/70">
-              Orientación emocional no terapéutica (terceros). Sin acceso a contenido de Concia.
+              Orientación emocional no terapéutica (terceros). Sin acceso a contenido de CONZIA.
             </div>
             <div className="mt-3">
               <Button variant="primary" disabled={!sub.derived.hasAssistance} onClick={() => {}}>

@@ -1,4 +1,4 @@
-import type { XmiTest } from "../../content/tests";
+import type { ConziaTest } from "../../content/tests";
 import type { Pattern, Reading, ReadingContent } from "../../types/models";
 import { toISODateOnly } from "../../utils/dates";
 import { createId } from "../../utils/id";
@@ -22,7 +22,7 @@ function oneLine(text: string): string {
   return text.replace(/\s+/g, " ").trim();
 }
 
-function themeLines(theme: XmiTest["theme"]): { avoids: string; question: string; action?: string } {
+function themeLines(theme: ConziaTest["theme"]): { avoids: string; question: string; action?: string } {
   switch (theme) {
     case "límites":
       return {
@@ -70,7 +70,7 @@ function themeLines(theme: XmiTest["theme"]): { avoids: string; question: string
 }
 
 function buildMockContent(params: {
-  test: XmiTest;
+  test: ConziaTest;
   result: TestResult;
   signals: TestSignal[];
   patternName?: string;
@@ -105,7 +105,7 @@ function buildMockContent(params: {
 }
 
 async function requestTestReadingFromProxy(params: {
-  test: XmiTest;
+  test: ConziaTest;
   result: TestResult;
   signals: TestSignal[];
   suggestedPattern?: Pattern;
@@ -143,7 +143,7 @@ async function requestTestReadingFromProxy(params: {
 }
 
 export async function generateTestReading(params: {
-  test: XmiTest;
+  test: ConziaTest;
   result: TestResult;
   signals: TestSignal[];
   patterns: Pattern[];

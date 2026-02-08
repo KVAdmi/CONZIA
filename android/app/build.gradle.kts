@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-  namespace = "com.concia.app"
+  namespace = "com.conzia.app"
   compileSdk = 34
 
   defaultConfig {
-    applicationId = "com.concia.app"
+    applicationId = "com.conzia.app"
     minSdk = 24
     targetSdk = 34
     versionCode = 1

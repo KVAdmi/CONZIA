@@ -4,10 +4,10 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import GlassSheet from "../components/ui/GlassSheet";
 import { FieldHint, FieldLabel } from "../components/ui/Field";
-import { TESTS, type XmiTest } from "../content/tests";
+import { TESTS, type ConziaTest } from "../content/tests";
 import { generateTestReading } from "../services/ai";
 import { useSubscription } from "../state/subscriptionStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { Reading } from "../types/models";
 import { toISODateOnly } from "../utils/dates";
 
@@ -31,7 +31,7 @@ function severityFromAvg(avg: number): Result["severity"] {
   return "alto";
 }
 
-function resultCopy(test: XmiTest, result: Result): { suggests: string; tone: string } {
+function resultCopy(test: ConziaTest, result: Result): { suggests: string; tone: string } {
   const base =
     result.severity === "alto"
       ? "Esto sugiere un patrón sostenido, no un mal día."
@@ -63,7 +63,7 @@ function resultCopy(test: XmiTest, result: Result): { suggests: string; tone: st
 }
 
 export default function TestsPage() {
-  const { state, dispatch } = useXmi();
+  const { state, dispatch } = useConzia();
   const sub = useSubscription();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -82,7 +82,7 @@ export default function TestsPage() {
   const preselectTestId = searchParams.get("testId");
 
   const grouped = useMemo(() => {
-    const byTheme = new Map<string, XmiTest[]>();
+    const byTheme = new Map<string, ConziaTest[]>();
     for (const t of TESTS) byTheme.set(t.theme, [...(byTheme.get(t.theme) ?? []), t]);
     return [...byTheme.entries()].map(([theme, tests]) => ({
       theme,
@@ -133,12 +133,12 @@ export default function TestsPage() {
     return { avg: Math.round(avg * 100) / 100, severity: severityFromAvg(avg) };
   }
 
-  function scoreQuestion(q: XmiTest["questions"][number], answer: LikertValue | undefined): number {
+  function scoreQuestion(q: ConziaTest["questions"][number], answer: LikertValue | undefined): number {
     const v = answer ?? 0;
     return q.reverse ? (4 - v) : v;
   }
 
-  function buildTopSignals(test: XmiTest, limit: number): Array<{ questionId: string; text: string; score: number }> {
+  function buildTopSignals(test: ConziaTest, limit: number): Array<{ questionId: string; text: string; score: number }> {
     return test.questions
       .map((q) => ({
         questionId: q.id,

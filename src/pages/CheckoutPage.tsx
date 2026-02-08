@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSubscription, type PlanId } from "../state/subscriptionStore";
 
-const CHECKOUT_PLAN_KEY = "concia_v1_checkout_plan";
+const CHECKOUT_PLAN_KEY = "conzia_v1_checkout_plan";
 
 function pillClassName(): string {
   return "inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs text-white/85 ring-1 ring-white/10 transition hover:bg-white/12";
@@ -24,11 +24,11 @@ function quietButtonClassName(): string {
 function loadCheckoutPlan(): PlanId {
   try {
     const raw = localStorage.getItem(CHECKOUT_PLAN_KEY) ?? "";
-    if (raw === "xmi_total" || raw === "xmi_asistencia") return raw;
+    if (raw === "conzia_total" || raw === "conzia_asistencia") return raw;
   } catch {
     // ignore
   }
-  return "xmi_total";
+  return "conzia_total";
 }
 
 function clearCheckoutPlan() {
@@ -40,15 +40,15 @@ function clearCheckoutPlan() {
 }
 
 function planCopy(plan: PlanId): { title: string; price: string; subtitle: string } {
-  if (plan === "xmi_asistencia") {
+  if (plan === "conzia_asistencia") {
     return {
-      title: "Concia + Asistencia",
+      title: "CONZIA + Asistencia",
       price: "$129/mes",
       subtitle: "Sistema + orientación humana (terceros).",
     };
   }
   return {
-    title: "Concia Sistema",
+    title: "CONZIA Sistema",
     price: "$99/mes",
     subtitle: "Sistema cognitivo personal. Privado. Sin humanos.",
   };

@@ -1,6 +1,6 @@
-# Concia (v1 visor)
+# CONZIA (v1 visor)
 
-Concia es un sistema cognitivo personal: registra, observa, contrasta y devuelve conciencia estructurada sobre vida emocional, conductual y decisional. No es journaling, no es wellness, no es una app motivacional.
+CONZIA es un sistema de acompañamiento consciente: registra hechos, observa conducta, detecta repetición, contrasta intención vs realidad y devuelve verdad estructurada. No es journaling, no es wellness, no es una app motivacional.
 
 La v1 es **100% local** con data mock (seed JSON) y persistencia en `localStorage`.
 
@@ -42,16 +42,16 @@ El APK queda en `android/app/build/outputs/apk/debug/app-debug.apk`.
 - `src/pages/` pantallas: Inicio, Sesión, Espejo Negro, Mapa, Bóveda, Caja, Más, Integración, Arquetipos, Crisis
 - `src/types/models.ts` contrato de datos
 - `src/data/seeds.json` data mock (se “mueve” a hoy para que la app siempre se vea llena)
-- `src/state/xmiStore.tsx` store local + persistencia
+- `src/state/conziaStore.tsx` store local + persistencia
 - `src/services/ai/` IA mock (estructura lista para reemplazar por IA real)
 
 ## Datos mock y persistencia
 
 - El seed vive en `src/data/seeds.json`.
 - En `src/data/seed.ts` se ajustan fechas para que el último día del seed caiga en “hoy”.
-- El estado se guarda en `localStorage` (key: `concia_v1_state`).
+- El estado se guarda en `localStorage` (key: `conzia_v1_state`).
 
-Para reiniciar el demo: borra `localStorage` o elimina la key `concia_v1_state`.
+Para reiniciar el demo: borra `localStorage` o elimina la key `conzia_v1_state`.
 
 ## IA real (fase 2)
 

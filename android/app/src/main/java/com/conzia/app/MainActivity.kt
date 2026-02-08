@@ -1,4 +1,4 @@
-package com.concia.app
+package com.conzia.app
 
 import android.annotation.SuppressLint
 import android.content.pm.ApplicationInfo
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
         object : WebChromeClient() {
           override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
             Log.d(
-              "ConciaWebView",
+              "CONZIAWebView",
               "${consoleMessage.messageLevel()}: ${consoleMessage.message()} (${consoleMessage.sourceId()}:${consoleMessage.lineNumber()})",
             )
             return super.onConsoleMessage(consoleMessage)

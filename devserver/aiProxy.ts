@@ -179,9 +179,9 @@ async function callAnthropic(params: {
   return text;
 }
 
-export function conciaAiProxyPlugin(config: AiProxyConfig): Plugin {
+export function conziaAiProxyPlugin(config: AiProxyConfig): Plugin {
   return {
-    name: "concia-ai-proxy",
+    name: "conzia-ai-proxy",
     configureServer(server: ViteDevServer) {
       server.middlewares.use(async (req, res, next) => {
         const url = req.url ?? "";
@@ -220,7 +220,7 @@ export function conciaAiProxyPlugin(config: AiProxyConfig): Plugin {
             const patternName = patternId ? patterns.find((p) => p.id === patternId)?.name : undefined;
 
             const system = [
-              "Eres Concia: un sistema cognitivo personal. Hablas en español MX.",
+              "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
               "Tono: sobrio, firme, amoroso pero crudo. Sin emojis. Sin clichés. Sin motivación barata.",
               "No diagnostiques, no etiquetes clínicamente, no prometas terapia ni curación.",
               "No inventes hechos: solo puedes afirmar lo que esté en la evidencia enviada.",
@@ -290,7 +290,7 @@ export function conciaAiProxyPlugin(config: AiProxyConfig): Plugin {
             }
 
             const system = [
-              "Eres Concia: un sistema cognitivo personal. Hablas en español MX.",
+              "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
               "Tono: sobrio, claro, sin juicio. Amoroso pero no cómplice. Sin emojis. Sin clichés.",
               "Esto es un REFLEJO BREVE después de escritura libre (no es análisis, no es dashboard, no es diagnóstico).",
               "No uses las palabras: patrón, diagnóstico, frecuencia, indicador, métrica, score, KPI, clínico.",
@@ -371,7 +371,7 @@ export function conciaAiProxyPlugin(config: AiProxyConfig): Plugin {
             }
 
             const system = [
-              "Eres Concia: un sistema cognitivo personal. Hablas en español MX.",
+              "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
               "Tono: sobrio, firme, amoroso pero crudo. Sin emojis. Sin clichés. Sin motivación barata.",
               "No diagnostiques, no etiquetes clínicamente, no prometas terapia ni curación.",
               "No inventes datos: solo puedes afirmar lo que esté en el resumen del test y las señales.",
@@ -464,7 +464,7 @@ export function conciaAiProxyPlugin(config: AiProxyConfig): Plugin {
             const basedOnEntryIds = evidence.map((e) => e.id).filter(Boolean).slice(0, 8);
 
             const system = [
-              "Eres Concia: un sistema cognitivo personal. Hablas en español MX.",
+              "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
               "Tono: sobrio, firme, amoroso pero crudo. Sin emojis. Sin clichés.",
               "No diagnostiques. No uses lenguaje clínico. No prometas terapia.",
               "Genera una historia espejo ficticia (otra persona) con el mismo patrón estructural.",

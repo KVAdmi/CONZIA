@@ -1,4 +1,4 @@
-# Concia (visor web) — First minute experience (0–60s)
+# CONZIA (visor web) — First minute experience (0–60s)
 
 Este repo es un **visor web** para validar **flujo / estructura / ritual**. El producto final es **100% app nativa**. En el visor, la prioridad es: **dar valor primero** y mantener **progresivo > simultáneo**.
 
@@ -33,7 +33,7 @@ Acción:
 
 ## Segundo 45–60: REFLEJO / SIGUIENTE PASO (opcional)
 
-Después de guardar, Concia muestra:
+Después de guardar, CONZIA muestra:
 
 - Mensaje: “Gracias. Esto no necesita respuesta todavía.”
 - CTA opcional: **Pedir espejo breve** (formato fijo, sobrio).

@@ -14,7 +14,7 @@ import Textarea from "../components/ui/Textarea";
 import Toggle from "../components/ui/Toggle";
 import { generateReading } from "../services/ai";
 import { useSubscription } from "../state/subscriptionStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type {
   Entry,
   EntryBoundary,
@@ -119,7 +119,7 @@ function buildEntryText(params: {
 }
 
 export default function EscribirPage() {
-  const { state, dispatch } = useXmi();
+  const { state, dispatch } = useConzia();
   const sub = useSubscription();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -350,7 +350,7 @@ export default function EscribirPage() {
         <Card className="p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-sm font-semibold tracking-tight">Escribir</h2>
+              <h2 className="text-sm font-semibold tracking-tight">Mesa</h2>
               <p className="mt-1 text-sm text-outer-space/70">
                 {formatDateLongEsMX(todayISO)} · Primero humano. Luego estructura.
               </p>

@@ -27,7 +27,7 @@ export default function IntegracionCompasPage() {
         </div>
 
         <div className="mt-5 text-sm leading-relaxed text-white/70">
-          Aquí vive tu brújula: valores definidos después de avances reales. Concia los usa para recordarte una decisión mínima
+          Aquí vive tu brújula: valores definidos después de avances reales. CONZIA los usa para recordarte una decisión mínima
           cuando vuelves al patrón.
         </div>
       </div>

@@ -1,6 +1,6 @@
-# Concia — Manual de uso (v1)
+# CONZIA — Manual de uso (v1)
 
-Concia es un acompañamiento de **trabajo de sombra**: una pregunta por vez, evidencia antes que historia, y acción mínima antes que “arreglar”.
+CONZIA es un acompañamiento de **trabajo de sombra**: una pregunta por vez, evidencia antes que historia, y acción mínima antes que “arreglar”.
 
 ## Primer arranque (flujo nuevo)
 
@@ -14,10 +14,10 @@ Concia es un acompañamiento de **trabajo de sombra**: una pregunta por vez, evi
 
 - **Barra inferior (footer)**: es tu “volante” para moverte rápido.
   - **Sesión**: dónde empiezas hoy.
+  - **Proceso**: ruta activa (qué sigue).
+  - **Espejo**: confrontación directa (pantalla negra).
   - **Mapa**: tablero colapsado (abre detalles en modales cristal).
-  - **Hablar**: entrada directa al Espejo Negro.
   - **Bóveda**: notas privadas (fuera del sistema).
-  - **Más**: módulos secundarios (Crisis, Lecturas, Integración, Arquetipos, etc.).
 - **Modales cristal (GlassSheet)**: se abren desde tiles o tarjetas.
   - **Cerrar**: toca la **X** o toca **fuera** del modal.
 - En **Inicio** y **Acceso** la barra inferior puede estar oculta (onboarding/login). En el resto de la app se mantiene visible.
@@ -26,7 +26,7 @@ Concia es un acompañamiento de **trabajo de sombra**: una pregunta por vez, evi
 ## Flujo recomendado (día 1)
 
 1) Entra a **Sesión**  
-2) Elige **Hablar** (Espejo Negro) o **Escribir** (Descarga)  
+2) Elige **Espejo** (pantalla negra) o **Mesa** (escritura estructurada)  
 3) Luego abre **Mapa** solo para ver **rastro**, no para juzgarte  
 4) Si aparece un patrón con evidencia: **Caja** (cuando esté disponible)
 
@@ -37,7 +37,7 @@ Objetivo: **un paso real hoy**.
 - **HABLAR** → abre **Espejo Negro** (voz/mock + texto).
 - **ESCRIBIR** → abre **Descarga** (escritura sin estructura).
 - **ENTRAR A CAJA** → abre **Caja de Enfrentamiento** (si hay patrón dominante con evidencia).
-- Atajos: **Mapa**, **Crisis**, **Bóveda**, **Más**.
+- Atajos: **Mapa**, **Sala**, **Bóveda**, **Proceso**.
 
 ## Mapa
 
@@ -56,7 +56,7 @@ En **Mapa** verás tiles. Cada tile abre un **modal cristal** con el detalle:
 - **Práctica sugerida**: práctica breve; puedes pedir “Otra” o abrir en Escribir.
 - **Test del mes**: módulo mock de tests (rotación mensual).
 
-## Hablar (Espejo Negro)
+## Espejo (pantalla negra)
 
 Objetivo: **nombrar sin adornar**.
 
@@ -77,7 +77,7 @@ Objetivo: privacidad total (fuera del sistema).
   - **Modo ceniza**: escribe y destruye (no guarda).
   - **Notas selladas**: lista; toca una nota para abrirla.
 
-## Más
+## Proceso
 
 Objetivo: acceso a módulos secundarios.
 

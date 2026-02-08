@@ -185,7 +185,7 @@ def screen_onboarding(width: int, height: int, theme: Theme, fonts: dict[str, Im
     im, draw = _base_canvas(width, height, theme)
     margin = 64
 
-    _text(draw, (margin, 130), "Concia", font=fonts["title_64"], fill=theme.text)
+    _text(draw, (margin, 130), "CONZIA", font=fonts["title_64"], fill=theme.text)
     _text(
         draw,
         (margin, 240),
@@ -234,7 +234,7 @@ def screen_contrato(width: int, height: int, theme: Theme, fonts: dict[str, Imag
     _text(
         draw,
         (margin, 200),
-        "Concia no es un asistente. No está para hacerte sentir cómodo. Está para ayudarte a mirar lo que evitas.",
+        "CONZIA no es un asistente. No está para hacerte sentir cómodo. Está para ayudarte a mirar lo que evitas.",
         font=fonts["body_32"],
         fill=theme.text_muted,
         max_width=width - margin * 2,
@@ -337,7 +337,7 @@ def screen_acceso(width: int, height: int, theme: Theme, fonts: dict[str, ImageF
     _text(
         draw,
         (margin, height - 130),
-        "Privacidad: Concia funciona local. Sync es opcional.",
+        "Privacidad: CONZIA funciona local. Sync es opcional.",
         font=fonts["body_24"],
         fill=theme.text_muted,
         max_width=width - margin * 2,
@@ -417,7 +417,7 @@ def screen_menu(width: int, height: int, theme: Theme, fonts: dict[str, ImageFon
 
     x = 48
     y = 120
-    _text(draw, (x, y), "Concia", font=fonts["title_48"], fill=theme.text)
+    _text(draw, (x, y), "CONZIA", font=fonts["title_48"], fill=theme.text)
     y += 86
     _text(draw, (x, y), "Menú", font=fonts["body_28"], fill=theme.text_muted)
     y += 64

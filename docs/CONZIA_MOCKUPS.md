@@ -1,6 +1,6 @@
-# Concia — Mockups (imágenes)
+# CONZIA — Mockups (imágenes)
 
-Nota: los PNG y scripts aún se llaman `mirat_*` porque son **legacy** (se generaron antes del rename). Se regeneran con la marca Concia cuando lo pidamos.
+Nota: los PNG y scripts aún se llaman `mirat_*` porque son **legacy** (se generaron antes del rename). Se regeneran con la marca CONZIA cuando lo pidamos.
 
 Estas imágenes son **mockups rápidos** para visualizar layout y tono (no son UI final). Hay dos rutas visuales para decidir:
 

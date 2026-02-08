@@ -7,7 +7,7 @@ import { useAuth } from "../state/authStore";
 
 type Mode = "login" | "signup";
 
-const ACCESS_DONE_KEY = "concia_v1_access_done";
+const ACCESS_DONE_KEY = "conzia_v1_access_done";
 
 function primaryButtonClassName(): string {
   return "w-full rounded-2xl bg-[#7D5C6B] px-5 py-4 text-center text-sm font-semibold tracking-wide text-white ring-1 ring-white/15 shadow-[0_14px_40px_rgba(0,0,0,0.35)] transition hover:bg-[#6f5160] active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none";
@@ -95,15 +95,15 @@ export default function AccesoPage() {
       <div className="mt-10 flex items-center gap-3 text-white">
         <div className="grid h-12 w-12 place-items-center overflow-hidden rounded-2xl bg-white/10 ring-1 ring-white/12 backdrop-blur-md">
           <img
-            src={`${import.meta.env.BASE_URL}brand/concia-logo.png`}
-            alt="Concia"
+            src={`${import.meta.env.BASE_URL}brand/conzia-logo.png`}
+            alt="CONZIA"
             className="h-10 w-10 object-contain"
             loading="eager"
           />
         </div>
         <div>
           <div className="text-[26px] font-semibold tracking-tight">Acceso</div>
-          <div className="mt-1 text-sm text-white/65">Concia — Volver a ti</div>
+          <div className="mt-1 text-sm text-white/65">CONZIA — Ver claro</div>
         </div>
       </div>
 

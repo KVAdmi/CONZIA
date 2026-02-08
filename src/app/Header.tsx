@@ -1,7 +1,7 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "../utils/cn";
-import { useXmiDerived } from "../state/xmiStore";
+import { useConziaDerived } from "../state/conziaStore";
 import { ChevronDown, ClipboardList, Settings, User } from "lucide-react";
 import { useAuth } from "../state/authStore";
 import { useSubscription } from "../state/subscriptionStore";
@@ -17,7 +17,7 @@ const TABS: Tab[] = [
 ];
 
 export default function Header() {
-  const { latestDate } = useXmiDerived();
+  const { latestDate } = useConziaDerived();
   const auth = useAuth();
   const sub = useSubscription();
   const location = useLocation();
@@ -27,7 +27,7 @@ export default function Header() {
 
   const title = useMemo(() => {
     const match = TABS.find((t) => location.pathname.startsWith(t.to));
-    return match?.label ?? "Concia";
+    return match?.label ?? "CONZIA";
   }, [location.pathname]);
 
   useEffect(() => {
@@ -51,8 +51,8 @@ export default function Header() {
   }, [auth.status, auth.user?.email]);
 
   const planLabel = useMemo(() => {
-    if (sub.state.selectedPlan === "xmi_asistencia") return "Plan: Concia + Asistencia";
-    if (sub.state.selectedPlan === "xmi_total") return "Plan: Concia Sistema";
+    if (sub.state.selectedPlan === "conzia_asistencia") return "Plan: CONZIA + Asistencia";
+    if (sub.state.selectedPlan === "conzia_total") return "Plan: CONZIA Sistema";
     if (sub.derived.trialActive) return "Trial activo";
     return "Modo básico";
   }, [sub.derived.trialActive, sub.state.selectedPlan]);
@@ -69,7 +69,7 @@ export default function Header() {
           >
             <div className="h-9 w-9 rounded-xl bg-white/80 ring-1 ring-gainsboro/60 shadow-sm grid place-items-center overflow-hidden">
               <img
-                src={`${import.meta.env.BASE_URL}brand/concia-logo.png`}
+                src={`${import.meta.env.BASE_URL}brand/conzia-logo.png`}
                 alt=""
                 className="h-6 w-6 object-contain"
                 aria-hidden
@@ -77,8 +77,8 @@ export default function Header() {
               />
             </div>
             <div className="hidden sm:block">
-              <div className="text-sm font-semibold tracking-tight text-outer-space">Concia</div>
-              <div className="text-xs text-morning-blue">Volver a ti</div>
+              <div className="text-sm font-semibold tracking-tight text-outer-space">CONZIA</div>
+              <div className="text-xs text-morning-blue">Ver claro</div>
             </div>
           </button>
 

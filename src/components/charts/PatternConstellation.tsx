@@ -96,13 +96,13 @@ export default function PatternConstellation({
       <div className="mt-4 rounded-2xl bg-mint-cream/70 ring-1 ring-gainsboro/60 px-3 py-3">
         <svg viewBox={`0 0 ${width} ${height}`} className="h-56 w-full">
           <defs>
-            <radialGradient id="concia-constellation-glow" cx="50%" cy="35%" r="65%">
+            <radialGradient id="conzia-constellation-glow" cx="50%" cy="35%" r="65%">
               <stop offset="0%" stopColor="rgba(125,92,107,0.18)" />
               <stop offset="100%" stopColor="rgba(125,92,107,0)" />
             </radialGradient>
           </defs>
 
-          <rect x="0" y="0" width={width} height={height} fill="url(#concia-constellation-glow)" />
+          <rect x="0" y="0" width={width} height={height} fill="url(#conzia-constellation-glow)" />
 
           {nodes.map((n, idx) => {
             const isDominant = n.id === dominant;

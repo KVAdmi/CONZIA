@@ -1,16 +1,50 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import BottomNav from "./BottomNav";
+import { useConzia } from "../state/conziaStore";
+import type { DoorId } from "../types/models";
+
+const ONBOARDING_DONE_KEY = "conzia_v1_onboarding_done";
+
+function getFlag(key: string): boolean {
+  try {
+    return localStorage.getItem(key) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function doorFromPathname(pathname: string): DoorId | null {
+  if (pathname.startsWith("/sesion")) return "sesion";
+  if (pathname.startsWith("/consultorio")) return "consultorio";
+  if (pathname.startsWith("/mesa")) return "mesa";
+  if (pathname.startsWith("/proceso")) return "proceso";
+  return null;
+}
 
 export default function AppLayout() {
   const location = useLocation();
   const pathname = location.pathname;
-  const hideNav =
-    pathname.startsWith("/inicio") ||
-    pathname.startsWith("/onboarding") ||
-    pathname.startsWith("/planes/elige") ||
-    pathname.startsWith("/checkout") ||
-    pathname.startsWith("/auth/") ||
-    pathname.startsWith("/acceso");
+  const { state } = useConzia();
+
+  const onboardingDone = getFlag(ONBOARDING_DONE_KEY);
+  const registrationDone = Boolean(state.profile?.registrationDone);
+
+  if (!onboardingDone && !pathname.startsWith("/onboarding")) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  if (onboardingDone && !registrationDone && !pathname.startsWith("/registro") && !pathname.startsWith("/onboarding")) {
+    return <Navigate to="/registro" replace />;
+  }
+
+  if (registrationDone && state.activeDoor) {
+    const currentDoor = doorFromPathname(pathname);
+    if (currentDoor !== state.activeDoor) {
+      return <Navigate to={`/${state.activeDoor}`} replace />;
+    }
+  }
+
+  const hideNav = pathname.startsWith("/onboarding");
   const contentPaddingBottom = hideNav ? "pb-0" : "pb-[140px]";
 
   return (

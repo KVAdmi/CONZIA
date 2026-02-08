@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Textarea from "../components/ui/Textarea";
 import { generateReflection } from "../services/ai";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { Entry, Reading } from "../types/models";
 import { formatDateLongEsMX, toISODateOnly } from "../utils/dates";
 import { createId } from "../utils/id";
@@ -34,7 +34,7 @@ function buildEntry(params: { dateISO: string; text: string }): Entry {
 export default function DescargaPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { dispatch } = useXmi();
+  const { dispatch } = useConzia();
 
   const todayISO = useMemo(() => toISODateOnly(new Date()), []);
   const promptParam = searchParams.get("prompt");

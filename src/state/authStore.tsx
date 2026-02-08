@@ -35,9 +35,9 @@ type AuthContextValue = {
   signOut: () => Promise<void>;
 };
 
-const AUTH_SESSION_KEY = "concia_v1_auth_session";
-const AUTH_MODE_KEY = "concia_v1_auth_mode";
-const PKCE_VERIFIER_KEY = "concia_v1_pkce_verifier";
+const AUTH_SESSION_KEY = "conzia_v1_auth_session";
+const AUTH_MODE_KEY = "conzia_v1_auth_mode";
+const PKCE_VERIFIER_KEY = "conzia_v1_pkce_verifier";
 
 function loadSession(): SupabaseSession | null {
   try {

@@ -2,58 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-type Step = {
-  id: string;
-  kind: "umbral" | "card" | "final";
-  eyebrow?: string;
-  title: string;
-  body: string[];
-  footnote?: string;
-};
-
-const ONBOARDING_DONE_KEY = "concia_v1_onboarding_done";
-
-const STEPS: Step[] = [
-  {
-    id: "umbral",
-    kind: "umbral",
-    title: "CONCIA",
-    body: ["Desahogo y reencuentro."],
-    footnote: "Un espacio íntimo para decir lo que cargas\ny volver a ti sin máscaras.",
-  },
-  {
-    id: "desahogo",
-    kind: "card",
-    title: "Aquí no vienes\na verte bien.",
-    body: [
-      "Concia no te pide respuestas correctas.\nTe invita a decir lo que normalmente callas.\nSin orden. Sin filtro. Sin juicio.",
-    ],
-    footnote: "Hablar también es soltar.",
-  },
-  {
-    id: "incomodo",
-    kind: "card",
-    title: "Lo que evitas\ntambién habla.",
-    body: [
-      "A veces lo que más pesa\nno es lo que pasó,\nsino lo que nunca dijiste.",
-    ],
-    footnote: "Aquí puedes mirarlo sin huir.",
-  },
-  {
-    id: "reencuentro",
-    kind: "card",
-    title: "Después del desahogo,\nviene el regreso.",
-    body: ["No para ser otra persona.\nSino para volver a ti\ncon menos carga y más claridad."],
-    footnote: "Lo que sueltas, no te pierde.",
-  },
-  {
-    id: "decision",
-    kind: "final",
-    title: "Concia es\nun proceso personal.",
-    body: ["Nadie te observa.\nNadie te corrige.\nSolo tú, con lo que aparece."],
-    footnote: "Puedes salir cuando quieras.",
-  },
-];
+const ONBOARDING_DONE_KEY = "conzia_v1_onboarding_done";
 
 function glassCardClassName(variant: "soft" | "solid"): string {
   return [
@@ -92,15 +41,14 @@ function dots(count: number, active: number) {
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const [idx, setIdx] = useState(0);
+  const [accepted, setAccepted] = useState(false);
 
-  const step = STEPS[idx]!;
-  const isLast = idx === STEPS.length - 1;
+  const isContrato = idx === 1;
+  const stepCount = 2;
 
   const overlayOpacity = useMemo(() => {
-    if (step.id === "incomodo") return 0.72;
-    if (step.id === "reencuentro") return 0.56;
-    return 0.65;
-  }, [step.id]);
+    return isContrato ? 0.7 : 0.62;
+  }, [isContrato]);
 
   function persistDone() {
     try {
@@ -111,19 +59,20 @@ export default function OnboardingPage() {
   }
 
   function next() {
-    if (isLast) {
-      persistDone();
-      navigate("/planes/elige", { replace: true });
+    if (idx === 0) {
+      setIdx(1);
       return;
     }
-    setIdx((v) => Math.min(STEPS.length - 1, v + 1));
+    if (!accepted) return;
+    persistDone();
+    navigate("/registro", { replace: true });
   }
 
   function onTap(e: React.MouseEvent) {
     const target = e.target as HTMLElement | null;
     if (!target) return;
     if (target.closest("button,a,input,textarea,select,label")) return;
-    next();
+    if (!isContrato) next();
   }
 
   return (
@@ -134,7 +83,7 @@ export default function OnboardingPage() {
         transition={{ duration: 38, ease: "linear", repeat: Infinity, repeatType: "mirror" }}
       >
         <img
-          src={`${import.meta.env.BASE_URL}brand/concia-onboarding-bg.png`}
+          src={`${import.meta.env.BASE_URL}brand/conzia-onboarding-bg.png`}
           alt=""
           aria-hidden
           className="h-full w-full object-cover"
@@ -144,46 +93,48 @@ export default function OnboardingPage() {
       <div className="absolute inset-0" style={{ backgroundColor: `rgba(30,42,56,${overlayOpacity})` }} />
 
       <div className="relative z-10 min-h-[100svh] px-8 pb-10 pt-14 flex flex-col">
-        <div className="mt-2">{dots(STEPS.length, idx)}</div>
+        <div className="mt-2">{dots(stepCount, idx)}</div>
 
         <div className="flex-1 flex items-center justify-center">
           <AnimatePresence mode="wait">
             <motion.div
-              key={step.id}
+              key={idx}
               initial={{ opacity: 0, y: 10, filter: "blur(2px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -10, filter: "blur(2px)" }}
               transition={{ duration: 0.34, ease: "easeOut" }}
               className="w-full flex items-center justify-center"
             >
-              {step.kind === "umbral" ? (
+              {idx === 0 ? (
                 <div className="w-full max-w-[340px] text-center">
                   <img
-                    src={`${import.meta.env.BASE_URL}brand/concia-favicon.png`}
-                    alt="Concia"
+                    src={`${import.meta.env.BASE_URL}brand/conzia-favicon.png`}
+                    alt="CONZIA"
                     className="mx-auto h-16 w-16 object-contain"
                     loading="eager"
                     draggable={false}
                   />
-                  <div className="font-serif text-[44px] tracking-[0.18em]">{step.title}</div>
-                  <div className="mt-6 text-base text-[#EAE6DF]/85">{step.body[0]}</div>
+                  <div className="font-serif text-[44px] tracking-[0.18em]">CONZIA</div>
+                  <div className="mt-6 text-base text-[#EAE6DF]/85">Acompañamiento para ver lo que evitas.</div>
                 </div>
               ) : (
-                <div className={glassCardClassName(step.kind === "final" ? "solid" : "soft")}>
-                  {step.eyebrow ? (
-                    <div className="text-[11px] tracking-[0.18em] text-[#EAE6DF]/55">{step.eyebrow}</div>
-                  ) : null}
-                  <div className="font-serif text-[28px] leading-[1.18]">{step.title}</div>
-                  <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-[#EAE6DF]/80 whitespace-pre-line">
-                    {step.body.map((p) => (
-                      <div key={p}>{p}</div>
-                    ))}
+                <div className={glassCardClassName("solid")}>
+                  <div className="text-[11px] tracking-[0.18em] text-[#EAE6DF]/55">CONTRATO</div>
+                  <div className="mt-4 font-serif text-[22px] leading-[1.25]">
+                    CONZIA no es terapia. No diagnostica. No te endulza.
                   </div>
-                  {step.footnote && step.kind !== "final" ? (
-                    <div className="mt-7 font-serif italic text-sm text-[#EAE6DF]/65">
-                      {step.footnote}
-                    </div>
-                  ) : null}
+
+                  <label className="mt-8 flex items-start gap-3 text-left">
+                    <input
+                      type="checkbox"
+                      checked={accepted}
+                      onChange={(e) => setAccepted(e.target.checked)}
+                      className="mt-1 h-4 w-4 accent-[#7D5C6B]"
+                    />
+                    <span className="text-[15px] leading-relaxed text-[#EAE6DF]/85">
+                      Acepto trabajar sin justificarme.
+                    </span>
+                  </label>
                 </div>
               )}
             </motion.div>
@@ -191,12 +142,6 @@ export default function OnboardingPage() {
         </div>
 
         <div className="mt-auto flex flex-col items-center">
-          {step.kind === "umbral" && step.footnote ? (
-            <div className="max-w-[320px] text-center text-sm leading-relaxed text-[#EAE6DF]/80 whitespace-pre-line">
-              {step.footnote}
-            </div>
-          ) : null}
-
           <button
             type="button"
             onClick={(e) => {
@@ -204,14 +149,14 @@ export default function OnboardingPage() {
               e.stopPropagation();
               next();
             }}
-            className={step.kind === "final" ? glassButtonClassName("cta") : glassButtonClassName("small")}
+            disabled={isContrato && !accepted}
+            className={[
+              isContrato ? glassButtonClassName("cta") : glassButtonClassName("small"),
+              isContrato && !accepted ? "opacity-60 pointer-events-none" : "",
+            ].join(" ")}
           >
-            {step.kind === "final" ? "Entrar a Concia" : "Continuar"}
+            {isContrato ? "Entrar" : "Continuar"}
           </button>
-
-          {step.kind === "final" && step.footnote ? (
-            <div className="mt-4 text-xs text-[#EAE6DF]/60 italic">{step.footnote}</div>
-          ) : null}
         </div>
       </div>
     </div>

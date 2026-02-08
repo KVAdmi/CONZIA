@@ -341,9 +341,9 @@ def screen_onboarding(w: int, h: int, theme: Theme, fonts: dict[str, ImageFont.I
     _status_bar(draw, w, fonts, theme.text)
 
     # Title block (like ref)
-    draw.text((56, 210), "Concia", font=fonts["title"], fill=theme.text)
+    draw.text((56, 210), "CONZIA", font=fonts["title"], fill=theme.text)
     y = 290
-    y = _paragraph(draw, 56, y, "Volver a ti.", fonts["b"], theme.text, max_w=w - 112, lh=38)
+    y = _paragraph(draw, 56, y, "Ver claro.", fonts["b"], theme.text, max_w=w - 112, lh=38)
     y += 22
 
     # Small meta row (right)

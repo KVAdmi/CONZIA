@@ -5,7 +5,7 @@ import Input from "../components/ui/Input";
 import GlassSheet from "../components/ui/GlassSheet";
 import Textarea from "../components/ui/Textarea";
 import { useAuth } from "../state/authStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { VaultNote } from "../types/models";
 import { formatDateLongEsMX, toISODateOnly } from "../utils/dates";
 import { createId } from "../utils/id";
@@ -30,12 +30,12 @@ const darkFieldClassName =
   "bg-white/10 text-white ring-white/12 placeholder:text-white/35 focus:ring-white/25 disabled:bg-white/8 disabled:ring-white/10";
 
 export default function BovedaPage() {
-  const { state, dispatch } = useXmi();
+  const { state, dispatch } = useConzia();
   const auth = useAuth();
   const navigate = useNavigate();
   const todayISO = toISODateOnly(new Date());
   const vaultKey =
-    auth.actorId === "local" ? "concia_v1_vault_unlocked" : `concia_v1_vault_unlocked_${auth.actorId}`;
+    auth.actorId === "local" ? "conzia_v1_vault_unlocked" : `conzia_v1_vault_unlocked_${auth.actorId}`;
 
   const [unlocked, setUnlocked] = useState<boolean>(() => {
     try {

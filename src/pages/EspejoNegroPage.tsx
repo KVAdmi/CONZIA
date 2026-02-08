@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Textarea from "../components/ui/Textarea";
 import { generateReflection } from "../services/ai";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { Entry, Reading } from "../types/models";
 import { toISODateOnly } from "../utils/dates";
 import { createId } from "../utils/id";
@@ -32,7 +32,7 @@ function buildEntry(params: { dateISO: string; text: string }): Entry {
 
 export default function EspejoNegroPage() {
   const navigate = useNavigate();
-  const { dispatch } = useXmi();
+  const { dispatch } = useConzia();
   const todayISO = useMemo(() => toISODateOnly(new Date()), []);
 
   const [text, setText] = useState("");

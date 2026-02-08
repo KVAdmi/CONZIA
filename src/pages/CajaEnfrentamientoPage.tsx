@@ -7,7 +7,7 @@ import Collapsible from "../components/ui/Collapsible";
 import GlassSheet from "../components/ui/GlassSheet";
 import { generateMirrorStory } from "../services/ai";
 import { useSubscription } from "../state/subscriptionStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { Entry, MirrorStory, Pattern } from "../types/models";
 
 function inferPatternFromEntry(entry: Entry, patterns: Pattern[]): Pattern | undefined {
@@ -103,7 +103,7 @@ function oneLine(text: string): string {
 }
 
 export default function CajaEnfrentamientoPage() {
-  const { state, dispatch } = useXmi();
+  const { state, dispatch } = useConzia();
   const sub = useSubscription();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -146,7 +146,7 @@ export default function CajaEnfrentamientoPage() {
     return (
       <div className="mx-auto max-w-2xl">
         <Card className="p-6">
-          <h2 className="text-sm font-semibold tracking-tight">Caja de Enfrentamiento</h2>
+          <h2 className="text-sm font-semibold tracking-tight">Consultorio</h2>
           <p className="mt-1 text-sm text-outer-space/70">Sin patrón disponible.</p>
         </Card>
       </div>
@@ -197,7 +197,7 @@ export default function CajaEnfrentamientoPage() {
           <div className="mb-6 rounded-xl bg-mint-cream/70 ring-1 ring-gainsboro/60 px-5 py-4">
             <div className="text-xs text-morning-blue">Modo básico</div>
             <div className="mt-1 text-sm text-outer-space/80">
-              En modo básico no abrimos Caja con IA. Aquí ves estructura y ejemplo del visor.
+              En modo básico no abrimos Consultorio con IA. Aquí ves estructura y ejemplo del visor.
             </div>
             <div className="mt-3">
               <Button variant="primary" onClick={() => navigate("/planes")}>
@@ -209,7 +209,7 @@ export default function CajaEnfrentamientoPage() {
 
         <div className="space-y-10">
           <div>
-            <div className="text-xs text-morning-blue">Caja de Enfrentamiento</div>
+            <div className="text-xs text-morning-blue">Consultorio</div>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight text-outer-space">
               {pattern.name}
             </h1>
@@ -320,7 +320,7 @@ export default function CajaEnfrentamientoPage() {
             </div>
             <div className="mt-4 flex justify-end">
               <Button variant="quiet" onClick={() => navigate("/sesion")}>
-                Salir de Caja
+                Salir del Consultorio
               </Button>
             </div>
           </Collapsible>

@@ -15,14 +15,14 @@ export default function EntradaPage() {
           <div className="inline-flex items-center gap-2">
             <div className="h-9 w-9 rounded-xl bg-white/70 ring-1 ring-gainsboro/60 shadow-sm grid place-items-center overflow-hidden backdrop-blur-md">
               <img
-                src={`${import.meta.env.BASE_URL}brand/concia-logo.png`}
+                src={`${import.meta.env.BASE_URL}brand/conzia-logo.png`}
                 alt=""
                 className="h-6 w-6 object-contain"
                 aria-hidden
                 loading="eager"
               />
             </div>
-            <div className="text-xs text-morning-blue">Concia</div>
+            <div className="text-xs text-morning-blue">CONZIA</div>
           </div>
 
           <Button
@@ -45,9 +45,9 @@ export default function EntradaPage() {
           <Button
             variant="primary"
             className="w-full justify-center py-4 text-base"
-            onClick={() => navigate("/descarga")}
+            onClick={() => navigate("/mesa")}
           >
-            Escribir sin estructura
+            Mesa (sin estructura)
           </Button>
           <p className="mt-3 text-xs text-outer-space/60">
             Aquí no hay respuestas correctas. Solo partes de ti que merecen ser vistas con curiosidad, no con vergüenza.
@@ -57,16 +57,16 @@ export default function EntradaPage() {
         <div className="mt-8">
           <div className="text-xs text-morning-blue">Otras puertas</div>
           <div className="mt-3 grid grid-cols-1 gap-2">
-            <button
-              type="button"
-              onClick={() => navigate("/repeticion")}
-              className="rounded-2xl bg-white/65 ring-1 ring-gainsboro/60 px-4 py-4 text-left backdrop-blur-md transition hover:bg-white/75"
-            >
-              <div className="text-sm font-semibold tracking-tight text-outer-space">Algo se repite</div>
-              <div className="mt-1 text-sm text-outer-space/70">
-                Ver evidencia. Entrar a Caja solo si hay permiso.
-              </div>
-            </button>
+              <button
+                type="button"
+                onClick={() => navigate("/proceso")}
+                className="rounded-2xl bg-white/65 ring-1 ring-gainsboro/60 px-4 py-4 text-left backdrop-blur-md transition hover:bg-white/75"
+              >
+                <div className="text-sm font-semibold tracking-tight text-outer-space">Algo se repite</div>
+                <div className="mt-1 text-sm text-outer-space/70">
+                  Ver evidencia. Entrar a Consultorio solo si hay permiso.
+                </div>
+              </button>
             <button
               type="button"
               onClick={() =>
@@ -87,7 +87,7 @@ export default function EntradaPage() {
         </div>
 
         <div className="mt-10 flex items-center justify-between">
-          <Button variant="quiet" onClick={() => navigate("/archivo")}>
+          <Button variant="quiet" onClick={() => navigate("/mapa")}>
             Ver archivo
           </Button>
           <Button variant="quiet" onClick={() => navigate("/boveda")}>

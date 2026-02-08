@@ -268,12 +268,12 @@ def screen_onboarding(w: int, h: int, theme: Theme, fonts: dict[str, ImageFont.I
     _status_bar(draw, w, theme, fonts)
 
     # Hero title (top-left, like reference)
-    draw.text((56, 220), "Concia", font=fonts["h1"], fill=theme.text)
+    draw.text((56, 220), "CONZIA", font=fonts["h1"], fill=theme.text)
     _paragraph(
         draw,
         56,
         292,
-        "Volver a ti.",
+        "Ver claro.",
         font=fonts["b1"],
         fill=theme.text_muted,
         max_w=w - 112,

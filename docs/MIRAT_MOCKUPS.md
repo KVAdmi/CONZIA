@@ -1,4 +1,3 @@
 # Documento movido
 
-Este documento fue renombrado a `docs/CONCIA_MOCKUPS.md`.
-
+Este documento fue renombrado a `docs/CONZIA_MOCKUPS.md`.

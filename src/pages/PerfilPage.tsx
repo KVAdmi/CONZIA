@@ -7,10 +7,10 @@ import Input from "../components/ui/Input";
 import Toggle from "../components/ui/Toggle";
 import { useAuth } from "../state/authStore";
 import { useSubscription } from "../state/subscriptionStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 
 export default function PerfilPage() {
-  const { state } = useXmi();
+  const { state } = useConzia();
   const auth = useAuth();
   const sub = useSubscription();
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function PerfilPage() {
       <Card className="p-6">
         <h2 className="text-sm font-semibold tracking-tight">Perfil</h2>
         <p className="mt-1 text-sm text-outer-space/70">
-          Concia no es social. No hay “progreso” público. Solo estructura privada.
+          CONZIA no es social. No hay “progreso” público. Solo estructura privada.
         </p>
 
         <div className="mt-5 rounded-xl bg-mint-cream/70 px-4 py-3 ring-1 ring-gainsboro/60">
@@ -67,10 +67,10 @@ export default function PerfilPage() {
         <div className="mt-4 rounded-xl bg-white px-4 py-3 ring-1 ring-gainsboro/70">
           <div className="text-xs text-morning-blue">Plan</div>
           <div className="mt-1 text-sm text-outer-space/80">
-            {sub.state.selectedPlan === "xmi_asistencia"
-              ? "Concia + Asistencia"
-              : sub.state.selectedPlan === "xmi_total"
-                ? "Concia Sistema"
+            {sub.state.selectedPlan === "conzia_asistencia"
+              ? "CONZIA + Asistencia"
+              : sub.state.selectedPlan === "conzia_total"
+                ? "CONZIA Sistema"
                 : sub.derived.trialActive
                   ? "Trial activo (7 días)"
                   : "Modo básico"}
@@ -91,7 +91,7 @@ export default function PerfilPage() {
             checked={privateMode}
             onChange={setPrivateMode}
             label="Modo privado"
-            description="Reduce elementos ‘sociales’ (Concia no gamifica)."
+            description="Reduce elementos ‘sociales’ (CONZIA no gamifica)."
           />
         </div>
       </Card>

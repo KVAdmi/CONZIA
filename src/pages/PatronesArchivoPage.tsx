@@ -8,7 +8,7 @@ import Card from "../components/ui/Card";
 import Collapsible from "../components/ui/Collapsible";
 import Select from "../components/ui/Select";
 import { useSubscription } from "../state/subscriptionStore";
-import { useXmi } from "../state/xmiStore";
+import { useConzia } from "../state/conziaStore";
 import type { Entry, Pattern } from "../types/models";
 import { addDays, parseISODate, toISODateOnly } from "../utils/dates";
 
@@ -23,7 +23,7 @@ function mondayOf(date: Date): Date {
 }
 
 export default function PatronesArchivoPage() {
-  const { state } = useXmi();
+  const { state } = useConzia();
   const sub = useSubscription();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
