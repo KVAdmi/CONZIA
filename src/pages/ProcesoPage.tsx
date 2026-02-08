@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
@@ -17,7 +17,8 @@ const THEME_LABEL: Record<string, string> = {
 
 export default function ProcesoPage() {
   const navigate = useNavigate();
-  const { state, dispatch } = useConzia();
+  const { state, dispatch, storageKey } = useConzia();
+  const [devStatus, setDevStatus] = useState<string | null>(null);
 
   const process = useMemo(() => {
     const pick = state.activeProcessId
@@ -69,6 +70,59 @@ export default function ProcesoPage() {
     navigate("/sesion", { replace: true });
   }
 
+  function closeDay() {
+    if (!state.activeSessionId || !process) return;
+    const nowISO = new Date().toISOString();
+    dispatch({ type: "close_session", sessionId: state.activeSessionId, closedAt: nowISO });
+    dispatch({
+      type: "update_process",
+      processId: process.id,
+      patch: { status: "closed", last_closed_at: nowISO },
+    });
+    navigate("/sesion", { replace: true });
+  }
+
+  async function exportDebugJson() {
+    let raw = "";
+    try {
+      raw = localStorage.getItem(storageKey) ?? "";
+    } catch {
+      raw = "";
+    }
+
+    if (!raw) {
+      setDevStatus("Sin estado persistido.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(raw);
+      setDevStatus("Debug JSON copiado al portapapeles.");
+      return;
+    } catch {
+      // fallback: descarga
+    }
+
+    try {
+      const blob = new Blob([raw], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "conzia-debug.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      setDevStatus("Debug JSON descargado.");
+    } catch {
+      setDevStatus("No se pudo exportar debug JSON.");
+    }
+  }
+
+  useEffect(() => {
+    if (!devStatus) return;
+    const t = window.setTimeout(() => setDevStatus(null), 2200);
+    return () => window.clearTimeout(t);
+  }, [devStatus]);
+
   return (
     <div className="min-h-[100svh] px-6 pb-10 pt-14">
       <div className="flex items-center justify-between gap-3 text-white">
@@ -90,7 +144,27 @@ export default function ProcesoPage() {
         <div className="mt-4 text-xs text-outer-space/60">
           Último cierre: {process?.last_closed_at ? process.last_closed_at : "—"}
         </div>
+        <div className="mt-2 text-xs text-outer-space/60">Estado: {process?.status === "closed" ? "cerrado" : "abierto"}</div>
+
+        <div className="mt-6 flex justify-end">
+          <Button variant="primary" onClick={closeDay} disabled={process?.status === "closed"} type="button">
+            Cerrar día
+          </Button>
+        </div>
       </Card>
+
+      {import.meta.env.DEV ? (
+        <Card className="mt-4 p-6">
+          <div className="text-xs text-morning-blue">DEV</div>
+          <div className="mt-2 text-sm text-outer-space/70">Exportar estado persistido para debug.</div>
+          {devStatus ? <div className="mt-3 text-sm text-outer-space/75">{devStatus}</div> : null}
+          <div className="mt-5 flex justify-end">
+            <Button variant="quiet" onClick={exportDebugJson} type="button">
+              Export debug JSON
+            </Button>
+          </div>
+        </Card>
+      ) : null}
 
       <Card className="mt-4 p-6">
         <div className="text-xs text-morning-blue">Cierres recientes</div>

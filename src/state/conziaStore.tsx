@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useRef } from "react";
 import { loadSeedData } from "../data/seed";
 import type {
   CheckIn,
@@ -18,7 +18,10 @@ import type {
 
 type TruthFeedback = "me_sirve" | "no_me_sirve";
 
+const STORAGE_SCHEMA_VERSION = 1;
+
 type ConziaState = ConziaSeedData & {
+  schemaVersion: number;
   truthFeedback: Record<string, TruthFeedback | undefined>;
   profile: ConziaProfile | null;
   processes: ConziaProcess[];
@@ -38,6 +41,7 @@ type ConziaAction =
   | { type: "upsert_mirror_story"; mirrorStory: MirrorStory }
   | { type: "add_vault_note"; vaultNote: VaultNote }
   | { type: "set_truth_feedback"; truthId: string; feedback: TruthFeedback }
+  | { type: "reset_phase1" }
   | { type: "set_profile"; profile: ConziaProfile }
   | { type: "add_process"; process: ConziaProcess }
   | { type: "update_process"; processId: string; patch: Partial<ConziaProcess> }
@@ -45,6 +49,94 @@ type ConziaAction =
   | { type: "start_session"; session: ConziaSession }
   | { type: "close_session"; sessionId: string; closedAt: string }
   | { type: "add_entry_v1"; entry: ConziaEntry };
+
+type ConziaPersistedStateV1 = {
+  schemaVersion: 1;
+  profile: ConziaProfile | null;
+  processes: ConziaProcess[];
+  sessions: ConziaSession[];
+  entriesV1: ConziaEntry[];
+  activeProcessId: string | null;
+  activeSessionId: string | null;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
+  if (!isRecord(raw)) {
+    return {
+      schemaVersion: 1,
+      profile: null,
+      processes: [],
+      sessions: [],
+      entriesV1: [],
+      activeProcessId: null,
+      activeSessionId: null,
+    };
+  }
+
+  const version = typeof raw.schemaVersion === "number" ? raw.schemaVersion : 0;
+
+  // Migración simple: si no hay schemaVersion (o es desconocida), intentamos leer campos compatibles.
+  const profile = (isRecord(raw.profile) ? (raw.profile as ConziaProfile) : null) as ConziaProfile | null;
+  const processes = (Array.isArray(raw.processes) ? (raw.processes as ConziaProcess[]) : []) as ConziaProcess[];
+  const sessions = (Array.isArray(raw.sessions) ? (raw.sessions as ConziaSession[]) : []) as ConziaSession[];
+  const entriesV1 = (Array.isArray(raw.entriesV1) ? (raw.entriesV1 as ConziaEntry[]) : []) as ConziaEntry[];
+  const activeProcessId = (typeof raw.activeProcessId === "string" ? raw.activeProcessId : null) as string | null;
+  const activeSessionId = (typeof raw.activeSessionId === "string" ? raw.activeSessionId : null) as string | null;
+
+  if (version === 1) {
+    return {
+      schemaVersion: 1,
+      profile,
+      processes,
+      sessions,
+      entriesV1,
+      activeProcessId,
+      activeSessionId,
+    };
+  }
+
+  return {
+    schemaVersion: 1,
+    profile,
+    processes,
+    sessions,
+    entriesV1,
+    activeProcessId,
+    activeSessionId,
+  };
+}
+
+function toPersistedState(state: ConziaState): ConziaPersistedStateV1 {
+  const activeSession = state.activeSessionId
+    ? state.sessions.find((s) => s.id === state.activeSessionId) ?? null
+    : null;
+  const openSessionId = activeSession && !activeSession.closed ? activeSession.id : null;
+
+  return {
+    schemaVersion: 1,
+    profile: state.profile,
+    processes: state.processes,
+    sessions: state.sessions,
+    entriesV1: state.entriesV1,
+    activeProcessId: state.activeProcessId,
+    // No persistimos activeDoor; y solo guardamos sessionId si está abierta.
+    activeSessionId: openSessionId,
+  };
+}
+
+function devLog(event: string, payload: Record<string, unknown>) {
+  if (!import.meta.env.DEV) return;
+  try {
+    // eslint-disable-next-line no-console
+    console.log(`[CONZIA][${event}]`, { ts: new Date().toISOString(), ...payload });
+  } catch {
+    // ignore
+  }
+}
 
 function reducer(state: ConziaState, action: ConziaAction): ConziaState {
   switch (action.type) {
@@ -81,6 +173,17 @@ function reducer(state: ConziaState, action: ConziaAction): ConziaState {
       return {
         ...state,
         truthFeedback: { ...state.truthFeedback, [action.truthId]: action.feedback },
+      };
+    case "reset_phase1":
+      return {
+        ...state,
+        profile: null,
+        processes: [],
+        sessions: [],
+        entriesV1: [],
+        activeDoor: null,
+        activeSessionId: null,
+        activeProcessId: null,
       };
     case "set_profile":
       return { ...state, profile: action.profile };
@@ -131,6 +234,7 @@ function reducer(state: ConziaState, action: ConziaAction): ConziaState {
 type ConziaStore = {
   state: ConziaState;
   dispatch: React.Dispatch<ConziaAction>;
+  storageKey: string;
 };
 
 const ConziaContext = createContext<ConziaStore | null>(null);
@@ -142,6 +246,7 @@ function getInitialState(storageKey: string): ConziaState {
     const raw = localStorage.getItem(storageKey);
     const base: ConziaState = {
       ...seeded,
+      schemaVersion: STORAGE_SCHEMA_VERSION,
       truthFeedback: {},
       profile: null,
       processes: [],
@@ -152,22 +257,41 @@ function getInitialState(storageKey: string): ConziaState {
       activeProcessId: null,
     };
     if (!raw) return base;
-    const parsed = JSON.parse(raw) as Partial<ConziaState>;
-    return {
+
+    const parsedUnknown = JSON.parse(raw) as unknown;
+    const persisted = normalizePersisted(parsedUnknown);
+
+    const merged: ConziaState = {
       ...base,
-      ...parsed,
-      truthFeedback: parsed.truthFeedback ?? {},
-      profile: parsed.profile ?? null,
-      processes: parsed.processes ?? [],
-      sessions: parsed.sessions ?? [],
-      entriesV1: parsed.entriesV1 ?? [],
-      activeDoor: parsed.activeDoor ?? null,
-      activeSessionId: parsed.activeSessionId ?? null,
-      activeProcessId: parsed.activeProcessId ?? null,
+      schemaVersion: persisted.schemaVersion,
+      profile: persisted.profile,
+      processes: persisted.processes,
+      sessions: persisted.sessions,
+      entriesV1: persisted.entriesV1,
+      activeProcessId: persisted.activeProcessId,
+      activeSessionId: persisted.activeSessionId,
     };
+
+    const activeSession = merged.activeSessionId
+      ? merged.sessions.find((s) => s.id === merged.activeSessionId) ?? null
+      : null;
+
+    if (!activeSession || activeSession.closed) {
+      merged.activeDoor = null;
+      merged.activeSessionId = null;
+    } else {
+      merged.activeDoor = activeSession.door;
+    }
+
+    if (merged.activeProcessId && !merged.processes.some((p) => p.id === merged.activeProcessId)) {
+      merged.activeProcessId = merged.processes[0]?.id ?? null;
+    }
+
+    return merged;
   } catch {
     return {
       ...seeded,
+      schemaVersion: STORAGE_SCHEMA_VERSION,
       truthFeedback: {},
       profile: null,
       processes: [],
@@ -187,17 +311,64 @@ export function ConziaProvider({
   children: React.ReactNode;
   storageKey: string;
 }) {
-  const [state, dispatch] = useReducer(reducer, storageKey, getInitialState);
+  const [state, dispatchBase] = useReducer(reducer, storageKey, getInitialState);
+  const stateRef = useRef(state);
+
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   useEffect(() => {
     try {
-      localStorage.setItem(storageKey, JSON.stringify(state));
+      localStorage.setItem(storageKey, JSON.stringify(toPersistedState(state)));
     } catch {
       // ignore
     }
   }, [state, storageKey]);
 
-  const value = useMemo(() => ({ state, dispatch }), [state]);
+  const dispatch = useMemo(() => {
+    return (action: ConziaAction) => {
+      const snapshot = stateRef.current;
+
+      if (action.type === "start_session") {
+        devLog("door_opened", {
+          door: action.session.door,
+          sessionId: action.session.id,
+          processId: action.session.process_id,
+        });
+      }
+
+      if (action.type === "close_session") {
+        const session = snapshot.sessions.find((s) => s.id === action.sessionId) ?? null;
+        devLog("door_closed", {
+          sessionId: action.sessionId,
+          door: session?.door ?? "unknown",
+          processId: session?.process_id ?? "unknown",
+        });
+      }
+
+      if (action.type === "update_process" && action.patch.status === "closed") {
+        devLog("process_closed", { processId: action.processId });
+      }
+
+      if (action.type === "set_profile") {
+        devLog("registration_done", {
+          alias: action.profile.alias,
+          tema_base: action.profile.tema_base,
+          arquetipo_dominante: action.profile.arquetipo_dominante,
+          estilo: action.profile.estilo_conduccion,
+        });
+      }
+
+      if (action.type === "reset_phase1") {
+        devLog("reset_phase1", { storageKey });
+      }
+
+      dispatchBase(action);
+    };
+  }, [dispatchBase, storageKey]);
+
+  const value = useMemo(() => ({ state, dispatch, storageKey }), [dispatch, state, storageKey]);
 
   return <ConziaContext.Provider value={value}>{children}</ConziaContext.Provider>;
 }

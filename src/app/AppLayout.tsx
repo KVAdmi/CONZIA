@@ -39,12 +39,12 @@ export default function AppLayout() {
 
   if (registrationDone && state.activeDoor) {
     const currentDoor = doorFromPathname(pathname);
-    if (currentDoor !== state.activeDoor) {
+    if (currentDoor && currentDoor !== state.activeDoor) {
       return <Navigate to={`/${state.activeDoor}`} replace />;
     }
   }
 
-  const hideNav = pathname.startsWith("/onboarding");
+  const hideNav = pathname.startsWith("/onboarding") || pathname.startsWith("/registro");
   const contentPaddingBottom = hideNav ? "pb-0" : "pb-[140px]";
 
   return (

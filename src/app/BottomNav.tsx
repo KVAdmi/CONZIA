@@ -1,10 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { FilePenLine, Home, MessageCircle, Route, UserRound } from "lucide-react";
+import { FilePenLine, Home, MessageCircle, Route } from "lucide-react";
 import type { ComponentType } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "../utils/cn";
 import { useConzia } from "../state/conziaStore";
-import type { DoorId } from "../types/models";
 
 type Item = {
   to: string;
@@ -15,19 +14,10 @@ type Item = {
 
 const ITEMS: Item[] = [
   { to: "/sesion", label: "Sesión", icon: Home },
-  { to: "/proceso", label: "Proceso", icon: Route },
   { to: "/consultorio", label: "Consultorio", icon: MessageCircle, kind: "primary" },
   { to: "/mesa", label: "Mesa", icon: FilePenLine },
-  { to: "/registro", label: "Registro", icon: UserRound },
+  { to: "/proceso", label: "Proceso", icon: Route },
 ];
-
-function doorIdFromPath(path: string): DoorId | null {
-  if (path === "/sesion") return "sesion";
-  if (path === "/consultorio") return "consultorio";
-  if (path === "/mesa") return "mesa";
-  if (path === "/proceso") return "proceso";
-  return null;
-}
 
 export default function BottomNav() {
   const { state } = useConzia();
@@ -35,7 +25,7 @@ export default function BottomNav() {
 
   const activeDoorLabel = useMemo(() => {
     if (!state.activeDoor) return null;
-    return ITEMS.find((i) => doorIdFromPath(i.to) === state.activeDoor)?.label ?? null;
+    return ITEMS.find((i) => i.to === `/${state.activeDoor}`)?.label ?? null;
   }, [state.activeDoor]);
 
   useEffect(() => {

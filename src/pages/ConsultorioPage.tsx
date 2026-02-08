@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
@@ -23,7 +23,7 @@ function repeatLabel(v: RepeatSignal): string {
 
 export default function ConsultorioPage() {
   const navigate = useNavigate();
-  const { state, dispatch } = useConzia();
+  const { state, dispatch, storageKey } = useConzia();
 
   const process = useMemo(() => {
     const pick = state.activeProcessId
@@ -60,11 +60,96 @@ export default function ConsultorioPage() {
   const [peso, setPeso] = useState(6);
   const [repeticion, setRepeticion] = useState<RepeatSignal>("no");
 
+  const draftKey = useMemo(() => {
+    if (!state.activeSessionId) return null;
+    return `${storageKey}_draft_consultorio_${state.activeSessionId}`;
+  }, [state.activeSessionId, storageKey]);
+
+  const draftLoadedRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!draftKey) return;
+    if (draftLoadedRef.current === draftKey) return;
+    draftLoadedRef.current = draftKey;
+
+    try {
+      const raw = localStorage.getItem(draftKey);
+      if (!raw) return;
+      const parsedUnknown = JSON.parse(raw) as unknown;
+      if (!parsedUnknown || typeof parsedUnknown !== "object") return;
+      const parsed = parsedUnknown as Record<string, unknown>;
+
+      const parsedStep = parsed.step;
+      if (typeof parsedStep === "number" && [0, 1, 2, 3, 4].includes(parsedStep)) {
+        setStep(parsedStep as 0 | 1 | 2 | 3 | 4);
+      }
+
+      const parsedHecho = parsed.hecho;
+      if (typeof parsedHecho === "string") setHecho(parsedHecho);
+
+      const parsedContexto = parsed.contexto;
+      if (typeof parsedContexto === "string" && CONTEXTS.includes(parsedContexto as EntryContext)) {
+        setContexto(parsedContexto as EntryContext);
+      }
+
+      const parsedLimite = parsed.limite;
+      if (typeof parsedLimite === "string" && BOUNDARIES.includes(parsedLimite as EntryBoundary)) {
+        setLimite(parsedLimite as EntryBoundary);
+      }
+
+      const parsedRol = parsed.rol;
+      if (typeof parsedRol === "string") setRol(parsedRol);
+
+      const parsedPeso = parsed.peso;
+      if (typeof parsedPeso === "number" && Number.isFinite(parsedPeso)) {
+        const clamped = Math.min(10, Math.max(0, Math.round(parsedPeso)));
+        setPeso(clamped);
+      }
+
+      const parsedRepeticion = parsed.repeticion;
+      if (typeof parsedRepeticion === "string" && REPEAT.includes(parsedRepeticion as RepeatSignal)) {
+        setRepeticion(parsedRepeticion as RepeatSignal);
+      }
+    } catch {
+      // ignore
+    }
+  }, [draftKey]);
+
+  useEffect(() => {
+    if (!draftKey) return;
+    try {
+      localStorage.setItem(
+        draftKey,
+        JSON.stringify({
+          step,
+          hecho,
+          contexto,
+          limite,
+          rol,
+          peso,
+          repeticion,
+        }),
+      );
+    } catch {
+      // ignore
+    }
+  }, [contexto, draftKey, hecho, limite, peso, repeticion, rol, step]);
+
+  function clearDraft() {
+    if (!draftKey) return;
+    try {
+      localStorage.removeItem(draftKey);
+    } catch {
+      // ignore
+    }
+  }
+
   const canTurn1 = hecho.trim().length >= 3;
   const canTurn2 = rol.trim().length >= 2;
 
   function closeWithoutSaving() {
     if (!state.activeSessionId || !process) return;
+    clearDraft();
     const nowISO = new Date().toISOString();
     dispatch({ type: "close_session", sessionId: state.activeSessionId, closedAt: nowISO });
     dispatch({
@@ -77,6 +162,7 @@ export default function ConsultorioPage() {
 
   function closeWithEntry() {
     if (!state.activeSessionId || !process) return;
+    clearDraft();
     const nowISO = new Date().toISOString();
     dispatch({
       type: "add_entry_v1",
@@ -98,7 +184,7 @@ export default function ConsultorioPage() {
     dispatch({
       type: "update_process",
       processId: process.id,
-      patch: { day_index: (process.day_index ?? 1) + 1, last_closed_at: nowISO },
+      patch: { last_closed_at: nowISO },
     });
     navigate("/sesion", { replace: true });
   }

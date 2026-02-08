@@ -33,6 +33,15 @@ export default function SesionPage() {
   function startDoor(door: DoorId) {
     if (!process) return;
     if (state.activeDoor) return;
+
+    if (process.status === "closed") {
+      dispatch({
+        type: "update_process",
+        processId: process.id,
+        patch: { status: "open", day_index: (process.day_index ?? 1) + 1 },
+      });
+    }
+
     const nowISO = new Date().toISOString();
     const sessionId = createId("s");
     dispatch({

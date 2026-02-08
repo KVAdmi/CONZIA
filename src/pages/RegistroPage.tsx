@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -209,7 +209,48 @@ function pickTopTwo(score: Record<ConziaArchetype, number>) {
 
 export default function RegistroPage() {
   const navigate = useNavigate();
-  const { dispatch } = useConzia();
+  const [params] = useSearchParams();
+  const { state, dispatch } = useConzia();
+
+  const canReset = import.meta.env.DEV || params.get("reset") === "1";
+  const registrationDone = Boolean(state.profile?.registrationDone);
+
+  if (registrationDone && !canReset) {
+    return <Navigate to="/sesion" replace />;
+  }
+
+  if (registrationDone && canReset) {
+    return (
+      <div className="min-h-[100svh] px-6 pb-10 pt-14">
+        <div className="text-white">
+          <div className="text-[26px] font-semibold tracking-tight">Registro</div>
+          <div className="mt-2 text-sm text-white/65">Completado.</div>
+        </div>
+
+        <Card className="mt-7 p-6">
+          <div className="text-sm font-semibold tracking-tight">Reset (dev)</div>
+          <div className="mt-2 text-sm text-outer-space/70">
+            Esto borra perfil/proceso/sesiones/entradas de Fase 1 en este dispositivo.
+          </div>
+          <div className="mt-6 flex items-center justify-between gap-3">
+            <Button variant="quiet" onClick={() => navigate("/sesion")} type="button">
+              Volver
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                dispatch({ type: "reset_phase1" });
+                navigate("/registro", { replace: true });
+              }}
+              type="button"
+            >
+              Resetear
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   const [step, setStep] = useState<StepId>("r1");
 
