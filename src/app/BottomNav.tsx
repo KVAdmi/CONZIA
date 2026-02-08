@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { DoorClosed, DoorOpen } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "../utils/cn";
@@ -11,13 +11,14 @@ type Item = {
 };
 
 const ITEMS: Item[] = [
-  { to: "/sesion", label: "Sesión" },
+  { to: "/sesion", label: "Inicio" },
   { to: "/consultorio", label: "Consultorio" },
   { to: "/mesa", label: "Mesa" },
   { to: "/proceso", label: "Proceso" },
 ];
 
 export default function BottomNav() {
+  const navigate = useNavigate();
   const { state } = useConzia();
   const [blocked, setBlocked] = useState<string | null>(null);
   const todayKey = toISODateOnly(new Date());
@@ -70,7 +71,7 @@ export default function BottomNav() {
                 if (!isBlocked) return;
                 e.preventDefault();
                 if (blockedByObservation) {
-                  setBlocked("Completa Observación Inicial para desbloquear.");
+                  navigate("/observacion");
                   return;
                 }
                 setBlocked(`Cierra ${activeDoorLabel ?? "la puerta actual"} antes de entrar a otra.`);

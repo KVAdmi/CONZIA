@@ -235,7 +235,7 @@ export type ConziaTodayPlan = {
   mixed: boolean;
 };
 
-export type ConziaEntrySource = "consultorio" | "mesa" | "puerta1_observacion";
+export type ConziaEntrySource = "consultorio" | "mesa" | "puerta1_observacion" | "quick";
 
 export type ConziaTherapyEntry = {
   id: string;
@@ -273,4 +273,11 @@ export type ConziaEntry = (
       repeticion_flag: RepeatSignal;
     })
   | ConziaObservationEntry
+  | {
+      id: string;
+      process_id: string;
+      source: "quick";
+      fact_line: string;
+      created_at: ISODateString; // datetime ISO
+    }
 );

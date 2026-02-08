@@ -31,6 +31,7 @@ type ConziaState = ConziaSeedData & {
   activeDoor: DoorId | null;
   activeSessionId: string | null;
   activeProcessId: string | null;
+  phase1Complete: boolean;
 };
 
 type ConziaAction =
@@ -59,6 +60,7 @@ type ConziaPersistedStateV1 = {
   entriesV1: ConziaEntry[];
   activeProcessId: string | null;
   activeSessionId: string | null;
+  phase1Complete: boolean;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -99,6 +101,7 @@ function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
       entriesV1: [],
       activeProcessId: null,
       activeSessionId: null,
+      phase1Complete: false,
     };
   }
 
@@ -121,6 +124,12 @@ function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
   const entriesV1 = (Array.isArray(raw.entriesV1) ? (raw.entriesV1 as ConziaEntry[]) : []) as ConziaEntry[];
   const activeProcessId = (typeof raw.activeProcessId === "string" ? raw.activeProcessId : null) as string | null;
   const activeSessionId = (typeof raw.activeSessionId === "string" ? raw.activeSessionId : null) as string | null;
+  const rawPhase1Complete =
+    typeof raw.phase1Complete === "boolean" ? (raw.phase1Complete as boolean) : undefined;
+  const derivedPhase1Complete =
+    sessions.some((s) => s.closed && s.door === "observacion") &&
+    sessions.some((s) => s.closed && (s.door === "consultorio" || s.door === "mesa"));
+  const phase1Complete = rawPhase1Complete ?? derivedPhase1Complete;
 
   if (version === 1) {
     return {
@@ -131,6 +140,7 @@ function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
       entriesV1,
       activeProcessId,
       activeSessionId,
+      phase1Complete,
     };
   }
 
@@ -142,6 +152,7 @@ function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
     entriesV1,
     activeProcessId,
     activeSessionId,
+    phase1Complete,
   };
 }
 
@@ -160,6 +171,7 @@ function toPersistedState(state: ConziaState): ConziaPersistedStateV1 {
     activeProcessId: state.activeProcessId,
     // No persistimos activeDoor; y solo guardamos sessionId si está abierta.
     activeSessionId: openSessionId,
+    phase1Complete: state.phase1Complete,
   };
 }
 
@@ -219,6 +231,7 @@ function reducer(state: ConziaState, action: ConziaAction): ConziaState {
         activeDoor: null,
         activeSessionId: null,
         activeProcessId: null,
+        phase1Complete: false,
       };
     case "set_profile":
       return { ...state, profile: action.profile };
@@ -252,11 +265,16 @@ function reducer(state: ConziaState, action: ConziaAction): ConziaState {
       const next = [...state.sessions];
       next[idx] = { ...next[idx], closed: true, closed_at: action.closedAt };
       const shouldClear = state.activeSessionId === action.sessionId;
+      const phase1Complete =
+        state.phase1Complete ||
+        (next.some((s) => s.closed && s.door === "observacion") &&
+          next.some((s) => s.closed && (s.door === "consultorio" || s.door === "mesa")));
       return {
         ...state,
         sessions: next,
         activeDoor: shouldClear ? null : state.activeDoor,
         activeSessionId: shouldClear ? null : state.activeSessionId,
+        phase1Complete,
       };
     }
     case "add_entry_v1":
@@ -290,6 +308,7 @@ function getInitialState(storageKey: string): ConziaState {
       activeDoor: null,
       activeSessionId: null,
       activeProcessId: null,
+      phase1Complete: false,
     };
     if (!raw) return base;
 
@@ -305,6 +324,7 @@ function getInitialState(storageKey: string): ConziaState {
       entriesV1: persisted.entriesV1,
       activeProcessId: persisted.activeProcessId,
       activeSessionId: persisted.activeSessionId,
+      phase1Complete: persisted.phase1Complete,
     };
 
     const activeSession = merged.activeSessionId
@@ -335,6 +355,7 @@ function getInitialState(storageKey: string): ConziaState {
       activeDoor: null,
       activeSessionId: null,
       activeProcessId: null,
+      phase1Complete: false,
     };
   }
 }

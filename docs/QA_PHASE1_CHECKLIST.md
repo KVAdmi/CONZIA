@@ -22,10 +22,10 @@ Regla madre (recordatorio):
 - [ ] **R2**: seleccionar tema_base (1 de 6) y costo_dominante (1).
 - [ ] **R3**: responder 12 preguntas.
 - [ ] Resultado NO etiqueta “eres X”; sí muestra: “Tu estilo de conducción inicial será: Directo/Sobrio/Relacional/Reflexivo”.
-- [ ] Finalizar R3 crea Proceso Activo Día 1 y navega a `/sesion`.
+- [ ] Finalizar R3 crea Proceso Activo Día 1 y navega a `/sesion` (Inicio).
 
-### Sesión → Puertas
-- [ ] En `/sesion` se ve: alias + “Una cosa por sesión. Entra. Sostén. Cierra.”
+### Inicio (Home) → Puertas
+- [ ] En `/sesion` (Inicio) se ve: dashboard con progreso + puertas.
 - [ ] Entrar a **Consultorio**.
 - [ ] Completar 3 turnos + ver **Cierre**.
 - [ ] Cerrar Consultorio → vuelve a `/sesion`.
@@ -47,7 +47,7 @@ Regla madre (recordatorio):
 ## C) Persistencia — Refresh/Restart (anti-stuck)
 En cada punto, hacer refresh / reiniciar (web: refresh; Android: cerrar/reabrir).
 
-- [ ] Refresh en **Sesión**: mantiene perfil, proceso activo y entradas.
+- [ ] Refresh en **Inicio**: mantiene perfil, proceso activo y entradas.
 - [ ] Refresh en **Consultorio** (en Turno 2): no debe romper; debe volver a la misma puerta sin perder el avance.
 - [ ] Refresh en **Mesa** con campos llenos (antes del cierre): no debe romper; debe volver a la misma puerta sin perder el avance.
 - [ ] Refresh en **Proceso**: no rompe; mantiene proceso/entradas/cierres.
@@ -64,4 +64,3 @@ Anti-stuck:
   - `process_closed`
   - `registration_done`
   - `reset_phase1`
-
