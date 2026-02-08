@@ -1,0 +1,700 @@
+{
+  "checkIns": [
+    {
+      "id": "ci_001",
+      "date": "2026-02-06",
+      "dominantTags": ["límite", "culpa", "claridad"],
+      "energy": "media",
+      "emotionalWeight": 6,
+      "clarity": "medio"
+    },
+    {
+      "id": "ci_002",
+      "date": "2026-02-05",
+      "dominantTags": ["trabajo", "presión", "evitación"],
+      "energy": "baja",
+      "emotionalWeight": 7,
+      "clarity": "nublado"
+    },
+    {
+      "id": "ci_003",
+      "date": "2026-02-04",
+      "dominantTags": ["pareja", "apego", "control"],
+      "energy": "media",
+      "emotionalWeight": 5,
+      "clarity": "medio"
+    },
+    {
+      "id": "ci_004",
+      "date": "2026-02-03",
+      "dominantTags": ["familia", "respeto", "silencio"],
+      "energy": "baja",
+      "emotionalWeight": 8,
+      "clarity": "nublado"
+    },
+    {
+      "id": "ci_005",
+      "date": "2026-02-02",
+      "dominantTags": ["decisión", "miedo", "autoanulación"],
+      "energy": "media",
+      "emotionalWeight": 6,
+      "clarity": "medio"
+    },
+    {
+      "id": "ci_006",
+      "date": "2026-02-01",
+      "dominantTags": ["rumiación", "qué dirán", "cuerpo"],
+      "energy": "baja",
+      "emotionalWeight": 7,
+      "clarity": "nublado"
+    },
+    {
+      "id": "ci_007",
+      "date": "2026-01-31",
+      "dominantTags": ["límite", "trabajo", "claridad"],
+      "energy": "alta",
+      "emotionalWeight": 4,
+      "clarity": "alto"
+    }
+  ],
+  "entries": [
+    {
+      "id": "e_001",
+      "date": "2026-02-06",
+      "type": "queria_hacer_algo_distinto",
+      "context": "trabajo",
+      "boundary": "tiempo",
+      "reaction": "cedi",
+      "emotionalWeight": 6,
+      "text": "Dije que sí a una junta que no me tocaba. No era urgente. Lo hice para no verme “difícil”.",
+      "tags": ["límite", "aprobación", "trabajo"],
+      "linkedIntentionId": "i_001",
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_002",
+      "date": "2026-02-06",
+      "type": "algo_me_incomodo",
+      "context": "pareja",
+      "boundary": "respeto",
+      "reaction": "calle",
+      "emotionalWeight": 7,
+      "text": "Me corrigió en público con ese tono. Yo sonreí. Luego me quedé pensando en qué dije mal.",
+      "tags": ["respeto", "silencio", "apego"],
+      "repeatSignal": "creo_que_si"
+    },
+    {
+      "id": "e_003",
+      "date": "2026-02-05",
+      "type": "algo_me_incomodo",
+      "context": "familia",
+      "boundary": "decision",
+      "reaction": "negocie",
+      "emotionalWeight": 8,
+      "text": "Otra vez opinó sobre mi decisión como si fuera suya. Yo expliqué de más para que lo aceptara.",
+      "tags": ["familia", "justificación", "decisión"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_004",
+      "date": "2026-02-05",
+      "type": "desahogo_libre",
+      "context": "yo",
+      "boundary": "cuerpo",
+      "reaction": "hui",
+      "emotionalWeight": 7,
+      "text": "Traigo el cuerpo tenso. Siento que estoy corriendo y no sé de qué. Evito quedarme quieto.",
+      "tags": ["ansiedad", "cuerpo", "evitación"],
+      "silenceMode": true,
+      "practiceId": "sp_dialogo_parte"
+    },
+    {
+      "id": "e_005",
+      "date": "2026-02-04",
+      "type": "queria_hacer_algo_distinto",
+      "context": "pareja",
+      "boundary": "respeto",
+      "reaction": "pedi",
+      "emotionalWeight": 5,
+      "text": "Pedí que no me interrumpiera. No fue perfecto, pero lo dije sin disculparme.",
+      "tags": ["hablar claro", "respeto", "movimiento"],
+      "linkedIntentionId": "i_003",
+      "repeatSignal": "no"
+    },
+    {
+      "id": "e_006",
+      "date": "2026-02-03",
+      "type": "no_quise_ver_esto",
+      "context": "trabajo",
+      "boundary": "respeto",
+      "reaction": "calle",
+      "emotionalWeight": 8,
+      "text": "Me molestó que asumieran que yo lo iba a resolver. Lo dejé pasar porque me conviene que crean que puedo.",
+      "tags": ["autoexigencia", "respeto", "estatus"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_007",
+      "date": "2026-02-03",
+      "type": "algo_me_incomodo",
+      "context": "familia",
+      "boundary": "tiempo",
+      "reaction": "cedi",
+      "emotionalWeight": 8,
+      "text": "Cancelé mis planes para ir a un “favor rápido”. Nadie lo pidió con cuidado. Yo lo ofrecí.",
+      "tags": ["límite", "familia", "culpa"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_008",
+      "date": "2026-02-02",
+      "type": "queria_hacer_algo_distinto",
+      "context": "social",
+      "boundary": "dinero",
+      "reaction": "negocie",
+      "emotionalWeight": 6,
+      "text": "Iba a decir que no al plan caro. Al final dije “vemos” para no romper el ambiente. Yo pagué con ansiedad.",
+      "tags": ["qué dirán", "dinero", "evitación"],
+      "linkedIntentionId": "i_004",
+      "repeatSignal": "creo_que_si"
+    },
+    {
+      "id": "e_009",
+      "date": "2026-02-02",
+      "type": "desahogo_libre",
+      "context": "yo",
+      "boundary": "tiempo",
+      "reaction": "hui",
+      "emotionalWeight": 6,
+      "text": "Me la pasé “optimizando” y terminé sin hacer lo importante. Controlé detalles para no tocar la decisión real.",
+      "tags": ["control", "evitación", "decisión"]
+    },
+    {
+      "id": "e_010",
+      "date": "2026-02-01",
+      "type": "algo_me_incomodo",
+      "context": "trabajo",
+      "boundary": "respeto",
+      "reaction": "explote",
+      "emotionalWeight": 7,
+      "text": "Me pidieron un cambio de última hora y contesté seco. No era el cambio, era el patrón: lo acepto y luego trueno.",
+      "tags": ["respeto", "límite", "explosión"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_011",
+      "date": "2026-01-31",
+      "type": "hoy_si_lo_hice",
+      "context": "trabajo",
+      "boundary": "tiempo",
+      "reaction": "puse_limite",
+      "emotionalWeight": 4,
+      "text": "Dije que no a un pendiente que no era mío. No expliqué. Solo cerré el tema.",
+      "tags": ["límite", "no justificarme", "claridad"],
+      "linkedIntentionId": "i_006",
+      "repeatSignal": "no"
+    },
+    {
+      "id": "e_012",
+      "date": "2026-01-30",
+      "type": "algo_me_incomodo",
+      "context": "pareja",
+      "boundary": "intimidad",
+      "reaction": "hui",
+      "emotionalWeight": 6,
+      "text": "Me preguntó qué necesitaba y contesté “nada”. Sí había algo. Me dio miedo parecer demandante.",
+      "tags": ["apego", "evitación", "necesidad"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_013",
+      "date": "2026-01-29",
+      "type": "no_quise_ver_esto",
+      "context": "yo",
+      "boundary": "decision",
+      "reaction": "negocie",
+      "emotionalWeight": 7,
+      "text": "Estoy esperando permiso. No de nadie en específico. De una versión imaginaria de “la gente”.",
+      "tags": ["permiso", "qué dirán", "estancamiento"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_014",
+      "date": "2026-01-27",
+      "type": "algo_me_incomodo",
+      "context": "social",
+      "boundary": "respeto",
+      "reaction": "calle",
+      "emotionalWeight": 5,
+      "text": "Hicieron un chiste sobre mí. Reí. Luego lo repetí yo mismo para adelantarme.",
+      "tags": ["autoanulación", "respeto", "aprobación"],
+      "repeatSignal": "creo_que_si"
+    },
+    {
+      "id": "e_015",
+      "date": "2026-01-26",
+      "type": "queria_hacer_algo_distinto",
+      "context": "familia",
+      "boundary": "respeto",
+      "reaction": "pedi",
+      "emotionalWeight": 6,
+      "text": "Pedí que no hablaran de mi cuerpo. Se sintió tenso. No me deshice.",
+      "tags": ["cuerpo", "límite", "sostener incomodidad"],
+      "linkedIntentionId": "i_008",
+      "repeatSignal": "no"
+    },
+    {
+      "id": "e_016",
+      "date": "2026-01-24",
+      "type": "desahogo_libre",
+      "context": "yo",
+      "boundary": "tiempo",
+      "reaction": "hui",
+      "emotionalWeight": 7,
+      "text": "Traigo rumiación: repito la conversación y busco una salida perfecta. No existe.",
+      "tags": ["rumiación", "control", "ansiedad"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_017",
+      "date": "2026-01-22",
+      "type": "algo_me_incomodo",
+      "context": "trabajo",
+      "boundary": "decision",
+      "reaction": "cedi",
+      "emotionalWeight": 6,
+      "text": "Iba a proponer mi idea. Me frené porque pensé “ya va a sonar obvio”. Luego alguien dijo lo mismo.",
+      "tags": ["autoanulación", "miedo", "trabajo"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_018",
+      "date": "2026-01-20",
+      "type": "no_quise_ver_esto",
+      "context": "pareja",
+      "boundary": "respeto",
+      "reaction": "negocie",
+      "emotionalWeight": 8,
+      "text": "Estoy negociando mi lugar para que no se vayan. Lo hago con frases pequeñas. Pero es el mismo trato.",
+      "tags": ["apego", "dignidad", "límite"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_019",
+      "date": "2026-01-18",
+      "type": "algo_me_incomodo",
+      "context": "familia",
+      "boundary": "decision",
+      "reaction": "calle",
+      "emotionalWeight": 7,
+      "text": "Se burlaron de algo que me importa. Me quedé callado para no alargar. Me quedé cargándolo todo el día.",
+      "tags": ["respeto", "silencio", "familia"],
+      "repeatSignal": "si"
+    },
+    {
+      "id": "e_020",
+      "date": "2026-01-16",
+      "type": "desahogo_libre",
+      "context": "yo",
+      "boundary": "intimidad",
+      "reaction": "hui",
+      "emotionalWeight": 6,
+      "text": "Quiero pedir lo que necesito, pero en mi cabeza suena a “exigir”. Esa confusión me mantiene quieto.",
+      "tags": ["necesidad", "confusión", "evitación"],
+      "repeatSignal": "creo_que_si"
+    }
+  ],
+  "intentions": [
+    {
+      "id": "i_001",
+      "date": "2026-02-06",
+      "intentionType": "No justificarme",
+      "outcome": "a_medias",
+      "block": "costumbre",
+      "note": "Arranqué bien, luego me expliqué para “cerrar bonito”."
+    },
+    {
+      "id": "i_002",
+      "date": "2026-02-05",
+      "intentionType": "Poner un límite",
+      "outcome": "no_lo_hice",
+      "block": "culpa",
+      "note": "Me vi a mí mismo cediendo antes de que lo pidieran."
+    },
+    {
+      "id": "i_003",
+      "date": "2026-02-04",
+      "intentionType": "Hablar claro",
+      "outcome": "lo_hice",
+      "block": "miedo",
+      "note": "El miedo estaba, pero no mandó."
+    },
+    {
+      "id": "i_004",
+      "date": "2026-02-02",
+      "intentionType": "Decir que no",
+      "outcome": "no_lo_hice",
+      "block": "presion",
+      "note": "Dije “vemos” para no tensar."
+    },
+    {
+      "id": "i_005",
+      "date": "2026-02-01",
+      "intentionType": "No controlar",
+      "outcome": "a_medias",
+      "block": "confusion",
+      "note": "Solté detalles, pero usé la rumiación como control."
+    },
+    {
+      "id": "i_006",
+      "date": "2026-01-31",
+      "intentionType": "No ceder",
+      "outcome": "lo_hice",
+      "note": "No fue amable. Fue claro."
+    },
+    {
+      "id": "i_007",
+      "date": "2026-01-30",
+      "intentionType": "Pedir lo que necesito",
+      "outcome": "no_lo_hice",
+      "block": "miedo",
+      "note": "Preferí parecer independiente."
+    },
+    {
+      "id": "i_008",
+      "date": "2026-01-26",
+      "intentionType": "Poner un límite",
+      "outcome": "lo_hice",
+      "note": "Sostuve la incomodidad sin venderme."
+    },
+    {
+      "id": "i_009",
+      "date": "2026-01-24",
+      "intentionType": "No perseguir",
+      "outcome": "a_medias",
+      "block": "apego",
+      "note": "No escribí, pero me quedé pendiente del teléfono."
+    },
+    {
+      "id": "i_010",
+      "date": "2026-01-20",
+      "intentionType": "Priorizarme",
+      "outcome": "no_lo_hice",
+      "block": "culpa",
+      "note": "Sentí que era “egoísta” elegir mi plan."
+    }
+  ],
+  "patterns": [
+    {
+      "id": "p_001",
+      "name": "Falta de límites",
+      "frequency30d": 11,
+      "contexts": ["trabajo", "familia", "pareja"],
+      "trend": "up",
+      "evidenceEntryIds": ["e_001", "e_007", "e_010", "e_018"]
+    },
+    {
+      "id": "p_002",
+      "name": "Apego a aprobación",
+      "frequency30d": 9,
+      "contexts": ["social", "trabajo", "pareja"],
+      "trend": "flat",
+      "evidenceEntryIds": ["e_001", "e_014", "e_017"]
+    },
+    {
+      "id": "p_003",
+      "name": "Evitación activa",
+      "frequency30d": 8,
+      "contexts": ["yo", "pareja", "social"],
+      "trend": "up",
+      "evidenceEntryIds": ["e_004", "e_012", "e_020"]
+    },
+    {
+      "id": "p_004",
+      "name": "Rumiación circular",
+      "frequency30d": 7,
+      "contexts": ["yo"],
+      "trend": "flat",
+      "evidenceEntryIds": ["e_016", "e_009"]
+    },
+    {
+      "id": "p_005",
+      "name": "Autoanulación",
+      "frequency30d": 6,
+      "contexts": ["social", "trabajo"],
+      "trend": "down",
+      "evidenceEntryIds": ["e_014", "e_017", "e_011"]
+    },
+    {
+      "id": "p_006",
+      "name": "Qué dirán estructural",
+      "frequency30d": 6,
+      "contexts": ["social", "yo"],
+      "trend": "flat",
+      "evidenceEntryIds": ["e_013", "e_008"]
+    }
+  ],
+  "readings": [
+    {
+      "id": "r_001",
+      "date": "2026-02-06",
+      "type": "lectura_del_dia",
+      "content": {
+        "contencion": "No estás “mal”. Estás viendo una repetición en tiempo real.",
+        "loQueVeo": "Tu intención fue no justificarte. Aun así, terminaste negociando aceptación con explicación.",
+        "patron": "Falta de límites + aprobación.",
+        "loQueEvitas": "El costo emocional de que alguien no esté de acuerdo contigo.",
+        "pregunta": "¿Qué perderías si hoy alguien te mira como “difícil” y no lo corriges?",
+        "accionMinima": "Una frase hoy: “No voy a explicar más. Esto es lo que es”."
+      },
+      "patternId": "p_001"
+    },
+    {
+      "id": "r_002",
+      "date": "2026-02-05",
+      "entryId": "e_003",
+      "type": "evento_incomodo",
+      "content": {
+        "contencion": "No fue una discusión. Fue un guion viejo.",
+        "loQueVeo": "Te pidieron una explicación y la diste antes de que te la exigieran.",
+        "patron": "Elección ajena (tu decisión pasa por el filtro de otro).",
+        "loQueEvitas": "La incomodidad de sostener tu decisión sin permiso.",
+        "pregunta": "¿A quién le estás entregando el voto final de tu vida?",
+        "accionMinima": "Corta la próxima explicación a la mitad. Observa quién se incomoda."
+      },
+      "patternId": "p_006"
+    },
+    {
+      "id": "r_003",
+      "date": "2026-02-04",
+      "entryId": "e_005",
+      "type": "semanal",
+      "content": {
+        "contencion": "Hay movimiento cuando tu miedo no toma el volante.",
+        "loQueVeo": "Pudiste pedir respeto sin disculparte.",
+        "patron": "Autoanulación (en descenso).",
+        "loQueEvitas": "Volver a desaparecer para que todo “esté bien”.",
+        "pregunta": "¿Qué parte de ti cree que pedir respeto es un riesgo?",
+        "accionMinima": "Repite el límite una vez más, sin justificar."
+      },
+      "patternId": "p_005"
+    },
+    {
+      "id": "r_004",
+      "date": "2026-02-03",
+      "entryId": "e_006",
+      "type": "patron_activo",
+      "content": {
+        "contencion": "Tu capacidad no es el problema. Tu disponibilidad automática sí.",
+        "loQueVeo": "Aceptaste una carga implícita para sostener una imagen.",
+        "patron": "Falta de límites (estatus como trampa).",
+        "loQueEvitas": "Que alguien vea tu ‘no’ y no te celebre por resolverlo todo.",
+        "pregunta": "¿Qué te da más miedo: decepcionar o dejar de ser necesario?",
+        "accionMinima": "Hoy: “No lo voy a tomar yo. Hay que reasignarlo”."
+      },
+      "patternId": "p_001"
+    },
+    {
+      "id": "r_005",
+      "date": "2026-02-02",
+      "entryId": "e_008",
+      "type": "intencion_no_lograda",
+      "content": {
+        "contencion": "No dijiste que sí al plan. Dijiste que sí a no incomodar.",
+        "loQueVeo": "Evitaste el ‘no’ y pagaste con ansiedad.",
+        "patron": "Qué dirán estructural.",
+        "loQueEvitas": "Ser la persona que cambia el clima del grupo.",
+        "pregunta": "¿Qué es peor para ti: tensar el ambiente o traicionarte en silencio?",
+        "accionMinima": "La próxima vez: “No me late. Paso”. Sin explicación."
+      },
+      "patternId": "p_006"
+    },
+    {
+      "id": "r_006",
+      "date": "2026-02-01",
+      "entryId": "e_010",
+      "type": "evento_incomodo",
+      "content": {
+        "contencion": "Explotar no es fuerza. Es acumulación.",
+        "loQueVeo": "Aceptas de más, callas, y luego truena por el lugar equivocado.",
+        "patron": "Falta de límites (acumulación).",
+        "loQueEvitas": "El límite temprano, pequeño y claro.",
+        "pregunta": "¿Qué límite evitaste decir antes de explotar?",
+        "accionMinima": "Hoy: el límite más pequeño posible, dicho a tiempo."
+      },
+      "patternId": "p_001"
+    },
+    {
+      "id": "r_007",
+      "date": "2026-01-31",
+      "entryId": "e_011",
+      "type": "semanal",
+      "content": {
+        "contencion": "Cuando no te explicas, no estás siendo duro. Estás siendo claro.",
+        "loQueVeo": "Dijiste no sin justificar y el mundo siguió.",
+        "patron": "Aprobación (en pausa).",
+        "loQueEvitas": "Volver a convencer.",
+        "pregunta": "¿Qué te haría regresar a explicar lo que ya es claro?",
+        "accionMinima": "Sostén el silencio después del límite."
+      },
+      "patternId": "p_002"
+    },
+    {
+      "id": "r_008",
+      "date": "2026-01-30",
+      "entryId": "e_012",
+      "type": "patron_activo",
+      "content": {
+        "contencion": "Decir ‘nada’ es una forma limpia de no pedir.",
+        "loQueVeo": "Tu necesidad existe, pero la escondes para no ser ‘demasiado’.",
+        "patron": "Evitación activa.",
+        "loQueEvitas": "La vulnerabilidad de ser explícito.",
+        "pregunta": "¿Qué parte de ti cree que pedir es perder?",
+        "accionMinima": "Escribe una necesidad en una línea. No la adornes."
+      },
+      "patternId": "p_003"
+    },
+    {
+      "id": "r_009",
+      "date": "2026-01-24",
+      "entryId": "e_016",
+      "type": "evento_incomodo",
+      "content": {
+        "contencion": "No estás pensando. Estás dando vueltas.",
+        "loQueVeo": "Repites una conversación para encontrar control donde no existe.",
+        "patron": "Rumiación circular.",
+        "loQueEvitas": "La decisión imperfecta.",
+        "pregunta": "¿Qué decisión estás evitando detrás de la ‘claridad’ que buscas?",
+        "accionMinima": "Elige una acción de 5 minutos. No la optimices."
+      },
+      "patternId": "p_004"
+    },
+    {
+      "id": "r_010",
+      "date": "2026-01-20",
+      "entryId": "e_018",
+      "type": "patron_activo",
+      "content": {
+        "contencion": "No es que no te elijan. Estás negociando tu lugar por miedo.",
+        "loQueVeo": "Cambian los nombres, no el trato: te encoges para sostener pertenencia.",
+        "patron": "Apego a aprobación.",
+        "loQueEvitas": "El vacío temporal de no perseguir.",
+        "pregunta": "¿Qué parte de ti prefiere un lugar pequeño a ningún lugar?",
+        "accionMinima": "Hoy: no persigas una respuesta. Observa qué se activa."
+      },
+      "patternId": "p_002"
+    }
+  ],
+  "vaultNotes": [
+    {
+      "id": "v_001",
+      "date": "2026-02-06",
+      "title": "Lo que no quiero que nadie lea",
+      "content": "Hay una parte de mí que quiere controlarlo todo porque cree que si no lo hace, se cae el mundo. Estoy cansado.",
+      "sealed": true
+    },
+    {
+      "id": "v_002",
+      "date": "2026-02-03",
+      "title": "Celos sin narrativa",
+      "content": "No es por la otra persona. Es por mi miedo de no ser suficiente. Y me da vergüenza admitirlo.",
+      "sealed": true
+    },
+    {
+      "id": "v_003",
+      "date": "2026-02-01",
+      "title": "Cuando me hago el fuerte",
+      "content": "Me enorgullezco de no necesitar a nadie. Pero es una defensa. Lo sé.",
+      "sealed": true
+    },
+    {
+      "id": "v_004",
+      "date": "2026-01-29",
+      "title": "Una confesión",
+      "content": "Espero permiso. Me preocupa que, si me elijo, alguien me deje de querer.",
+      "sealed": true
+    },
+    {
+      "id": "v_005",
+      "date": "2026-01-26",
+      "title": "Mi cansancio",
+      "content": "Estoy harto de explicar. Explicar se volvió mi forma de pedir amor sin pedirlo.",
+      "sealed": true
+    },
+    {
+      "id": "v_006",
+      "date": "2026-01-20",
+      "title": "No quiero decirlo en voz alta",
+      "content": "Me siento pequeño cuando no me buscan. Y entonces hago cosas para que me busquen.",
+      "sealed": true
+    }
+  ],
+  "mirrorStories": [
+    {
+      "id": "ms_001",
+      "patternId": "p_001",
+      "story": "Daniel aprendió a ganarse su lugar siendo útil. No lo dijo así; solo lo hacía. Si alguien pedía algo “rapidísimo”, Daniel estaba. Si alguien no sabía cómo resolver, Daniel lo sacaba. Un día, el equipo cambió de líder. El nuevo líder no pidió ayuda: la asumió. Daniel empezó a quedarse tarde sin que nadie se lo pidiera. Al tercer mes, le reclamaron por “no ser tan flexible como antes”. Daniel se tragó el coraje. Al sexto mes, explotó por un detalle mínimo. Se fue a su casa sintiéndose culpable por haber sido “duro”, sin ver que llevaba medio año negociando su dignidad en cuotas pequeñas.",
+      "highlights": ["ganarse su lugar siendo útil", "la asumió", "negociando su dignidad en cuotas pequeñas"],
+      "questions": [
+        "¿En qué parte te viste: en el sí automático o en la explosión tardía?",
+        "¿Qué crees que perderías si no eres “el que resuelve”?",
+        "¿Cuál es el límite pequeño que evitaste decir a tiempo?"
+      ]
+    },
+    {
+      "id": "ms_002",
+      "patternId": "p_002",
+      "story": "Sofía no perseguía personas. Perseguía señales. Si tardaban en contestar, lo sentía en el pecho. Entonces hacía “algo casual”: un mensaje, una historia, una pregunta que parecía neutra. Cuando por fin recibía respuesta, respiraba. Sofía le llamaba “conexión”. Pero era otra cosa: era un sistema de aprobación en tiempo real. El día que alguien le dijo “necesito espacio”, Sofía sonrió y respondió: “claro”. Esa misma noche, se quedó despierta buscando qué hizo mal. No era confusión. Era evitación de una verdad: estaba pidiendo pertenencia sin decirlo.",
+      "highlights": ["perseguía señales", "aprobación en tiempo real", "No era confusión. Era evitación"],
+      "questions": [
+        "¿Qué haces para sentirte elegido sin pedirlo de frente?",
+        "¿Qué parte de ti confunde ansiedad con conexión?",
+        "¿Qué pasaría si sostienes el vacío sin intervenir?"
+      ]
+    },
+    {
+      "id": "ms_003",
+      "patternId": "p_003",
+      "story": "Iván tenía una habilidad: podía explicar cualquier cosa. También tenía un hábito: podía explicar por qué no hacía lo importante. Si algo lo incomodaba, lo convertía en análisis. Si tenía que pedir algo, lo volvía “no tan importante”. Iván no mentía. Solo recortaba su necesidad hasta que ya no molestara. Con el tiempo, su vida se volvió eficiente y poco propia. Nadie lo detenía, porque nadie lo veía. La evitación de Iván era silenciosa. Y por eso se sentía “normal”.",
+      "highlights": ["lo convertía en análisis", "recortaba su necesidad", "se sentía “normal”"],
+      "questions": [
+        "¿Qué necesidad estás recortando hoy para no incomodar?",
+        "¿Qué parte de tu análisis es miedo disfrazado?",
+        "¿Qué harías si aceptarás que sí es importante?"
+      ]
+    },
+    {
+      "id": "ms_004",
+      "patternId": "p_004",
+      "story": "Paula podía repetir una conversación completa con pausas y tonos. Lo hacía como si ahí estuviera la respuesta. Si encontraba la frase perfecta, creía que el pasado se acomodaría. Paula no buscaba claridad. Buscaba control retroactivo. Un día se dio cuenta: la ‘frase perfecta’ siempre llegaba tarde. Y aun así, seguía intentándolo. Porque decidir sin certeza le daba miedo. Entonces prefería la vuelta infinita: parecía trabajo, pero era postergación.",
+      "highlights": ["control retroactivo", "buscaba control", "parecía trabajo, pero era postergación"],
+      "questions": [
+        "¿Qué decisión estás posponiendo con rumiación?",
+        "¿Qué certeza imposible estás exigiendo para moverte?",
+        "¿Cuál es la acción mínima que evitarías por “no estar listo”?"
+      ]
+    },
+    {
+      "id": "ms_005",
+      "patternId": "p_005",
+      "story": "Marcos aprendió a ser amable a tiempo completo. Si alguien lo interrumpía, él decía “no pasa nada”. Si alguien lo minimizaba, él lo convertía en chiste. Marcos era querido. Y también era invisible en lo que necesitaba. Un día, alguien le preguntó: “¿qué quieres tú?” Marcos se tardó demasiado en contestar. No porque no tuviera respuesta. Porque nunca la había practicado en voz alta.",
+      "highlights": ["amable a tiempo completo", "era querido", "nunca la había practicado en voz alta"],
+      "questions": [
+        "¿Dónde conviertes tu límite en chiste?",
+        "¿Qué ganas siendo ‘fácil’ para todos?",
+        "¿Qué quieres tú, sin explicar por qué?"
+      ]
+    },
+    {
+      "id": "ms_006",
+      "patternId": "p_006",
+      "story": "Lucía tenía una brújula externa. Antes de decidir, imaginaba reacciones. Si la reacción era incómoda, cambiaba el plan. Lucía le llamaba “consideración”. Con el tiempo, su vida se llenó de decisiones técnicamente correctas pero emocionalmente ajenas. Un día, una amiga le dijo: “no sé qué quieres tú”. Lucía se rió. Y en esa risa se escuchó una verdad: no era que no supiera. Era que no quería sostener el costo.",
+      "highlights": ["brújula externa", "decisiones técnicamente correctas", "no quería sostener el costo"],
+      "questions": [
+        "¿Qué decisión tuya está siendo votación pública?",
+        "¿Qué costo te da miedo pagar: tensión, juicio o soledad?",
+        "¿Qué cambiaría si tu brújula fuera interna por 24 horas?"
+      ]
+    }
+  ]
+}
