@@ -1,35 +1,37 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DoorClosed, MessageCircle, Mic, Settings2 } from "lucide-react";
+import { LockKeyhole, MessageCircle } from "lucide-react";
 import MiniSparkline from "../components/charts/MiniSparkline";
 import Modal from "../components/ui/Modal";
-import Textarea from "../components/ui/Textarea";
 import RadialProgress from "../components/ui/RadialProgress";
+import { conziaGuidanceProfile, todayPlanFromProfile } from "../engine/conziaMotor";
+import { computeMetrics } from "../metrics/computeMetrics";
 import { useConzia } from "../state/conziaStore";
 import { createId } from "../utils/id";
-import { addDays, toISODateOnly } from "../utils/dates";
-import type { ConziaEntry, ConziaFriccion, ConziaObservationEntry, ConziaTrap, DoorId } from "../types/models";
+import { toISODateOnly } from "../utils/dates";
+import type {
+  ConziaEntry,
+  ConziaFriccion,
+  ConziaObservationEntry,
+  ConziaPatternTag,
+  ConziaTrap,
+  DoorId,
+} from "../types/models";
 
-type PatternId = "rumiacion" | "evitacion" | "aislamiento" | "control" | "culpa" | "postergacion";
+type PatternId = ConziaPatternTag;
 
-const FIXED_PATTERNS: PatternId[] = ["rumiacion", "evitacion", "aislamiento"];
+const FIXED_PATTERNS: ConziaPatternTag[] = ["rumiacion", "evitacion", "aislamiento"];
 
 const PATTERN_LABEL: Record<PatternId, string> = {
   rumiacion: "Rumiación",
   evitacion: "Evitación",
   aislamiento: "Aislamiento",
-  control: "Control",
-  culpa: "Culpa",
-  postergacion: "Postergación",
 };
 
 const PATTERN_KEYWORDS: Record<PatternId, string[]> = {
   rumiacion: ["darle vueltas", "rumia", "rumiacion", "sobrepienso", "sobrepens", "no paro de pensar"],
   evitacion: ["evite", "evitar", "me fui", "evadi", "ignorar", "no quise ver", "autoengano"],
   aislamiento: ["me aisle", "me encerre", "me aleje", "no conteste", "no respondi", "desconecte"],
-  control: ["control", "vigile", "revisar", "perfeccion", "orden", "tengo que"],
-  culpa: ["culpa", "perdon", "disculpa", "me senti mal", "quede mal", "debo"],
-  postergacion: ["luego", "mañana", "manana", "despues", "posterg", "procrast", "pospuse"],
 };
 
 const FRICCION_LABEL: Record<ConziaFriccion, string> = {
@@ -59,9 +61,8 @@ function normalizeText(value: string): string {
 
 function trapToPattern(trap: ConziaTrap): PatternId {
   if (trap === "INFINITE_ANALYSIS") return "rumiacion";
-  if (trap === "PRETTY_INSIGHT") return "evitacion";
-  if (trap === "GUILT_PERFORMANCE") return "culpa";
-  return "control";
+  if (trap === "GUILT_PERFORMANCE") return "aislamiento";
+  return "evitacion";
 }
 
 function tagsForEntry(entry: ConziaEntry): PatternId[] {
@@ -72,6 +73,8 @@ function tagsForEntry(entry: ConziaEntry): PatternId[] {
       ? entry.hecho
       : entry.source === "quick"
         ? entry.fact_line
+        : entry.source === "desahogo"
+          ? entry.text
         : entry.source === "puerta1_observacion"
           ? entry.fact_line
           : "";
@@ -85,10 +88,9 @@ function tagsForEntry(entry: ConziaEntry): PatternId[] {
 
   if (entry.source === "puerta1_observacion") {
     tags.add(trapToPattern(entry.trap_selected));
-    if (entry.friccion_hoy === "control") tags.add("control");
     if (entry.friccion_hoy === "autoengano") tags.add("evitacion");
     if (entry.friccion_hoy === "verguenza" || entry.friccion_hoy === "abandono_propio") tags.add("aislamiento");
-    if (entry.friccion_hoy === "dependencia") tags.add("culpa");
+    if (entry.friccion_hoy === "dependencia") tags.add("aislamiento");
   }
 
   return [...tags];
@@ -99,6 +101,7 @@ function entrySourceLabel(source: ConziaEntry["source"]): string {
   if (source === "mesa") return "Mesa";
   if (source === "puerta1_observacion") return "Observación Inicial";
   if (source === "quick") return "Desahogo rápido";
+  if (source === "desahogo") return "Desahogo";
   return "Entrada";
 }
 
@@ -112,19 +115,6 @@ function formatDateTimeEsMX(value: string): string {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
-}
-
-function mean(values: number[]): number | null {
-  if (!values.length) return null;
-  return values.reduce((a, b) => a + b, 0) / values.length;
-}
-
-function variance(values: number[]): number | null {
-  const m = mean(values);
-  if (m === null) return null;
-  if (values.length <= 1) return 0;
-  const v = values.reduce((acc, x) => acc + (x - m) * (x - m), 0) / values.length;
-  return v;
 }
 
 export default function SesionPage() {
@@ -161,7 +151,19 @@ export default function SesionPage() {
     return byToday[0] ?? null;
   }, [process, state.entriesV1, todayKey]);
 
-  const recommendedDoor = latestObservation?.today_plan.recommendedDoor ?? null;
+  const fallbackPlan = useMemo(() => {
+    if (!state.profile) return null;
+    const guidance = conziaGuidanceProfile({
+      archetypeDominant: state.profile.arquetipo_dominante,
+      archetypeConfidence: state.profile.confianza,
+      friccionPrincipal: state.profile.tema_base,
+      costoDominante: state.profile.costo_dominante,
+    });
+    return todayPlanFromProfile(guidance);
+  }, [state.profile]);
+
+  const todayPlan = latestObservation?.today_plan ?? fallbackPlan;
+  const recommendedDoor = todayPlan?.recommendedDoor ?? null;
   const trapSelected = latestObservation?.trap_selected ?? null;
 
   const overallProgress = useMemo(() => {
@@ -207,12 +209,11 @@ export default function SesionPage() {
   }
 
   const [helpOpen, setHelpOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [cofreOpen, setCofreOpen] = useState(false);
   const [patternModal, setPatternModal] = useState<PatternId | null>(null);
   const [analysisOpen, setAnalysisOpen] = useState(false);
 
-  const [quickText, setQuickText] = useState("");
-  const [quickStatus, setQuickStatus] = useState<string | null>(null);
+  const hello = state.profile?.alias ? `Hola, ${state.profile.alias}` : "Hola";
 
   const entriesForProcess = useMemo(() => {
     if (!process) return [] as ConziaEntry[];
@@ -229,27 +230,6 @@ export default function SesionPage() {
     return entriesByRecency.map((e) => ({ entry: e, tags: tagsForEntry(e) }));
   }, [entriesByRecency]);
 
-  const last14 = taggedRecency.slice(0, 14);
-  const last7 = last14.slice(0, 7);
-  const prev7 = last14.slice(7, 14);
-
-  const patternSummary = useMemo(() => {
-    const base: Record<PatternId, { count14: number; count7: number; prev7: number }> = {
-      rumiacion: { count14: 0, count7: 0, prev7: 0 },
-      evitacion: { count14: 0, count7: 0, prev7: 0 },
-      aislamiento: { count14: 0, count7: 0, prev7: 0 },
-      control: { count14: 0, count7: 0, prev7: 0 },
-      culpa: { count14: 0, count7: 0, prev7: 0 },
-      postergacion: { count14: 0, count7: 0, prev7: 0 },
-    };
-
-    for (const row of last14) for (const t of row.tags) base[t].count14 += 1;
-    for (const row of last7) for (const t of row.tags) base[t].count7 += 1;
-    for (const row of prev7) for (const t of row.tags) base[t].prev7 += 1;
-
-    return base;
-  }, [last14, last7, prev7]);
-
   const patternDetails = useMemo(() => {
     if (!patternModal) return [];
     return taggedRecency
@@ -258,104 +238,73 @@ export default function SesionPage() {
       .map((r) => r.entry);
   }, [patternModal, taggedRecency]);
 
-  const sessionById = useMemo(() => new Map(state.sessions.map((s) => [s.id, s] as const)), [state.sessions]);
-
-  const weightsToday = useMemo(() => {
-    const values: number[] = [];
-    for (const e of entriesForProcess) {
-      if (e.source !== "consultorio" && e.source !== "mesa") continue;
-      const s = sessionById.get(e.session_id) ?? null;
-      if (!s || s.date_key !== todayKey) continue;
-      values.push(e.peso);
-    }
-    return values;
-  }, [entriesForProcess, sessionById, todayKey]);
-
-  const cargaEmocional = useMemo(() => mean(weightsToday), [weightsToday]);
-  const pesoVar = useMemo(() => variance(weightsToday), [weightsToday]);
-
-  const estabilidadScore = useMemo(() => {
-    if (cargaEmocional === null) return null;
-    const v = pesoVar ?? 0;
-    const std = Math.sqrt(v);
-    let score = 10 - Math.min(10, Math.round(std * 2));
-    if (latestObservation?.trap_matches_archetype) score = Math.max(0, score - 2);
-    return score;
-  }, [cargaEmocional, latestObservation?.trap_matches_archetype, pesoVar]);
-
-  const last7Days = useMemo(() => {
-    const days: string[] = [];
-    for (let i = 6; i >= 0; i -= 1) {
-      days.push(toISODateOnly(addDays(new Date(), -i)));
-    }
-    return days;
-  }, []);
-
-  const chartValues = useMemo(() => {
-    const values: Array<number | null> = last7Days.map((dayKey) => {
-      const dayWeights: number[] = [];
-      for (const e of entriesForProcess) {
-        if (e.source !== "consultorio" && e.source !== "mesa") continue;
-        const s = sessionById.get(e.session_id) ?? null;
-        if (!s || s.date_key !== dayKey) continue;
-        dayWeights.push(e.peso);
-      }
-      return mean(dayWeights);
+  const metrics = useMemo(() => {
+    if (!process) return null;
+    return computeMetrics({
+      entries: state.entriesV1,
+      sessions: state.sessions,
+      processId: process.id,
+      todayKey,
     });
-    const dataPoints = values.filter((v) => typeof v === "number").length;
-    return { values, dataPoints };
-  }, [entriesForProcess, last7Days, sessionById]);
+  }, [process, state.entriesV1, state.sessions, todayKey]);
 
-  function saveQuick() {
-    if (!process) return;
-    const clean = quickText.trim();
-    if (clean.length < 3) {
-      setQuickStatus("Escribe una línea concreta.");
-      return;
-    }
-    const nowISO = new Date().toISOString();
-    dispatch({
-      type: "add_entry_v1",
-      entry: {
-        id: createId("e"),
-        process_id: process.id,
-        source: "quick",
-        fact_line: clean,
-        created_at: nowISO,
-      },
-    });
-    setQuickText("");
-    setQuickStatus("Guardado.");
-    window.setTimeout(() => setQuickStatus(null), 1600);
+  const latestDesahogo = useMemo(() => {
+    if (!process) return null;
+    const list = state.entriesV1.filter(
+      (e): e is Extract<ConziaEntry, { source: "desahogo" }> => e.source === "desahogo" && e.process_id === process.id,
+    );
+    list.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+    return list[0] ?? null;
+  }, [process, state.entriesV1]);
+
+  const latestChallenge = useMemo(() => {
+    if (!process) return null;
+    const list = state.challenges.filter((c) => c.process_id === process.id);
+    list.sort((a, b) => (a.accepted_at < b.accepted_at ? 1 : -1));
+    return list[0] ?? null;
+  }, [process, state.challenges]);
+
+  const challengeNeedsEvidence = Boolean(
+    latestChallenge &&
+      latestChallenge.status === "active" &&
+      !(latestChallenge.evidence && latestChallenge.evidence.trim().length >= 3),
+  );
+
+  function formatSilence(mins: number | null | undefined): string {
+    if (mins === null || mins === undefined) return "—";
+    if (mins < 60) return `${mins}m`;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m ? `${h}h ${m}m` : `${h}h`;
   }
 
   return (
-    <div className="min-h-[100svh] px-6 pb-14">
-      <div className="sticky top-0 z-20 -mx-6 px-6 pb-4 pt-7 bg-[#0b1220]/35 backdrop-blur-md">
-        <div className="flex items-center justify-between gap-4 text-white">
-          <div className="min-w-0">
-            <div className="text-[22px] font-semibold tracking-tight">CONZIA</div>
-            <div className="mt-1 text-xs text-white/65">Inicio · Día {process?.day_index ?? 1}</div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setHelpOpen(true)}
-              className="rounded-2xl p-2 text-white/80 ring-1 ring-white/15 transition hover:bg-white/10 hover:text-white"
-              aria-label="Ayuda"
-            >
-              <MessageCircle className="h-5 w-5" aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={() => setSettingsOpen(true)}
-              className="rounded-2xl p-2 text-white/80 ring-1 ring-white/15 transition hover:bg-white/10 hover:text-white"
-              aria-label="Ajustes"
-            >
-              <Settings2 className="h-5 w-5" aria-hidden />
-            </button>
-          </div>
-        </div>
+	    <div className="min-h-[100svh] px-6 pb-14">
+	      <div className="sticky top-0 z-20 -mx-6 px-6 pb-4 pt-7 bg-[#0b1220]/35 backdrop-blur-md">
+	        <div className="flex items-center justify-between gap-4 text-white">
+	          <div className="min-w-0">
+	            <div className="text-[22px] font-semibold tracking-tight">CONZIA</div>
+	            <div className="mt-1 text-xs text-white/65">Inicio · Día {process?.day_index ?? 1}</div>
+	          </div>
+	          <div className="flex items-center gap-2">
+	            <button
+	              type="button"
+	              onClick={() => setHelpOpen(true)}
+	              className="rounded-2xl p-2 text-white/80 ring-1 ring-white/15 transition hover:bg-white/10 hover:text-white"
+	              aria-label="Ayuda"
+	            >
+	              <MessageCircle className="h-5 w-5" aria-hidden />
+	            </button>
+	            <button
+	              type="button"
+	              onClick={() => setCofreOpen(true)}
+	              className="rounded-2xl p-2 text-white/80 ring-1 ring-white/15 transition hover:bg-white/10 hover:text-white"
+	              aria-label="Cofre"
+	            >
+	              <LockKeyhole className="h-5 w-5" aria-hidden />
+	            </button>
+	          </div>
+	        </div>
 
         {process?.status === "closed" ? (
           <div className="mt-3 text-xs text-white/70">El día anterior fue cerrado.</div>
@@ -373,99 +322,78 @@ export default function SesionPage() {
         </RadialProgress>
       </div>
 
-      <div className="mt-8 space-y-4">
-        <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
-          <div className="text-xs tracking-[0.18em] text-white/60">DESAHOGO RÁPIDO</div>
-          <div className="mt-3 text-sm text-white/70">Escribe una línea. No tienes que justificar.</div>
-          <Textarea
-            className="mt-4 min-h-[120px] bg-white/10 text-white placeholder:text-white/45 ring-1 ring-white/10"
-            value={quickText}
-            onChange={(e) => setQuickText(e.target.value)}
-            placeholder="Qué pasó. Qué se dijo. Qué se hizo."
-          />
-          {quickStatus ? <div className="mt-3 text-xs text-white/70">{quickStatus}</div> : null}
-          <div className="mt-5 flex items-center justify-between gap-3">
-            <button
-              type="button"
-              disabled
-              className="inline-flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-xs text-white/55 ring-1 ring-white/10 opacity-70"
-              aria-label="Micrófono (próximamente)"
-            >
-              <Mic className="h-4 w-4" aria-hidden />
-              Próximamente
-            </button>
-            <button
-              type="button"
-              onClick={saveQuick}
-              className="inline-flex items-center justify-center rounded-2xl bg-camel px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition hover:brightness-[0.98] active:scale-[0.99]"
-            >
-              Guardar
-            </button>
-          </div>
-        </div>
+	      <div className="mt-8 space-y-4">
+	        <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
+	          <div className="text-xs tracking-[0.18em] text-white/60">DESAHOGO DE HOY</div>
+	          <div className="mt-3 text-lg font-semibold tracking-tight">{hello}</div>
+	          <div className="mt-2 text-sm text-white/75">
+	            {challengeNeedsEvidence
+	              ? "Tienes un reto activo. Necesitas evidencia para desbloquear el siguiente desahogo."
+	              : "Tu sombra tiene algo que decirte. ¿Estás listo para escuchar?"}
+	          </div>
 
-        <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="text-xs tracking-[0.18em] text-white/60">ANÁLISIS TERAPÉUTICO</div>
-              <div className="mt-3 text-sm text-white/80">
-                {latestObservation && trapSelected
-                  ? `Te escucho. Noto patrón de ${PATTERN_LABEL[trapToPattern(trapSelected)]}.`
-                  : "Completa Observación Inicial para generar el plan de hoy."}
-              </div>
-              <div className="mt-4 rounded-2xl bg-mint-cream/90 ring-1 ring-gainsboro/60 px-4 py-4 text-outer-space">
-                <div className="text-xs text-morning-blue">CONZIA</div>
-                <div className="mt-1 text-sm font-semibold tracking-tight">
-                  {latestObservation ? latestObservation.today_plan.cutLine : "—"}
-                </div>
-              </div>
-              <div className="mt-4 text-xs text-white/65">
-                Puerta recomendada: {latestObservation ? (recommendedDoor === "mesa" ? "Mesa" : "Consultorio") : "—"}
-              </div>
-            </div>
-          </div>
+	          <div className="mt-4 rounded-2xl bg-mint-cream/90 ring-1 ring-gainsboro/60 px-4 py-4 text-outer-space">
+	            <div className="text-xs text-morning-blue">CONZIA</div>
+	            <div className="mt-1 text-sm font-semibold tracking-tight whitespace-pre-line">
+	              {latestDesahogo?.analysis.reflection ?? todayPlan?.cutLine ?? "—"}
+	            </div>
+	            <div className="mt-3 text-sm text-outer-space/80">
+	              {latestDesahogo?.analysis.question ?? "¿Qué hecho vas a nombrar hoy, sin justificar?"}
+	            </div>
+	          </div>
 
-          <div className="mt-5 flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setAnalysisOpen(true)}
-              className="rounded-2xl px-3 py-2 text-xs text-white/85 ring-1 ring-white/15 transition hover:bg-white/10"
-            >
-              Patrón detectado
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (!latestObservation) {
-                  navigate("/observacion");
-                  return;
-                }
-                goDoor(latestObservation.today_plan.recommendedDoor as DoorId);
-              }}
-              className="rounded-2xl bg-camel px-3 py-2 text-xs font-semibold text-white ring-1 ring-white/15 transition hover:brightness-[0.98] active:scale-[0.99]"
-            >
-              Abrir puerta recomendada
-            </button>
-          </div>
-        </div>
+	          {latestChallenge ? (
+	            <div className="mt-4 text-xs text-white/70">
+	              {challengeNeedsEvidence
+	                ? `Reto activo · falta evidencia · vence ${toISODateOnly(new Date(latestChallenge.due_at))}`
+	                : `Último reto: ${latestChallenge.status === "completed" ? "cumplido" : latestChallenge.status}`}
+	            </div>
+	          ) : null}
 
-        <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
-          <div className="text-xs tracking-[0.18em] text-white/60">PATRONES QUE SE REPITEN</div>
-          <div className="mt-4 grid grid-cols-1 gap-3">
-            {FIXED_PATTERNS.map((pid) => {
-              const stats = patternSummary[pid];
-              const status =
-                stats.count7 === 0 && stats.prev7 === 0
-                  ? "Iniciando"
-                  : stats.prev7 === 0 && stats.count7 > 0
-                    ? "Frecuente"
-                    : stats.count7 > stats.prev7
-                      ? "En aumento"
-                      : "Recurrente";
+	          <div className="mt-5 grid grid-cols-2 gap-2">
+	            <button
+	              type="button"
+	              onClick={() => navigate("/resultados")}
+	              className="rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-white/12"
+	            >
+	              Ver Oráculo
+	            </button>
+	            <button
+	              type="button"
+	              onClick={() => navigate("/desahogo")}
+	              className="rounded-2xl bg-camel px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/15 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition hover:brightness-[0.98] active:scale-[0.99]"
+	            >
+	              IR AL DESAHOGO DE HOY
+	            </button>
+	          </div>
 
-              return (
-                <div key={pid} className="rounded-2xl bg-[#0b1220]/55 ring-1 ring-white/10 px-4 py-4">
-                  <div className="flex items-center justify-between gap-3">
+	          <div className="mt-4 flex items-center justify-between gap-3">
+	            <button
+	              type="button"
+	              onClick={() => setAnalysisOpen(true)}
+	              className="rounded-2xl px-3 py-2 text-xs text-white/85 ring-1 ring-white/15 transition hover:bg-white/10"
+	            >
+	              Patrón detectado
+	            </button>
+	            <button
+	              type="button"
+	              onClick={() => setCofreOpen(true)}
+	              className="rounded-2xl px-3 py-2 text-xs text-white/85 ring-1 ring-white/15 transition hover:bg-white/10"
+	            >
+	              Abrir el Cofre
+	            </button>
+	          </div>
+	        </div>
+
+	        <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
+	          <div className="text-xs tracking-[0.18em] text-white/60">PATRONES QUE SE REPITEN</div>
+	          <div className="mt-4 grid grid-cols-1 gap-3">
+	            {FIXED_PATTERNS.map((pid) => {
+	              const status = metrics?.patternStatus[pid] ?? "Iniciando";
+	
+	              return (
+	                <div key={pid} className="rounded-2xl bg-[#0b1220]/55 ring-1 ring-white/10 px-4 py-4">
+	                  <div className="flex items-center justify-between gap-3">
                     <div>
                       <div className="text-sm font-semibold tracking-tight text-white">{PATTERN_LABEL[pid]}</div>
                       <div className="mt-1 text-xs text-white/65">{status}</div>
@@ -484,47 +412,53 @@ export default function SesionPage() {
           </div>
         </div>
 
-        <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
-          <div className="text-xs tracking-[0.18em] text-white/60">CÓMO ESTÁS HOY</div>
+	        <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
+	          <div className="text-xs tracking-[0.18em] text-white/60">CÓMO ESTÁS HOY</div>
+	
+	          <div className="mt-4 grid grid-cols-3 gap-2">
+	            <div className="rounded-2xl bg-[#0b1220]/55 ring-1 ring-white/10 px-3 py-3">
+	              <div className="text-[11px] text-white/65">Carga emocional</div>
+	              <div className="mt-2 text-lg font-semibold tracking-tight">
+	                {metrics?.cargaEmocionalHoy === null || metrics?.cargaEmocionalHoy === undefined
+	                  ? "—"
+	                  : metrics.cargaEmocionalHoy.toFixed(1)}
+	              </div>
+	            </div>
+	            <div className="rounded-2xl bg-[#0b1220]/55 ring-1 ring-white/10 px-3 py-3">
+	              <div className="text-[11px] text-white/65">Estabilidad</div>
+	              <div className="mt-2 text-lg font-semibold tracking-tight">
+	                {metrics?.estabilidadScore === null || metrics?.estabilidadScore === undefined
+	                  ? "—"
+	                  : `${metrics.estabilidadScore}/10`}
+	              </div>
+	            </div>
+		            <div className="rounded-2xl bg-[#0b1220]/55 ring-1 ring-white/10 px-3 py-3">
+		              <div className="text-[11px] text-white/65">Silencio</div>
+		              <div className="mt-2 text-lg font-semibold tracking-tight">
+                    {formatSilence(metrics?.silencioMinutos)}
+                  </div>
+		            </div>
+		          </div>
+		        </div>
 
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <div className="rounded-2xl bg-[#0b1220]/55 ring-1 ring-white/10 px-3 py-3">
-              <div className="text-[11px] text-white/65">Carga emocional</div>
-              <div className="mt-2 text-lg font-semibold tracking-tight">
-                {cargaEmocional === null ? "—" : cargaEmocional.toFixed(1)}
-              </div>
-            </div>
-            <div className="rounded-2xl bg-[#0b1220]/55 ring-1 ring-white/10 px-3 py-3">
-              <div className="text-[11px] text-white/65">Estabilidad</div>
-              <div className="mt-2 text-lg font-semibold tracking-tight">
-                {estabilidadScore === null ? "—" : `${estabilidadScore}/10`}
-              </div>
-            </div>
-            <div className="rounded-2xl bg-[#0b1220]/55 ring-1 ring-white/10 px-3 py-3">
-              <div className="text-[11px] text-white/65">Silencio</div>
-              <div className="mt-2 text-lg font-semibold tracking-tight">—</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-xs tracking-[0.18em] text-white/60">TU RITMO RECIENTE</div>
-              <div className="mt-2 text-sm text-white/70">Estado emocional (7 días)</div>
-            </div>
-          </div>
-          {chartValues.dataPoints >= 2 ? (
-            <div className="mt-4 text-camel">
-              <MiniSparkline values={chartValues.values.map((v) => v ?? 0)} />
-            </div>
-          ) : null}
-          {chartValues.dataPoints >= 7 ? null : (
-            <div className={chartValues.dataPoints >= 2 ? "mt-3 text-sm text-white/70" : "mt-4 text-sm text-white/70"}>
-              Aún construyendo tu línea base.
-            </div>
-          )}
-        </div>
+	        <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
+	          <div className="flex items-center justify-between gap-4">
+		            <div>
+		              <div className="text-xs tracking-[0.18em] text-white/60">TU RITMO RECIENTE</div>
+		              <div className="mt-2 text-sm text-white/70">Índice de salud (7 días)</div>
+		            </div>
+		          </div>
+	          {metrics && metrics.chart.dataPoints >= 2 ? (
+	            <div className="mt-4 text-camel">
+	              <MiniSparkline values={metrics.chart.values.map((v) => v ?? 0)} />
+	            </div>
+	          ) : null}
+	          {metrics && metrics.chart.dataPoints >= 7 ? null : (
+	            <div className={metrics && metrics.chart.dataPoints >= 2 ? "mt-3 text-sm text-white/70" : "mt-4 text-sm text-white/70"}>
+	              Aún construyendo tu línea base.
+	            </div>
+	          )}
+	        </div>
 
         <div className="rounded-[26px] bg-white/10 ring-1 ring-white/10 backdrop-blur-xl px-5 py-5 text-white">
           <div className="text-xs tracking-[0.18em] text-white/60">PUERTAS</div>
@@ -586,7 +520,7 @@ export default function SesionPage() {
         </div>
       </Modal>
 
-      <Modal open={settingsOpen} title="Ajustes" description="Mínimo en Fase 1." onClose={() => setSettingsOpen(false)}>
+      <Modal open={cofreOpen} title="Cofre" description="Próximamente." onClose={() => setCofreOpen(false)}>
         <div className="text-sm text-outer-space/80">Próximamente.</div>
       </Modal>
 
@@ -604,6 +538,8 @@ export default function SesionPage() {
                   ? e.hecho
                   : e.source === "quick"
                     ? e.fact_line
+                    : e.source === "desahogo"
+                      ? e.text
                     : e.source === "puerta1_observacion"
                       ? e.fact_line
                       : "";

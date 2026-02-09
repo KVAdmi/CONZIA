@@ -30,12 +30,14 @@ export default function AppLayout() {
 
   const onboardingDone = getFlag(ONBOARDING_DONE_KEY);
   const registrationDone = Boolean(state.profile?.registrationDone);
+  const diagnosisDone = Boolean(state.profile?.radar_completed_at);
+  const phase2Ready = registrationDone && diagnosisDone;
 
   if (!onboardingDone && !pathname.startsWith("/onboarding")) {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (onboardingDone && !registrationDone && !pathname.startsWith("/registro") && !pathname.startsWith("/onboarding")) {
+  if (onboardingDone && !phase2Ready && !pathname.startsWith("/registro") && !pathname.startsWith("/onboarding")) {
     return <Navigate to="/registro" replace />;
   }
 
@@ -68,7 +70,12 @@ export default function AppLayout() {
     }
   }
 
-  const hideNav = pathname.startsWith("/onboarding") || pathname.startsWith("/registro");
+  const hideNav =
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/registro") ||
+    pathname.startsWith("/desahogo") ||
+    pathname.startsWith("/resultados") ||
+    pathname.startsWith("/crisis");
   const contentPaddingBottom = hideNav ? "pb-0" : "pb-[140px]";
 
   return (

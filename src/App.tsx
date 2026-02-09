@@ -11,6 +11,9 @@ import ConsultorioPage from "./pages/ConsultorioPage";
 import MesaPage from "./pages/MesaPage";
 import ProcesoPage from "./pages/ProcesoPage";
 import ObservacionPage from "./pages/ObservacionPage";
+import ResultadosPage from "./pages/ResultadosPage";
+import DesahogoPage from "./pages/DesahogoPage";
+import CrisisPage from "./pages/CrisisPage";
 
 export default function App() {
   return (
@@ -45,6 +48,9 @@ function AuthedApp() {
           <Route path="registro" element={<RegistroPage />} />
 
           <Route path="sesion" element={<SesionPage />} />
+          <Route path="resultados" element={<ResultadosPage />} />
+          <Route path="desahogo" element={<DesahogoPage />} />
+          <Route path="crisis" element={<CrisisPage />} />
           <Route path="observacion" element={<ObservacionPage />} />
           <Route path="consultorio" element={<ConsultorioPage />} />
           <Route path="mesa" element={<MesaPage />} />

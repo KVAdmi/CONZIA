@@ -158,7 +158,28 @@ export type ConziaSeedData = {
 
 export type DoorId = "sesion" | "observacion" | "consultorio" | "mesa" | "proceso";
 
-export type ConziaArchetype = "guerrero" | "sabio_rey" | "amante" | "mago";
+// Fase 2: patrones fijos en Inicio (ELAH-mode).
+export type ConziaPatternTag = "rumiacion" | "evitacion" | "aislamiento";
+
+export type ConziaShadowTrait = {
+  trait: string;
+  origin_probable: string;
+  status: "detected";
+};
+
+export type ConziaChatTurn = {
+  role: "user" | "conzia";
+  text: string;
+  ts: ISODateString; // datetime ISO
+};
+
+export type ConziaDoorSummary = {
+  hecho: string;
+  patron: ConziaPatternTag;
+  accion: string;
+};
+
+export type ConziaArchetype = "guerrero" | "rey" | "amante" | "mago";
 
 export type ConziaDrivingStyle = "Directo" | "Sobrio" | "Relacional" | "Reflexivo";
 
@@ -181,6 +202,12 @@ export type ConziaProfile = {
   arquetipo_secundario: ConziaArchetype;
   confianza: number;
   estilo_conduccion: ConziaDrivingStyle;
+  archetype_scores?: Partial<Record<ConziaArchetype, number>>;
+  dominant_archetype?: ConziaArchetype;
+  shadow_archetype?: ConziaArchetype;
+  shadow_traits?: ConziaShadowTrait[];
+  shadow_mirror_text?: string;
+  radar_completed_at?: ISODateString;
   registrationDone: true;
 };
 
@@ -235,13 +262,28 @@ export type ConziaTodayPlan = {
   mixed: boolean;
 };
 
-export type ConziaEntrySource = "consultorio" | "mesa" | "puerta1_observacion" | "quick";
+export type ConziaDesahogoEmotion = "ira" | "tristeza" | "culpa" | "miedo" | "ansiedad" | "vergüenza" | "otra";
+export type ConziaDesahogoRiskFlag = "none" | "watch" | "crisis";
+export type ConziaDesahogoRecommendedNext = "reto" | "consultorio" | "mesa" | "biblioteca";
+
+export type ConziaDesahogoAnalysis = {
+  emotion: ConziaDesahogoEmotion;
+  pattern_tag: string;
+  reflection: string;
+  question: string;
+  resistance_score: number; // 0-100
+  risk_flag: ConziaDesahogoRiskFlag;
+  recommended_next: ConziaDesahogoRecommendedNext;
+};
+
+export type ConziaTherapyEntrySource = "consultorio" | "mesa";
+export type ConziaEntrySource = ConziaTherapyEntrySource | "puerta1_observacion" | "quick" | "desahogo";
 
 export type ConziaTherapyEntry = {
   id: string;
   process_id: string;
   session_id: string;
-  source: ConziaEntrySource;
+  source: ConziaTherapyEntrySource;
   created_at: ISODateString; // datetime ISO
 };
 
@@ -271,6 +313,9 @@ export type ConziaEntry = (
       rol: string;
       peso: number; // 0–10
       repeticion_flag: RepeatSignal;
+      pattern_tag?: ConziaPatternTag;
+      transcript?: ConziaChatTurn[];
+      summary?: ConziaDoorSummary;
     })
   | ConziaObservationEntry
   | {
@@ -280,4 +325,30 @@ export type ConziaEntry = (
       fact_line: string;
       created_at: ISODateString; // datetime ISO
     }
+  | {
+      id: string;
+      process_id: string;
+      source: "desahogo";
+      text: string;
+      analysis: ConziaDesahogoAnalysis;
+      created_at: ISODateString; // datetime ISO
+    }
 );
+
+export type ConziaChallengeStatus = "active" | "completed" | "missed" | "expired";
+
+export type ConziaChallenge = {
+  id: string;
+  process_id: string;
+  created_at: ISODateString;
+  accepted_at: ISODateString;
+  due_at: ISODateString;
+  status: ConziaChallengeStatus;
+  card_title: string;
+  challenge_text: string;
+  shadow_archetype?: ConziaArchetype;
+  emotion?: ConziaDesahogoEmotion;
+  pattern_tag?: string;
+  evidence?: string;
+  closed_at?: ISODateString;
+};

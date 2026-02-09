@@ -34,7 +34,7 @@ export function conziaGuidanceProfile(input: {
     Pick<ConziaGuidanceProfile, "pace" | "defaultDoor" | "trap">
   > = {
     guerrero: { pace: "FAST", defaultDoor: "mesa", trap: "ACTION_WITHOUT_TRUTH" },
-    sabio_rey: { pace: "MEDIUM", defaultDoor: "consultorio", trap: "INFINITE_ANALYSIS" },
+    rey: { pace: "MEDIUM", defaultDoor: "consultorio", trap: "INFINITE_ANALYSIS" },
     amante: { pace: "MEDIUM_SLOW", defaultDoor: "consultorio", trap: "GUILT_PERFORMANCE" },
     mago: { pace: "VARIABLE", defaultDoor: "consultorio", trap: "PRETTY_INSIGHT" },
   };
@@ -53,4 +53,3 @@ export function todayPlanFromProfile(profile: ConziaGuidanceProfile): ConziaToda
     mixed: profile.mixed,
   };
 }
-

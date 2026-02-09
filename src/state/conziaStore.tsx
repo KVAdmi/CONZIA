@@ -2,7 +2,9 @@ import React, { createContext, useContext, useEffect, useMemo, useReducer, useRe
 import { loadSeedData } from "../data/seed";
 import type {
   CheckIn,
+  ConziaChallenge,
   ConziaEntry,
+  ConziaArchetype,
   ConziaProcess,
   ConziaProfile,
   Entry,
@@ -19,7 +21,7 @@ import type {
 
 type TruthFeedback = "me_sirve" | "no_me_sirve";
 
-const STORAGE_SCHEMA_VERSION = 1;
+const STORAGE_SCHEMA_VERSION = 2;
 
 type ConziaState = ConziaSeedData & {
   schemaVersion: number;
@@ -28,6 +30,7 @@ type ConziaState = ConziaSeedData & {
   processes: ConziaProcess[];
   sessions: ConziaSession[];
   entriesV1: ConziaEntry[];
+  challenges: ConziaChallenge[];
   activeDoor: DoorId | null;
   activeSessionId: string | null;
   activeProcessId: string | null;
@@ -45,19 +48,23 @@ type ConziaAction =
   | { type: "set_truth_feedback"; truthId: string; feedback: TruthFeedback }
   | { type: "reset_phase1" }
   | { type: "set_profile"; profile: ConziaProfile }
+  | { type: "update_profile"; patch: Partial<ConziaProfile> }
   | { type: "add_process"; process: ConziaProcess }
   | { type: "update_process"; processId: string; patch: Partial<ConziaProcess> }
   | { type: "set_active_process"; processId: string | null }
   | { type: "start_session"; session: ConziaSession }
   | { type: "close_session"; sessionId: string; closedAt: string }
-  | { type: "add_entry_v1"; entry: ConziaEntry };
+  | { type: "add_entry_v1"; entry: ConziaEntry }
+  | { type: "add_challenge"; challenge: ConziaChallenge }
+  | { type: "update_challenge"; challengeId: string; patch: Partial<ConziaChallenge> };
 
-type ConziaPersistedStateV1 = {
-  schemaVersion: 1;
+type ConziaPersistedStateV2 = {
+  schemaVersion: 2;
   profile: ConziaProfile | null;
   processes: ConziaProcess[];
   sessions: ConziaSession[];
   entriesV1: ConziaEntry[];
+  challenges: ConziaChallenge[];
   activeProcessId: string | null;
   activeSessionId: string | null;
   phase1Complete: boolean;
@@ -91,27 +98,61 @@ function migrateFriccionId(raw: unknown): ConziaFriccion {
   return "limites";
 }
 
-function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
+function migrateArchetypeId(raw: unknown): ConziaArchetype {
+  const v = typeof raw === "string" ? raw : "";
+  if (v === "guerrero" || v === "rey" || v === "amante" || v === "mago") return v;
+  if (v === "sabio_rey") return "rey";
+  return "guerrero";
+}
+
+function normalizePersisted(raw: unknown): ConziaPersistedStateV2 {
   if (!isRecord(raw)) {
     return {
-      schemaVersion: 1,
+      schemaVersion: 2,
       profile: null,
       processes: [],
       sessions: [],
       entriesV1: [],
+      challenges: [],
       activeProcessId: null,
       activeSessionId: null,
       phase1Complete: false,
     };
   }
 
-  const version = typeof raw.schemaVersion === "number" ? raw.schemaVersion : 0;
-
   // Migración simple: si no hay schemaVersion (o es desconocida), intentamos leer campos compatibles.
   const rawProfile = (isRecord(raw.profile) ? (raw.profile as ConziaProfile) : null) as ConziaProfile | null;
   const profile =
     rawProfile && isRecord(rawProfile)
-      ? ({ ...rawProfile, tema_base: migrateFriccionId((rawProfile as unknown as Record<string, unknown>).tema_base) } as ConziaProfile)
+      ? (() => {
+          const rec = rawProfile as unknown as Record<string, unknown>;
+          const dominantRaw = rec.dominant_archetype;
+          const shadowRaw = rec.shadow_archetype;
+          const scoresRaw = rec.archetype_scores;
+
+          const scores =
+            isRecord(scoresRaw) && Object.keys(scoresRaw).length
+              ? (Object.keys(scoresRaw) as Array<keyof typeof scoresRaw>).reduce(
+                  (acc, k) => {
+                    const v = (scoresRaw as Record<string, unknown>)[k as string];
+                    if (typeof v !== "number") return acc;
+                    acc[migrateArchetypeId(k)] = v;
+                    return acc;
+                  },
+                  {} as Partial<Record<ConziaArchetype, number>>,
+                )
+              : undefined;
+
+          return {
+            ...rawProfile,
+            tema_base: migrateFriccionId(rec.tema_base),
+            arquetipo_dominante: migrateArchetypeId(rec.arquetipo_dominante),
+            arquetipo_secundario: migrateArchetypeId(rec.arquetipo_secundario),
+            ...(typeof dominantRaw === "string" ? { dominant_archetype: migrateArchetypeId(dominantRaw) } : {}),
+            ...(typeof shadowRaw === "string" ? { shadow_archetype: migrateArchetypeId(shadowRaw) } : {}),
+            ...(scores ? { archetype_scores: scores } : {}),
+          } as ConziaProfile;
+        })()
       : rawProfile;
 
   const rawProcesses = (Array.isArray(raw.processes) ? (raw.processes as ConziaProcess[]) : []) as ConziaProcess[];
@@ -122,6 +163,7 @@ function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
   }) as ConziaProcess[];
   const sessions = (Array.isArray(raw.sessions) ? (raw.sessions as ConziaSession[]) : []) as ConziaSession[];
   const entriesV1 = (Array.isArray(raw.entriesV1) ? (raw.entriesV1 as ConziaEntry[]) : []) as ConziaEntry[];
+  const challenges = (Array.isArray(raw.challenges) ? (raw.challenges as ConziaChallenge[]) : []) as ConziaChallenge[];
   const activeProcessId = (typeof raw.activeProcessId === "string" ? raw.activeProcessId : null) as string | null;
   const activeSessionId = (typeof raw.activeSessionId === "string" ? raw.activeSessionId : null) as string | null;
   const rawPhase1Complete =
@@ -131,43 +173,32 @@ function normalizePersisted(raw: unknown): ConziaPersistedStateV1 {
     sessions.some((s) => s.closed && (s.door === "consultorio" || s.door === "mesa"));
   const phase1Complete = rawPhase1Complete ?? derivedPhase1Complete;
 
-  if (version === 1) {
-    return {
-      schemaVersion: 1,
-      profile,
-      processes,
-      sessions,
-      entriesV1,
-      activeProcessId,
-      activeSessionId,
-      phase1Complete,
-    };
-  }
-
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     profile,
     processes,
     sessions,
     entriesV1,
+    challenges,
     activeProcessId,
     activeSessionId,
     phase1Complete,
   };
 }
 
-function toPersistedState(state: ConziaState): ConziaPersistedStateV1 {
+function toPersistedState(state: ConziaState): ConziaPersistedStateV2 {
   const activeSession = state.activeSessionId
     ? state.sessions.find((s) => s.id === state.activeSessionId) ?? null
     : null;
   const openSessionId = activeSession && !activeSession.closed ? activeSession.id : null;
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     profile: state.profile,
     processes: state.processes,
     sessions: state.sessions,
     entriesV1: state.entriesV1,
+    challenges: state.challenges,
     activeProcessId: state.activeProcessId,
     // No persistimos activeDoor; y solo guardamos sessionId si está abierta.
     activeSessionId: openSessionId,
@@ -228,6 +259,7 @@ function reducer(state: ConziaState, action: ConziaAction): ConziaState {
         processes: [],
         sessions: [],
         entriesV1: [],
+        challenges: [],
         activeDoor: null,
         activeSessionId: null,
         activeProcessId: null,
@@ -235,6 +267,10 @@ function reducer(state: ConziaState, action: ConziaAction): ConziaState {
       };
     case "set_profile":
       return { ...state, profile: action.profile };
+    case "update_profile": {
+      if (!state.profile) return state;
+      return { ...state, profile: { ...state.profile, ...action.patch } };
+    }
     case "add_process": {
       const next = [action.process, ...state.processes];
       return {
@@ -279,6 +315,15 @@ function reducer(state: ConziaState, action: ConziaAction): ConziaState {
     }
     case "add_entry_v1":
       return { ...state, entriesV1: [action.entry, ...state.entriesV1] };
+    case "add_challenge":
+      return { ...state, challenges: [action.challenge, ...state.challenges] };
+    case "update_challenge": {
+      const idx = state.challenges.findIndex((c) => c.id === action.challengeId);
+      if (idx === -1) return state;
+      const next = [...state.challenges];
+      next[idx] = { ...next[idx], ...action.patch };
+      return { ...state, challenges: next };
+    }
     default:
       return state;
   }
@@ -305,6 +350,7 @@ function getInitialState(storageKey: string): ConziaState {
       processes: [],
       sessions: [],
       entriesV1: [],
+      challenges: [],
       activeDoor: null,
       activeSessionId: null,
       activeProcessId: null,
@@ -322,6 +368,7 @@ function getInitialState(storageKey: string): ConziaState {
       processes: persisted.processes,
       sessions: persisted.sessions,
       entriesV1: persisted.entriesV1,
+      challenges: persisted.challenges,
       activeProcessId: persisted.activeProcessId,
       activeSessionId: persisted.activeSessionId,
       phase1Complete: persisted.phase1Complete,
@@ -352,6 +399,7 @@ function getInitialState(storageKey: string): ConziaState {
       processes: [],
       sessions: [],
       entriesV1: [],
+      challenges: [],
       activeDoor: null,
       activeSessionId: null,
       activeProcessId: null,

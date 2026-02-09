@@ -1,6 +1,8 @@
 export { generateAlerts } from "./generateAlerts";
 export { classifyEntry } from "./classifyEntry";
 export { detectPatterns } from "./detectPatterns";
+export { analyzeDesahogo } from "./analyzeDesahogo";
+export { extractShadowTraits } from "./extractShadowTraits";
 export { generateMirrorStory } from "./generateMirrorStory";
 export { generateReading } from "./generateReading";
 export { generateReflection } from "./generateReflection";
