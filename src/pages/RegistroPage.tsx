@@ -39,13 +39,20 @@ export default function RegistroPage() {
     // Simulamos el proceso de registro y análisis
     setTimeout(() => {
       dispatch({ 
-        type: "SET_USER", 
-        payload: { 
-          id: "user_" + Math.random().toString(36).substr(2, 9), 
-          email, 
-          nombre, 
-          status: "inactivo",
-          registrationDone: true
+        type: "set_profile", 
+        profile: { 
+          alias: nombre,
+          email: email,
+          tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          country: "MX",
+          tema_base: "limites",
+          costo_dominante: "soledad",
+          arquetipo_dominante: "guerrero",
+          arquetipo_secundario: "mago",
+          confianza: 0,
+          estilo_conduccion: "Directo",
+          radar_completed_at: new Date().toISOString(),
+          registrationDone: true,
         } 
       });
       navigate("/pago");
