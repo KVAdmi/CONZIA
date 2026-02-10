@@ -5,27 +5,29 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Visor theme — confianza, armonía, premium sobrio (inspirado en referencia)
-        // Light: misty cream base + fog blues, plum accent, warm ink.
-        alabaster: "#EAE6DF", // app background (Misty Cream)
-        "mint-cream": "#F4F0EA", // rest surface
-        camel: "#7D5C6B", // accent (Muted Plum)
-        white: "#FFFFFF", // cards
-        gainsboro: "#D8D2C8", // borders/dividers (warm)
-        "morning-blue": "#6B7C87", // secondary text
-        "outer-space": "#1C1917", // primary ink (warm)
-
-        // Extras (opcional en UI nueva / charts)
-        chestnut: "#542919",
-        "clay-taupe": "#A39483",
-        "fog-blue": "#A8B5C1",
-        "muted-plum": "#7D5C6B",
+        // Paleta Oficial CONZIA
+        "conzia-dark": "#1E2A38",    // Azul Oscuro Profundo
+        "conzia-gray": "#3A4654",    // Gris Azulado
+        "conzia-muted": "#7F809D",   // Lavanda Muted
+        "conzia-light": "#F4F6F8",   // Gris Claro / Blanco
+        "camel": "#DDB273",          // Dorado / Camel (Acento)
+        
+        // Mantenemos compatibilidad con nombres anteriores si es necesario
+        "morning-blue": "#6B7C87",
+        "outer-space": "#1C1917",
+      },
+      backgroundImage: {
+        'conzia-gradient': 'linear-gradient(135deg, #F4F6F8 0%, #EAE6DF 100%)',
+        'conzia-dark-gradient': 'linear-gradient(135deg, #1E2A38 0%, #3A4654 100%)',
       },
       boxShadow: {
-        card: "0 22px 55px rgba(28, 25, 23, 0.10)",
+        card: "0 22px 55px rgba(30, 42, 56, 0.10)",
+        glass: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
       },
       borderRadius: {
-        xl: "0.9rem",
+        xl: "1rem",
+        "2xl": "1.5rem",
+        "3xl": "2rem",
       },
     },
   },

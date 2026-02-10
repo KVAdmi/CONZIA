@@ -1,109 +1,129 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Button from "../components/ui/Button";
+
+const slides = [
+  {
+    id: 1,
+    title: "Identificación",
+    description: "Descubre los arquetipos que rigen tu sombra y cómo influyen en tu vida diaria.",
+    icon: "🔍"
+  },
+  {
+    id: 2,
+    title: "Desahogo",
+    description: "Un espacio sagrado y seguro para liberar lo que callas y confrontar tu verdad.",
+    icon: "🗣️"
+  },
+  {
+    id: 3,
+    title: "Sanación",
+    description: "Un viaje de 90 días para integrar tu sombra y brillar con tu propia luz.",
+    icon: "✨"
+  }
+];
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const nextSlide = () => {
+    if (currentSlide < slides.length - 1) {
+      setCurrentSlide(currentSlide + 1);
+    } else {
+      navigate("/registro");
+    }
+  };
 
   return (
-    <div className="min-h-[100svh] flex flex-col items-center justify-between px-8 pb-12 pt-20 bg-[#0b1220] overflow-hidden relative">
-      {/* Elementos decorativos de fondo */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2 }}
-        className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-camel/10 rounded-full blur-[120px]" 
-      />
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2, delay: 0.5 }}
-        className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-white/5 rounded-full blur-[120px]" 
-      />
+    <div className="min-h-[100svh] flex flex-col items-center justify-between px-8 pb-12 pt-16 bg-conzia-light overflow-hidden relative">
+      {/* Fondo con degradado sutil */}
+      <div className="absolute inset-0 bg-conzia-gradient opacity-50" />
+      
+      {/* Elementos decorativos sutiles */}
+      <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-camel/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-[20%] left-[-10%] w-80 h-80 bg-conzia-muted/10 rounded-full blur-3xl" />
 
-      <div className="flex flex-col items-center z-10 w-full">
+      <div className="flex flex-col items-center z-10 w-full max-w-md">
+        {/* Logo Principal */}
         <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ 
-            type: "spring",
-            stiffness: 100,
-            damping: 20,
-            delay: 0.2 
-          }}
-          className="relative mb-12"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="mb-12"
         >
-          <div className="absolute inset-0 bg-white/5 rounded-full blur-3xl animate-pulse" />
           <img 
-            src="/logo.png" 
+            src="/brand/conzia-logo.png" 
             alt="CONZIA Logo" 
-            className="w-48 h-48 object-contain relative z-10 drop-shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+            className="w-40 h-auto object-contain drop-shadow-sm"
           />
         </motion.div>
-        
-        <motion.h1 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-5xl font-bold text-white tracking-[0.2em] text-center mb-4"
-        >
-          CONZIA
-        </motion.h1>
-        
-        <motion.div 
-          initial={{ width: 0 }}
-          animate={{ width: 48 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="h-1 bg-camel rounded-full mb-10" 
-        />
-        
-        <motion.p 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="text-white/70 text-center text-lg leading-relaxed max-w-xs font-light"
-        >
-          Bienvenido a tu santuario de introspección. Un viaje de 90 días hacia el corazón de tu sombra.
-        </motion.p>
+
+        {/* Carrusel de Slides */}
+        <div className="relative w-full min-h-[320px] flex flex-col items-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ x: 50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -50, opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="flex flex-col items-center text-center"
+            >
+              <div className="text-6xl mb-8 bg-white w-24 h-24 flex items-center justify-center rounded-3xl shadow-glass border border-white/50">
+                {slides[currentSlide].icon}
+              </div>
+              <h2 className="text-3xl font-bold text-conzia-dark mb-4 tracking-tight">
+                {slides[currentSlide].title}
+              </h2>
+              <p className="text-conzia-gray/80 text-lg leading-relaxed font-light px-4">
+                {slides[currentSlide].description}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Indicadores de Slide */}
+        <div className="flex gap-2 mt-8">
+          {slides.map((_, index) => (
+            <div 
+              key={index}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                index === currentSlide ? "w-8 bg-camel" : "w-2 bg-conzia-muted/30"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
-      <motion.div 
-        initial={{ y: 40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1.3 }}
-        className="w-full max-w-sm space-y-6 z-10"
-      >
+      {/* Botones de Acción */}
+      <div className="w-full max-w-sm space-y-6 z-10">
         <Button
           variant="primary"
-          className="w-full py-6 bg-camel hover:bg-camel/90 text-white font-semibold rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.4)] transition-all active:scale-[0.98] text-lg"
-          onClick={() => navigate("/registro")}
+          className="w-full py-5 bg-camel hover:bg-camel/90 text-white font-bold rounded-2xl shadow-lg shadow-camel/20 transition-all active:scale-[0.98] text-lg"
+          onClick={nextSlide}
         >
-          Comenzar mi viaje
+          {currentSlide === slides.length - 1 ? "Comenzar mi viaje" : "Siguiente"}
         </Button>
         
         <div className="text-center">
-          <p className="text-white/40 text-sm">
+          <p className="text-conzia-gray/50 text-sm font-medium">
             ¿Ya tienes una cuenta?{" "}
             <button 
               onClick={() => navigate("/login")}
-              className="text-white/80 hover:text-white font-medium underline underline-offset-8 transition-colors"
+              className="text-conzia-dark hover:text-camel font-bold transition-colors"
             >
               Inicia sesión
             </button>
           </p>
         </div>
-      </motion.div>
 
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.8 }}
-        className="z-10"
-      >
-        <p className="text-white/20 text-[10px] tracking-[0.3em] uppercase font-medium">
-          AI Cognitive Shadow Work · 2026
-        </p>
-      </motion.div>
+        <div className="pt-4 text-center">
+          <p className="text-conzia-muted/40 text-[10px] tracking-[0.3em] uppercase font-bold">
+            AI Cognitive Shadow Work · 2026
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
