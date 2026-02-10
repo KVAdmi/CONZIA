@@ -630,7 +630,7 @@ export default function RegistroPage() {
     });
     dispatch({ type: "set_active_process", processId });
 
-    navigate("/resultados", { replace: true });
+    navigate("/pago", { replace: true });
   }
 
   return (
