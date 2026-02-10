@@ -6,21 +6,31 @@ import Button from "../components/ui/Button";
 const slides = [
   {
     id: 1,
-    title: "Identificación",
-    description: "Descubre los arquetipos que rigen tu sombra y cómo influyen en tu vida diaria.",
-    icon: "🔍"
+    title: "Bienvenida a CONZIA",
+    description: "Este es un espacio privado, diseñado para acompañarte con claridad, cuidado y respeto.\n\nAquí no se te evalúa ni se te corrige.\nAquí se observa, se entiende y se avanza a tu ritmo.",
+    cta: "Continuar",
+    secondaryCta: "Omitir"
   },
   {
     id: 2,
-    title: "Desahogo",
-    description: "Un espacio sagrado y seguro para liberar lo que callas y confrontar tu verdad.",
-    icon: "🗣️"
+    title: "¿Qué es CONZIA?",
+    description: "CONZIA no reemplaza a un terapeuta ni te da diagnósticos.\n\nEs una herramienta de observación personal que te ayuda a reconocer patrones, estados y decisiones internas.\n\nNo busca respuestas rápidas. Busca comprensión sostenible.",
+    cta: "Entiendo, continuar",
+    secondaryCta: "Omitir"
   },
   {
     id: 3,
-    title: "Sanación",
-    description: "Un viaje de 90 días para integrar tu sombra y brillar con tu propia luz.",
-    icon: "✨"
+    title: "¿Cómo funciona?",
+    description: "A través de ejercicios breves y momentos de reflexión, CONZIA identifica dinámicas internas que suelen pasar desapercibidas.\n\nNo hay respuestas correctas. No hay prisa.\nSolo información útil para ti.",
+    cta: "Continuar",
+    secondaryCta: "Omitir"
+  },
+  {
+    id: 4,
+    title: "Tú tienes el control",
+    description: "Puedes pausar, omitir o retomar cuando lo necesites.\n\nNada se activa sin tu decisión. Nada se muestra sin tu permiso.\n\nEste espacio es tuyo.",
+    cta: "Entrar a CONZIA",
+    secondaryCta: "Omitir y entrar"
   }
 ];
 
@@ -32,95 +42,91 @@ export default function OnboardingPage() {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
-      navigate("/registro");
+      navigate("/login");
     }
+  };
+
+  const skipOnboarding = () => {
+    navigate("/login");
   };
 
   return (
     <div className="min-h-[100svh] flex flex-col items-center justify-between px-8 pb-12 pt-16 bg-conzia-light overflow-hidden relative">
-      {/* Fondo con degradado sutil */}
-      <div className="absolute inset-0 bg-conzia-gradient opacity-50" />
+      {/* Fondo con degradado sutil y profesional */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-[#F4F6F8] to-[#F4F6F8] opacity-100" />
       
-      {/* Elementos decorativos sutiles */}
-      <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-camel/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-[20%] left-[-10%] w-80 h-80 bg-conzia-muted/10 rounded-full blur-3xl" />
+      {/* Elementos decorativos sutiles para transmitir paz */}
+      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-camel/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[10%] left-[-10%] w-80 h-80 bg-conzia-muted/5 rounded-full blur-[100px]" />
 
       <div className="flex flex-col items-center z-10 w-full max-w-md">
-        {/* Logo Principal */}
+        {/* Logo Principal - Sutil y Profesional */}
         <motion.div 
-          initial={{ y: -20, opacity: 0 }}
+          initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="mb-12"
+          className="mb-16"
         >
           <img 
             src="/brand/conzia-logo.png" 
             alt="CONZIA Logo" 
-            className="w-40 h-auto object-contain drop-shadow-sm"
+            className="w-32 h-auto object-contain opacity-90"
           />
         </motion.div>
 
         {/* Carrusel de Slides */}
-        <div className="relative w-full min-h-[320px] flex flex-col items-center">
+        <div className="relative w-full min-h-[380px] flex flex-col items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
-              initial={{ x: 50, opacity: 0 }}
+              initial={{ x: 20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -50, opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+              exit={{ x: -20, opacity: 0 }}
+              transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
               className="flex flex-col items-center text-center"
             >
-              <div className="text-6xl mb-8 bg-white w-24 h-24 flex items-center justify-center rounded-3xl shadow-glass border border-white/50">
-                {slides[currentSlide].icon}
-              </div>
-              <h2 className="text-3xl font-bold text-conzia-dark mb-4 tracking-tight">
+              <h2 className="text-2xl font-bold text-conzia-dark mb-8 tracking-tight">
                 {slides[currentSlide].title}
               </h2>
-              <p className="text-conzia-gray/80 text-lg leading-relaxed font-light px-4">
+              <div className="text-conzia-gray/80 text-base leading-relaxed font-light px-2 whitespace-pre-line">
                 {slides[currentSlide].description}
-              </p>
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* Indicadores de Slide */}
-        <div className="flex gap-2 mt-8">
+        {/* Indicadores de Slide - Minimalistas */}
+        <div className="flex gap-2.5 mt-4">
           {slides.map((_, index) => (
             <div 
               key={index}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                index === currentSlide ? "w-8 bg-camel" : "w-2 bg-conzia-muted/30"
+              className={`h-1 rounded-full transition-all duration-500 ${
+                index === currentSlide ? "w-6 bg-camel" : "w-1.5 bg-conzia-muted/20"
               }`}
             />
           ))}
         </div>
       </div>
 
-      {/* Botones de Acción */}
-      <div className="w-full max-w-sm space-y-6 z-10">
+      {/* Botones de Acción - Claros y Amorosos */}
+      <div className="w-full max-w-sm space-y-4 z-10">
         <Button
           variant="primary"
-          className="w-full py-5 bg-camel hover:bg-camel/90 text-white font-bold rounded-2xl shadow-lg shadow-camel/20 transition-all active:scale-[0.98] text-lg"
+          className="w-full py-4.5 bg-camel hover:bg-camel/90 text-white font-bold rounded-2xl shadow-lg shadow-camel/10 transition-all active:scale-[0.99] text-base"
           onClick={nextSlide}
         >
-          {currentSlide === slides.length - 1 ? "Comenzar mi viaje" : "Siguiente"}
+          {slides[currentSlide].cta}
         </Button>
         
-        <div className="text-center">
-          <p className="text-conzia-gray/50 text-sm font-medium">
-            ¿Ya tienes una cuenta?{" "}
-            <button 
-              onClick={() => navigate("/login")}
-              className="text-conzia-dark hover:text-camel font-bold transition-colors"
-            >
-              Inicia sesión
-            </button>
-          </p>
-        </div>
+        <button 
+          onClick={skipOnboarding}
+          className="w-full py-2 text-conzia-muted/60 hover:text-conzia-dark text-sm font-medium transition-colors"
+        >
+          {slides[currentSlide].secondaryCta}
+        </button>
 
-        <div className="pt-4 text-center">
-          <p className="text-conzia-muted/40 text-[10px] tracking-[0.3em] uppercase font-bold">
-            AI Cognitive Shadow Work · 2026
+        <div className="pt-8 text-center">
+          <p className="text-conzia-muted/30 text-[9px] tracking-[0.4em] uppercase font-bold">
+            Acompañamiento Consciente · 2026
           </p>
         </div>
       </div>
