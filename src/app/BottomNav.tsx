@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { DoorClosed, DoorOpen } from "lucide-react";
+import { DoorClosed, DoorOpen, MessageSquare, Moon, Home } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "../utils/cn";
 import { useConzia } from "../state/conziaStore";
@@ -8,13 +8,14 @@ import { toISODateOnly } from "../utils/dates";
 type Item = {
   to: string;
   label: string;
+  icon: any;
 };
 
 const ITEMS: Item[] = [
-  { to: "/sesion", label: "Inicio" },
-  { to: "/consultorio", label: "Consultorio" },
-  { to: "/mesa", label: "Mesa" },
-  { to: "/proceso", label: "Proceso" },
+  { to: "/sesion", label: "Inicio", icon: Home },
+  { to: "/desahogo", label: "Desahogo", icon: MessageSquare },
+  { to: "/suenos", label: "Sueños", icon: Moon },
+  { to: "/consultorio", label: "Consultorio", icon: DoorClosed },
 ];
 
 export default function BottomNav() {
@@ -59,7 +60,7 @@ export default function BottomNav() {
       ) : null}
       <div className="mx-auto flex items-end justify-between rounded-[30px] bg-[#0b1220]/75 backdrop-blur-md ring-1 ring-white/10 px-3 py-3">
         {ITEMS.map((item) => {
-          const blockedByDoor = Boolean(state.activeDoor && item.to !== `/${state.activeDoor}`);
+          const blockedByDoor = Boolean(state.activeDoor && item.to !== `/${state.activeDoor}` && (item.to === "/consultorio" || item.to === "/mesa" || item.to === "/proceso"));
           const blockedByObservation = !observationDoneToday && (item.to === "/consultorio" || item.to === "/mesa" || item.to === "/proceso");
           const isBlocked = blockedByDoor || blockedByObservation;
 
@@ -87,7 +88,7 @@ export default function BottomNav() {
               }
             >
               {({ isActive }) => {
-                const Icon = isActive ? DoorOpen : DoorClosed;
+                const Icon = item.to === "/consultorio" && isActive ? DoorOpen : item.icon;
                 return (
                   <>
                     <div

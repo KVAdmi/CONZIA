@@ -14,6 +14,7 @@ import ObservacionPage from "./pages/ObservacionPage";
 import ResultadosPage from "./pages/ResultadosPage";
 import DesahogoPage from "./pages/DesahogoPage";
 import CrisisPage from "./pages/CrisisPage";
+import SuenosPage from "./pages/SuenosPage";
 
 export default function App() {
   return (
@@ -50,6 +51,7 @@ function AuthedApp() {
           <Route path="sesion" element={<SesionPage />} />
           <Route path="resultados" element={<ResultadosPage />} />
           <Route path="desahogo" element={<DesahogoPage />} />
+          <Route path="suenos" element={<SuenosPage />} />
           <Route path="crisis" element={<CrisisPage />} />
           <Route path="observacion" element={<ObservacionPage />} />
           <Route path="consultorio" element={<ConsultorioPage />} />

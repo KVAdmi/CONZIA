@@ -1,4 +1,4 @@
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Sparkles, Mic, MicOff } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
@@ -110,6 +110,7 @@ export default function DesahogoPage() {
   const [aiBusy, setAiBusy] = useState(false);
   const [challengeRevealed, setChallengeRevealed] = useState(false);
   const [challengeAccepted, setChallengeAccepted] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
     if (!draftKey) return;
@@ -318,6 +319,18 @@ export default function DesahogoPage() {
     );
   }
 
+  async function toggleRecording() {
+    if (isRecording) {
+      setIsRecording(false);
+      // Aquí se detendría la grabación y se enviaría a Deepgram
+      setStatus("Procesando audio...");
+      setTimeout(() => setStatus(null), 2000);
+    } else {
+      setIsRecording(true);
+      setStatus("Escuchando tu sombra...");
+    }
+  }
+
   return (
     <div className="min-h-[100svh] px-6 pb-10 pt-12">
       <div className="flex items-center justify-between gap-3">
@@ -362,7 +375,16 @@ export default function DesahogoPage() {
 
         {status ? <div className="mt-3 text-xs text-white/70">{status}</div> : null}
 
-        <div className="mt-5 flex items-center justify-end">
+        <div className="mt-5 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={toggleRecording}
+            className={`p-3 rounded-full transition-all ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-white/10 hover:bg-white/20'}`}
+            disabled={aiBusy}
+          >
+            {isRecording ? <MicOff className="h-5 w-5 text-white" /> : <Mic className="h-5 w-5 text-white" />}
+          </button>
+
           <button
             type="button"
             onClick={entregar}

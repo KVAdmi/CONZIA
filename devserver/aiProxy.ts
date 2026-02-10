@@ -519,6 +519,50 @@ export function conziaAiProxyPlugin(config: AiProxyConfig): Plugin {
           }
         }
 
+        if (method === "POST" && url.startsWith("/api/ai/dream-analysis")) {
+          if (!config.anthropicApiKey) {
+            return sendJson(res, 503, { ok: false, error: "AI proxy no configurado." });
+          }
+
+          try {
+            const body = (await readJson(req)) as any;
+            const text = body?.text;
+
+            // 1. Interpretación con Claude
+            const system = [
+              SYSTEM_PROMPTS.default,
+              "Eres un experto en análisis de sueños junguiano.",
+              "Devuelve SOLO JSON con esta forma:",
+              '{ "interpretation": "...", "symbols": ["..."], "visual_prompt": "..." }',
+              "visual_prompt debe ser una descripción en INGLÉS para Stability AI, estilo surrealista, oscuro, cinematográfico.",
+            ].join("\n");
+
+            const aiResponse = await callAnthropic({
+              apiKey: config.anthropicApiKey,
+              model: config.anthropicModel,
+              system,
+              userText: `Analiza este sueño: "${text}"`,
+            });
+
+            const analysis = extractJsonObject(aiResponse) as any;
+
+            // 2. Generación de imagen con Stability AI (Simulado o Real si hay API Key)
+            // Por ahora devolvemos una imagen de placeholder o preparamos el hook
+            const imageUrl = `https://pollinations.ai/p/${encodeURIComponent(analysis.visual_prompt)}?width=1024&height=1024&seed=42&model=flux`;
+
+            return sendJson(res, 200, {
+              ok: true,
+              analysis: {
+                ...analysis,
+                imageUrl
+              }
+            });
+          } catch (err) {
+            const message = err instanceof Error ? err.message : "Error desconocido";
+            return sendJson(res, 500, { ok: false, error: message });
+          }
+        }
+
         return next();
       });
     },
