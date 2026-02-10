@@ -2,7 +2,7 @@ import type { ConziaDesahogoAnalysis, ConziaDesahogoEmotion } from "../../types/
 import { inferPatternTag } from "../../ai/responseComposer";
 
 type AiDesahogoResponse =
-  | { ok: true; analysis: ConziaDesahogoAnalysis }
+  | { ok: true; reading: { content: ConziaDesahogoAnalysis } }
   | { ok: false; error: string };
 
 function normalize(value: string): string {
@@ -136,24 +136,36 @@ function buildFallbackAnalysis(text: string): ConziaDesahogoAnalysis {
   };
 }
 
-async function requestDesahogoFromProxy(params: { text: string }): Promise<ConziaDesahogoAnalysis> {
-  const resp = await fetch("/api/ai/desahogo", {
+async function requestDesahogoFromProxy(params: { text: string, month?: number }): Promise<ConziaDesahogoAnalysis> {
+  const resp = await fetch("/api/ai/reflection", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ text: params.text }),
+    body: JSON.stringify({ 
+      entry: { id: "temp", text: params.text, date: new Date().toISOString() },
+      month: params.month ?? 1
+    }),
   });
 
-  const json = (await resp.json().catch(() => null)) as AiDesahogoResponse | null;
+  const json = (await resp.json().catch(() => null)) as any;
   if (!resp.ok || !json) throw new Error(`Proxy IA: HTTP ${resp.status}`);
   if (!json.ok) throw new Error(json.error);
-  return json.analysis;
+  
+  const content = json.reading.content;
+  return {
+    emotion: emotionFromText(params.text),
+    pattern_tag: content.patron || patternTagFromText(params.text),
+    reflection: content.loQueVeo || content.contencion,
+    question: content.pregunta,
+    resistance_score: resistanceScoreFromText(params.text),
+    risk_flag: riskFlagFromText(params.text),
+    recommended_next: "reto"
+  };
 }
 
-export async function analyzeDesahogo(params: { text: string }): Promise<ConziaDesahogoAnalysis> {
+export async function analyzeDesahogo(params: { text: string, month?: number }): Promise<ConziaDesahogoAnalysis> {
   try {
-    return await requestDesahogoFromProxy({ text: params.text });
+    return await requestDesahogoFromProxy(params);
   } catch {
     return buildFallbackAnalysis(params.text);
   }
 }
-

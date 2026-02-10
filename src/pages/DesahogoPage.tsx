@@ -21,13 +21,16 @@ function buildChallenge(params: {
   shadowArchetype: ConziaArchetype;
   emotion: ConziaDesahogoAnalysis["emotion"];
   pattern_tag: string;
-  phase: 1 | 2 | 3;
+  phase: number;
 }): { card_title: string; challenge_text: string } {
   const { shadowArchetype, phase } = params;
   const prefix = "La Carta del Destino";
 
-  if (phase !== 1) {
-    return { card_title: prefix, challenge_text: "Próximamente: retos de diálogo e integración (Mes 2 y 3)." };
+  if (phase === 2) {
+    return { card_title: prefix, challenge_text: "Fase de Elucidación: Hoy cuestiona una verdad que te has contado por años. ¿Qué pasaría si fuera mentira?" };
+  }
+  if (phase === 3) {
+    return { card_title: prefix, challenge_text: "Fase de Integración: Hoy actúa desde tu sombra. Si eres complaciente, di que no. Si eres duro, muestra ternura." };
   }
 
   if (shadowArchetype === "guerrero") {
@@ -80,6 +83,8 @@ export default function DesahogoPage() {
     const a = state.profile?.shadow_archetype;
     return a ?? "guerrero";
   }, [state.profile?.shadow_archetype]);
+
+  const month = state.profile?.current_month || 1;
 
   const activeChallenge = useMemo(() => {
     if (!process) return null;
@@ -182,7 +187,7 @@ export default function DesahogoPage() {
     setChallengeAccepted(false);
 
     try {
-      const a = await analyzeDesahogo({ text: clean });
+      const a = await analyzeDesahogo({ text: clean, month });
       const nowISO = new Date().toISOString();
       dispatch({
         type: "add_entry_v1",
@@ -218,9 +223,9 @@ export default function DesahogoPage() {
       shadowArchetype,
       emotion: analysis.emotion,
       pattern_tag: analysis.pattern_tag,
-      phase: 1,
+      phase: month,
     });
-  }, [analysis, shadowArchetype]);
+  }, [analysis, shadowArchetype, month]);
 
   function aceptarReto() {
     if (!process || !analysis || !draftChallenge) return;
@@ -379,20 +384,6 @@ export default function DesahogoPage() {
               </div>
             ) : null}
 
-            {analysis.risk_flag === "crisis" ? (
-              <div className="mt-5 rounded-2xl bg-white/10 ring-1 ring-white/10 px-4 py-4">
-                <div className="text-sm font-semibold">Primero: contención.</div>
-                <div className="mt-2 text-sm text-white/75">
-                  Si estás en riesgo o te sientes fuera de control, entra a Sala ahora.
-                </div>
-                <div className="mt-4">
-                  <Button variant="primary" onClick={() => navigate("/crisis")} type="button">
-                    IR A SALA (CRISIS)
-                  </Button>
-                </div>
-              </div>
-            ) : null}
-
             {draftChallenge ? (
               <div className="mt-6">
                 <div className="text-[11px] tracking-[0.18em] text-white/55">RETO 24H</div>
@@ -419,25 +410,23 @@ export default function DesahogoPage() {
                   {challengeRevealed ? (
                     <div className="mt-4 text-sm text-white/80 whitespace-pre-line">{draftChallenge.challenge_text}</div>
                   ) : (
-                    <div className="mt-4 text-sm text-white/70">
-                      No lo leas como motivación. Léelo como diagnóstico.
-                    </div>
+                    <div className="mt-4 h-12 w-full rounded-xl bg-white/5 animate-pulse" />
                   )}
                 </div>
 
-                <div className="mt-4 flex flex-col gap-2">
-                  <Button
-                    variant="primary"
-                    disabled={!challengeRevealed || challengeAccepted}
-                    onClick={aceptarReto}
-                    type="button"
-                  >
-                    {challengeAccepted ? "Reto aceptado" : "ACEPTO EL RETO"}
-                  </Button>
-                  <Button onClick={() => navigate("/sesion")} type="button">
-                    Volver al inicio
-                  </Button>
-                </div>
+                {challengeRevealed && !challengeAccepted ? (
+                  <div className="mt-5">
+                    <Button variant="primary" onClick={aceptarReto} type="button" className="w-full">
+                      Aceptar reto
+                    </Button>
+                  </div>
+                ) : null}
+
+                {challengeAccepted ? (
+                  <div className="mt-5 rounded-2xl bg-white/10 ring-1 ring-white/10 px-4 py-3 text-center text-sm">
+                    Reto aceptado. Tienes 24h.
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>
@@ -446,4 +435,3 @@ export default function DesahogoPage() {
     </div>
   );
 }
-

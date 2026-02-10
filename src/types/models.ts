@@ -43,10 +43,7 @@ export type Entry = {
   tags: string[];
   linkedIntentionId?: string;
   repeatSignal?: RepeatSignal;
-  // Marca de UX: el usuario eligió guardar sin lectura inmediata.
-  // No es “contenido clínico”; solo una señal de ritual.
   silenceMode?: boolean;
-  // Referencia opcional a una práctica (shadow work) sugerida por el sistema.
   practiceId?: string;
 };
 
@@ -158,13 +155,12 @@ export type ConziaSeedData = {
 
 export type DoorId = "sesion" | "observacion" | "consultorio" | "mesa" | "proceso";
 
-// Fase 2: patrones fijos en Inicio (ELAH-mode).
 export type ConziaPatternTag = "rumiacion" | "evitacion" | "aislamiento";
 
 export type ConziaShadowTrait = {
   trait: string;
   origin_probable: string;
-  status: "detected";
+  status: "detected" | "integrated";
 };
 
 export type ConziaChatTurn = {
@@ -189,7 +185,8 @@ export type ConziaFriccion =
   | "control"
   | "verguenza"
   | "dependencia"
-  | "autoengano";
+  | "autoengano"
+  | "arquetipos";
 
 export type ConziaProfile = {
   alias: string;
@@ -209,6 +206,7 @@ export type ConziaProfile = {
   shadow_mirror_text?: string;
   radar_completed_at?: ISODateString;
   registrationDone: true;
+  current_month?: number;
 };
 
 export type ConziaProcessStatus = "open" | "closed";
@@ -241,7 +239,7 @@ export type ConziaTrap =
 
 export type ConziaPace = "FAST" | "MEDIUM" | "MEDIUM_SLOW" | "VARIABLE";
 
-export type ConziaRecommendedDoor = "mesa" | "consultorio";
+export type ConziaRecommendedDoor = "mesa" | "consultorio" | "observacion" | "proceso";
 
 export type ConziaGuidanceProfile = {
   maxTurns: 3;
@@ -251,6 +249,7 @@ export type ConziaGuidanceProfile = {
   defaultDoor: ConziaRecommendedDoor;
   trap: ConziaTrap;
   mixed: boolean;
+  currentMonth?: number;
 };
 
 export type ConziaTodayPlan = {

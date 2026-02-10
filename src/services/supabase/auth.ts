@@ -55,7 +55,7 @@ async function parseJson(res: Response): Promise<unknown> {
 }
 
 function errorMessage(payload: unknown): string {
-  if (!payload || typeof payload !== "object") return "Error al conectar con Supabase.";
+  if (!payload || typeof payload !== "object") return "Error desconocido.";
   const rec = payload as Record<string, unknown>;
   const candidates = [
     rec.error_description,
@@ -63,20 +63,7 @@ function errorMessage(payload: unknown): string {
     rec.message,
     rec.msg,
   ].filter((x) => typeof x === "string") as string[];
-  
-  const msg = candidates[0] ?? "Error de autenticación en Supabase.";
-  
-  // Detectar rate limiting específicamente
-  if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {
-    return "Demasiados intentos. Espera 1 minuto y vuelve a intentar.";
-  }
-  
-  // Detectar email duplicado
-  if (msg.toLowerCase().includes("already registered") || msg.toLowerCase().includes("already exists")) {
-    return "Este correo ya está registrado. Intenta iniciar sesión.";
-  }
-  
-  return msg;
+  return candidates[0] ?? "Error desconocido.";
 }
 
 async function post<T>(path: string, body: unknown, opts?: { accessToken?: string }): Promise<ApiOk<T> | ApiErr> {
@@ -97,19 +84,12 @@ async function post<T>(path: string, body: unknown, opts?: { accessToken?: strin
       body: JSON.stringify(body),
     });
   } catch {
-    return { ok: false, error: { message: "No se pudo conectar con Supabase. Verifica tu conexión a internet." } };
+    return { ok: false, error: { message: "No se pudo conectar a Supabase. Puedes continuar sin cuenta." } };
   }
 
   const payload = await parseJson(res);
   if (!res.ok) {
-    // Rate limiting específico (429)
-    if (res.status === 429) {
-      return { ok: false, error: { message: "⏱️ Demasiados intentos. Espera 60 segundos y vuelve a intentar.", status: 429 } };
-    }
-    // Otros errores
-    const errorMsg = errorMessage(payload);
-    console.error('[Supabase Auth Error]', { status: res.status, payload, errorMsg });
-    return { ok: false, error: { message: errorMsg, status: res.status } };
+    return { ok: false, error: { message: errorMessage(payload), status: res.status } };
   }
   return { ok: true, data: payload as T };
 }
@@ -131,10 +111,6 @@ async function postNoBody(path: string, opts?: { accessToken?: string }): Promis
   }
   if (!res.ok) {
     const payload = await parseJson(res);
-    // Rate limiting específico (429)
-    if (res.status === 429) {
-      return { ok: false, error: { message: "Demasiados intentos. Espera 1 minuto antes de volver a intentar.", status: 429 } };
-    }
     return { ok: false, error: { message: errorMessage(payload), status: res.status } };
   }
   return { ok: true, data: null };

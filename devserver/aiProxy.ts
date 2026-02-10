@@ -179,6 +179,33 @@ async function callAnthropic(params: {
   return text;
 }
 
+// System Prompts por Mes
+const SYSTEM_PROMPTS = {
+  mes1: [
+    "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
+    "Fase: CATARSIS (Mes 1). Tono: sereno, profesional y profundamente observador.",
+    "Tu misión: Identificar proyecciones y mecanismos de defensa. No interrumpas el flujo emocional.",
+    "No diagnostiques, no etiquetes clínicamente. Devuelve SOLO JSON.",
+  ].join("\n"),
+  mes2: [
+    "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
+    "Fase: ELUCIDACIÓN (Mes 2). Tono: directo, analítico y confrontativo.",
+    "Tu misión: Desmantelar la máscara del usuario. Cuestiona las contradicciones.",
+    "No diagnostiques, no etiquetes clínicamente. Devuelve SOLO JSON.",
+  ].join("\n"),
+  mes3: [
+    "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
+    "Fase: INTEGRACIÓN (Mes 3). Tono: empoderador, práctico y orientado a la realidad.",
+    "Tu misión: Integrar la energía de la sombra en la personalidad consciente.",
+    "No diagnostiques, no etiquetes clínicamente. Devuelve SOLO JSON.",
+  ].join("\n"),
+  default: [
+    "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
+    "Tono: sobrio, firme, amoroso pero crudo. Sin emojis. Sin clichés.",
+    "No diagnostiques, no etiquetes clínicamente. Devuelve SOLO JSON.",
+  ].join("\n")
+};
+
 export function conziaAiProxyPlugin(config: AiProxyConfig): Plugin {
   return {
     name: "conzia-ai-proxy",
@@ -209,6 +236,7 @@ export function conziaAiProxyPlugin(config: AiProxyConfig): Plugin {
             const patterns = (body?.patterns as Pattern[] | undefined) ?? [];
             const entries = (body?.entries as Entry[] | undefined) ?? [];
             const todayISO = (body?.todayISO as string | undefined) ?? entry?.date ?? "";
+            const month = body?.month ?? 1;
 
             if (!entry || !entry.id || !entry.text) {
               return sendJson(res, 400, { ok: false, error: "Body inválido: falta entry." });
@@ -219,11 +247,9 @@ export function conziaAiProxyPlugin(config: AiProxyConfig): Plugin {
             const patternId = inferPatternId(entry, patterns);
             const patternName = patternId ? patterns.find((p) => p.id === patternId)?.name : undefined;
 
+            const baseSystem = month === 1 ? SYSTEM_PROMPTS.mes1 : month === 2 ? SYSTEM_PROMPTS.mes2 : month === 3 ? SYSTEM_PROMPTS.mes3 : SYSTEM_PROMPTS.default;
             const system = [
-              "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
-              "Tono: sobrio, firme, amoroso pero crudo. Sin emojis. Sin clichés. Sin motivación barata.",
-              "No diagnostiques, no etiquetes clínicamente, no prometas terapia ni curación.",
-              "No inventes hechos: solo puedes afirmar lo que esté en la evidencia enviada.",
+              baseSystem,
               "Devuelve SOLO JSON válido (sin markdown) con esta forma:",
               '{ "contencion": "...", "loQueVeo": "...", "patron": "... (opcional)", "loQueEvitas": "...", "pregunta": "...", "accionMinima": "... (opcional)" }',
               "Cada campo debe ser 1–3 frases máximo. Directo. Adulto.",
@@ -284,27 +310,24 @@ export function conziaAiProxyPlugin(config: AiProxyConfig): Plugin {
             const body = (await readJson(req)) as any;
             const entry = body?.entry as Entry | undefined;
             const todayISO = (body?.todayISO as string | undefined) ?? entry?.date ?? "";
+            const month = body?.month ?? 1;
 
             if (!entry || !entry.id || !entry.text) {
               return sendJson(res, 400, { ok: false, error: "Body inválido: falta entry." });
             }
 
+            const baseSystem = month === 1 ? SYSTEM_PROMPTS.mes1 : month === 2 ? SYSTEM_PROMPTS.mes2 : month === 3 ? SYSTEM_PROMPTS.mes3 : SYSTEM_PROMPTS.default;
             const system = [
-              "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
-              "Tono: sobrio, claro, sin juicio. Amoroso pero no cómplice. Sin emojis. Sin clichés.",
+              baseSystem,
               "Esto es un REFLEJO BREVE después de escritura libre (no es análisis, no es dashboard, no es diagnóstico).",
-              "No uses las palabras: patrón, diagnóstico, frecuencia, indicador, métrica, score, KPI, clínico.",
-              "No des instrucciones largas. No des listas. No des ‘tareas’.",
-              "No inventes hechos: solo puedes basarte en el texto enviado.",
-              "",
               "Devuelve SOLO JSON válido (sin markdown) con esta forma:",
               '{ "contencion": "...", "loQueVeo": "...", "loQueEvitas": "...", "pregunta": "..." }',
               "",
               "Reglas:",
-              "- contencion: 1 frase que baja defensas (sin motivación barata).",
-              "- loQueVeo: 1–2 frases que nombren lo que aparece (emociones/tono/contradicción) sin etiquetar.",
-              "- loQueEvitas: 1 frase sobre lo que está debajo (sin acusar).",
-              "- pregunta: 1 pregunta abierta que invite a integrar (no corregir).",
+              "- contencion: 1 frase que baja defensas.",
+              "- loQueVeo: 1–2 frases que nombren lo que aparece.",
+              "- loQueEvitas: 1 frase sobre lo que está debajo.",
+              "- pregunta: 1 pregunta abierta que invite a integrar.",
             ].join("\n");
 
             const userText = [
@@ -371,22 +394,10 @@ export function conziaAiProxyPlugin(config: AiProxyConfig): Plugin {
             }
 
             const system = [
-              "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
-              "Tono: sobrio, firme, amoroso pero crudo. Sin emojis. Sin clichés. Sin motivación barata.",
-              "No diagnostiques, no etiquetes clínicamente, no prometas terapia ni curación.",
-              "No inventes datos: solo puedes afirmar lo que esté en el resumen del test y las señales.",
-              "",
+              SYSTEM_PROMPTS.default,
               "Estás generando una lectura a partir de un test de comportamiento.",
               "Devuelve SOLO JSON válido (sin markdown) con esta forma:",
               '{ "contencion": "...", "loQueVeo": "...", "patron": "... (opcional)", "loQueEvitas": "...", "pregunta": "...", "accionMinima": "... (opcional)" }',
-              "",
-              "Reglas de formato:",
-              "- contencion es el contenido del bloque “Esto sugiere” (no escribas el encabezado) y debe ser 1–2 frases.",
-              "- loQueVeo debe ser la base del test: tema + severidad + 2–3 señales (si existen).",
-              "- patron: usa el patrón sugerido si existe; si no, omítelo.",
-              "- loQueEvitas: 1 frase directa.",
-              "- pregunta: 1 pregunta abierta (sin juicio).",
-              "- accionMinima: 1 acción mínima concreta (opcional pero preferible).",
             ].join("\n");
 
             const signalsLines = signals
@@ -464,9 +475,7 @@ export function conziaAiProxyPlugin(config: AiProxyConfig): Plugin {
             const basedOnEntryIds = evidence.map((e) => e.id).filter(Boolean).slice(0, 8);
 
             const system = [
-              "Eres CONZIA: un sistema de acompañamiento consciente. Hablas en español MX.",
-              "Tono: sobrio, firme, amoroso pero crudo. Sin emojis. Sin clichés.",
-              "No diagnostiques. No uses lenguaje clínico. No prometas terapia.",
+              SYSTEM_PROMPTS.default,
               "Genera una historia espejo ficticia (otra persona) con el mismo patrón estructural.",
               "Debes elegir 2–4 fragmentos EXACTOS del texto de la historia para subrayar (highlights).",
               "Devuelve SOLO JSON válido (sin markdown) con esta forma:",

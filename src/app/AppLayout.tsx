@@ -3,7 +3,6 @@ import BottomNav from "./BottomNav";
 import { useConzia } from "../state/conziaStore";
 import type { DoorId } from "../types/models";
 import { toISODateOnly } from "../utils/dates";
-import { useAuth } from "../state/authStore";
 
 const ONBOARDING_DONE_KEY = "conzia_v1_onboarding_done";
 
@@ -24,47 +23,23 @@ function doorFromPathname(pathname: string): DoorId | null {
   return null;
 }
 
-function isPublicPath(pathname: string) {
-  return (
-    pathname.startsWith("/onboarding") ||
-    pathname.startsWith("/acceso") ||
-    pathname.startsWith("/registro") ||
-    pathname.startsWith("/auth/callback")
-  );
-}
-
 export default function AppLayout() {
   const location = useLocation();
   const pathname = location.pathname;
   const { state } = useConzia();
-  const auth = useAuth();
-
-  // GUARDS TEMPORALMENTE DESACTIVADOS - acceso libre a todas las rutas
-  /*
-  const isAuthenticated = auth.status === "authenticated" && auth.session !== null;
 
   const onboardingDone = getFlag(ONBOARDING_DONE_KEY);
   const registrationDone = Boolean(state.profile?.registrationDone);
   const diagnosisDone = Boolean(state.profile?.radar_completed_at);
   const phase2Ready = registrationDone && diagnosisDone;
 
-  if (!onboardingDone && !isPublicPath(pathname)) {
+  if (!onboardingDone && !pathname.startsWith("/onboarding")) {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (!isAuthenticated) {
-    const allow = pathname.startsWith("/onboarding") || pathname.startsWith("/acceso") || pathname.startsWith("/registro") || pathname.startsWith("/auth/callback");
-    if (!allow) return <Navigate to="/acceso" replace />;
+  if (onboardingDone && !phase2Ready && !pathname.startsWith("/registro") && !pathname.startsWith("/onboarding")) {
+    return <Navigate to="/registro" replace />;
   }
-
-  if (isAuthenticated && onboardingDone && !phase2Ready) {
-    const allow = pathname.startsWith("/registro") || pathname.startsWith("/onboarding") || pathname.startsWith("/auth/callback") || pathname.startsWith("/resultados");
-    if (!allow) return <Navigate to="/registro" replace />;
-  }
-  */
-
-  // Variables necesarias para lógica de navegación (temporalmente sin guards)
-  const registrationDone = Boolean(state.profile?.registrationDone);
 
   const activeProcess = state.activeProcessId
     ? state.processes.find((p) => p.id === state.activeProcessId) ?? null
@@ -98,7 +73,6 @@ export default function AppLayout() {
   const hideNav =
     pathname.startsWith("/onboarding") ||
     pathname.startsWith("/registro") ||
-    pathname.startsWith("/acceso") ||
     pathname.startsWith("/desahogo") ||
     pathname.startsWith("/resultados") ||
     pathname.startsWith("/crisis");

@@ -4,7 +4,8 @@ export type TestTheme =
   | "evitación"
   | "rumiación"
   | "apego"
-  | "desgaste";
+  | "desgaste"
+  | "arquetipos";
 
 export type TestLength = "corto" | "largo";
 
@@ -12,6 +13,7 @@ export type TestQuestion = {
   id: string;
   text: string;
   reverse?: boolean;
+  archetype?: "guerrero" | "amante" | "rey" | "mago";
 };
 
 export type ConziaTest = {
@@ -24,11 +26,47 @@ export type ConziaTest = {
   suggestedPatternId?: string;
 };
 
-function q(id: string, text: string, reverse?: boolean): TestQuestion {
-  return reverse ? { id, text, reverse } : { id, text };
+function q(id: string, text: string, archetype?: "guerrero" | "amante" | "rey" | "mago", reverse?: boolean): TestQuestion {
+  const res: TestQuestion = { id, text };
+  if (reverse) res.reverse = reverse;
+  if (archetype) res.archetype = archetype;
+  return res;
 }
 
 export const TESTS: ConziaTest[] = [
+  {
+    id: "radar_4_pilares",
+    theme: "arquetipos",
+    length: "largo",
+    title: "Radar de los 4 Pilares",
+    description: "Identifica el equilibrio de tus energías internas: Guerrero, Amante, Rey y Mago.",
+    questions: [
+      // Guerrero
+      q("g1", "Soy capaz de decir 'NO' a las peticiones de otros sin sentir la necesidad de dar excusas o sentirme culpable.", "guerrero"),
+      q("g2", "Cuando alguien invade mi espacio o me falta al respeto, pongo un límite firme de manera inmediata.", "guerrero"),
+      q("g3", "Tengo la disciplina para empezar y terminar mis proyectos importantes sin dejar que la pereza me detenga.", "guerrero"),
+      q("g4", "Me siento seguro defendiendo mis puntos de vista, incluso cuando sé que la mayoría está en mi contra.", "guerrero"),
+      q("g5", "En situaciones de conflicto, prefiero enfrentar el problema directamente en lugar de evitarlo o callarme.", "guerrero"),
+      // Amante
+      q("a1", "Me permito llorar o expresar tristeza frente a otros cuando me siento vulnerable, sin sentir vergüenza.", "amante"),
+      q("a2", "Disfruto de los placeres de la vida (comida, descanso, arte) sin sentir que estoy perdiendo el tiempo o siendo egoísta.", "amante"),
+      q("a3", "Siento una conexión profunda y empática con las personas que me rodean, incluso con desconocidos.", "amante"),
+      q("a4", "Me trato a mí mismo con la misma amabilidad y paciencia con la que trataría a un ser querido.", "amante"),
+      q("a5", "Soy capaz de intimar emocionalmente y abrir mi corazón sin el miedo constante a ser rechazado.", "amante"),
+      // Rey
+      q("r1", "Siento que tengo el control y la autoridad sobre el rumbo que está tomando mi vida actualmente.", "rey"),
+      q("r2", "Me resulta natural organizar mi entorno y tomar decisiones que beneficien a mi 'reino' (familia, trabajo, proyectos).", "rey"),
+      q("r3", "Actúo con integridad, manteniendo mis promesas y valores incluso cuando nadie me está mirando.", "rey"),
+      q("r4", "Me siento capaz de bendecir y reconocer el éxito de los demás sin sentirme amenazado o envidioso.", "rey"),
+      q("r5", "Tengo una visión clara de mi propósito de vida y mis acciones diarias están alineadas con él.", "rey"),
+      // Mago
+      q("m1", "Confío plenamente en mi 'voz interna' o intuición para tomar decisiones difíciles.", "mago"),
+      q("m2", "Puedo ver el aprendizaje o la oportunidad oculta incluso en las experiencias más dolorosas de mi vida.", "mago"),
+      q("m3", "Me considero una persona capaz de reinventarse y cambiar de piel cuando una etapa de mi vida termina.", "mago"),
+      q("m4", "Dedico tiempo diario a la reflexión profunda, tratando de entender los mensajes de mi inconsciente.", "mago"),
+      q("m5", "Creo firmemente que tengo el poder de transformar mis pensamientos para cambiar mi estado de ánimo.", "mago"),
+    ]
+  },
   {
     id: "t_limites_corto",
     theme: "límites",
@@ -151,7 +189,7 @@ export const TESTS: ConziaTest[] = [
       q("q4", "Me cuesta decir ‘no’ en pareja."),
       q("q5", "Respondo mensajes aunque ya no tenga energía."),
       q("q6", "Me justifico para que el otro no se enoje."),
-      q("q7", "Me siento egoísta cuando elijo mi plan."),
+      q("q7", "Me siento egoísta cuando eligo mi plan."),
       q("q8", "Me cuesta pedir respeto en el momento."),
       q("q9", "Me callo para evitar tensión."),
       q("q10", "Exploto cuando ya acumulé demasiado."),
