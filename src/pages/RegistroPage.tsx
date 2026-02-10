@@ -295,106 +295,98 @@ const RADAR_QUESTIONS: RadarQuestion[] = [
   },
 ];
 
-function detectTimeZone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-  } catch {
-    return "UTC";
-  }
+function scoreFromAnswers(answers: Array<ConziaArchetype | null>): Record<ConziaArchetype, number> {
+  const res: Record<ConziaArchetype, number> = { guerrero: 0, rey: 0, amante: 0, mago: 0 };
+  answers.forEach((a) => {
+    if (a) res[a] += 1;
+  });
+  return res;
 }
 
-function detectCountry(): string {
-  try {
-    const lang = navigator.language ?? "";
-    const parts = lang.split("-");
-    const region = parts[1] ?? "";
-    if (region.length === 2) return region.toUpperCase();
-  } catch {
-    // ignore
-  }
-  return "US";
+function pickTopTwo(score: Record<ConziaArchetype, number>): { top1: ConziaArchetype; top2: ConziaArchetype } {
+  const sorted = (Object.keys(score) as ConziaArchetype[]).sort((a, b) => score[b] - score[a]);
+  return { top1: sorted[0], top2: sorted[1] };
 }
 
-function scoreFromAnswers(answers: Array<ConziaArchetype | null>) {
-  const counts: Record<ConziaArchetype, number> = {
-    guerrero: 0,
-    rey: 0,
-    amante: 0,
-    mago: 0,
-  };
-  for (const a of answers) {
-    if (!a) continue;
-    counts[a] += 1;
-  }
-  return counts;
-}
+function computeRadarScores(answers: Record<string, Likert5 | undefined>): {
+  pct: Record<ConziaArchetype, number>;
+  dominant: ConziaArchetype;
+  shadow: ConziaArchetype;
+  perfectionMask: boolean;
+} {
+  const sums: Record<ConziaArchetype, number> = { guerrero: 0, rey: 0, amante: 0, mago: 0 };
+  const counts: Record<ConziaArchetype, number> = { guerrero: 0, rey: 0, amante: 0, mago: 0 };
 
-function pickTopTwo(score: Record<ConziaArchetype, number>) {
-  const order: ConziaArchetype[] = ["guerrero", "rey", "amante", "mago"];
-  const sorted = [...order].sort((a, b) => score[b] - score[a]);
-  return { top1: sorted[0]!, top2: sorted[1]! };
-}
+  RADAR_QUESTIONS.forEach((q) => {
+    const val = answers[q.id];
+    if (val !== undefined) {
+      sums[q.archetype] += val;
+      counts[q.archetype] += 1;
+    }
+  });
 
-function normalize(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  const pct: Record<ConziaArchetype, number> = { guerrero: 0, rey: 0, amante: 0, mago: 0 };
+  (Object.keys(sums) as ConziaArchetype[]).forEach((a) => {
+    const max = counts[a] * 5;
+    pct[a] = max > 0 ? Math.round((sums[a] / max) * 100) : 0;
+  });
+
+  const sorted = (Object.keys(pct) as ConziaArchetype[]).sort((a, b) => pct[b] - pct[a]);
+  const dominant = sorted[0];
+  const shadow = sorted[3];
+  const perfectionMask = Object.values(pct).every((v) => v >= 95);
+
+  return { pct, dominant, shadow, perfectionMask };
 }
 
 function guessTargetPerson(text: string): string {
-  const t = normalize(text);
-  if (t.includes("jefe")) return "tu jefe";
-  if (t.includes("madre")) return "tu madre";
-  if (t.includes("padre")) return "tu padre";
-  if (t.includes("pareja")) return "tu pareja";
-  if (t.includes("ex")) return "tu ex";
-  if (t.includes("politic")) return "esa figura pública";
+  const norm = text.toLowerCase();
+  if (norm.includes("jefe") || norm.includes("trabajo")) return "tu jefe";
+  if (norm.includes("mama") || norm.includes("madre")) return "tu madre";
+  if (norm.includes("papa") || norm.includes("padre")) return "tu padre";
+  if (norm.includes("pareja") || norm.includes("novio") || norm.includes("novia") || norm.includes("esposo") || norm.includes("esposa"))
+    return "tu pareja";
   return "esa persona";
 }
 
 function guessMask(text: string): string {
-  const t = normalize(text);
-  if (t.includes("perfect")) return "perfeccionismo";
-  if (t.includes("fuerte") || t.includes("fortaleza")) return "fortaleza";
-  if (t.includes("bueno") || t.includes("buena") || t.includes("buena persona")) return "buena persona";
-  if (t.includes("tranqui") || t.includes("calma")) return "calma";
-  if (t.includes("independ")) return "independencia";
-  return "control";
+  const norm = text.toLowerCase();
+  if (norm.includes("fuerte") || norm.includes("puedo con todo")) return "fortaleza inquebrantable";
+  if (norm.includes("bueno") || norm.includes("amable")) return "bondad extrema";
+  if (norm.includes("inteligente") || norm.includes("sabio")) return "intelectualismo";
+  if (norm.includes("exito") || norm.includes("logro")) return "éxito y perfección";
+  return "seguridad";
 }
 
 function positiveNeedForTrait(trait: string): string {
-  const t = normalize(trait);
-  if (t.includes("ego")) return "libertad";
-  if (t.includes("control")) return "seguridad";
-  if (t.includes("perfeccion")) return "valía";
-  if (t.includes("arrog")) return "autoridad sana";
-  if (t.includes("inflex")) return "claridad";
-  if (t.includes("miedo al abandono")) return "vínculo seguro";
-  return "poder personal";
+  const norm = trait.toLowerCase();
+  if (norm.includes("ego") || norm.includes("prepotente")) return "autoafirmación";
+  if (norm.includes("debil") || norm.includes("miedo")) return "vulnerabilidad";
+  if (norm.includes("control")) return "fluidez";
+  if (norm.includes("ira") || norm.includes("enojo")) return "fuerza vital";
+  return "libertad";
 }
 
-function computeRadarScores(answers: Record<string, Likert5 | undefined>) {
-  const sums: Record<ConziaArchetype, number> = { guerrero: 0, amante: 0, rey: 0, mago: 0 };
-  for (const q of RADAR_QUESTIONS) {
-    sums[q.archetype] += answers[q.id] ?? 0;
+function detectTimeZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch {
+    return "America/Mexico_City";
   }
-  const pct: Record<ConziaArchetype, number> = {
-    guerrero: (sums.guerrero / 25) * 100,
-    amante: (sums.amante / 25) * 100,
-    rey: (sums.rey / 25) * 100,
-    mago: (sums.mago / 25) * 100,
-  };
+}
 
-  const order: ConziaArchetype[] = ["guerrero", "amante", "rey", "mago"];
-  const sorted = [...order].sort((a, b) => pct[b] - pct[a]);
-  const dominant = sorted[0]!;
-  const shadow = sorted.at(-1)!;
-  const perfectionMask = order.every((a) => sums[a] === 25);
+function detectCountry(): string {
+  const tz = detectTimeZone();
+  if (tz.includes("Mexico")) return "MX";
+  if (tz.includes("Argentina")) return "AR";
+  if (tz.includes("Spain") || tz.includes("Madrid")) return "ES";
+  if (tz.includes("Colombia")) return "CO";
+  if (tz.includes("Chile")) return "CL";
+  return "MX";
+}
 
-  return { sums, pct, dominant, shadow, perfectionMask };
+function normalize(s: string): string {
+  return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 }
 
 export default function RegistroPage() {
@@ -491,7 +483,7 @@ export default function RegistroPage() {
   const [aiBusy, setAiBusy] = useState(false);
   const [aiStatus, setAiStatus] = useState<string | null>(null);
   const canSendProjection =
-    rechazoText.trim().length >= 200 && envidiaText.trim().length >= 200 && juicioText.trim().length >= 200;
+    rechazoText.trim().length >= 80 && envidiaText.trim().length >= 80 && juicioText.trim().length >= 80;
 
   const targetPerson = useMemo(() => guessTargetPerson(rechazoText), [rechazoText]);
   const userMask = useMemo(() => guessMask(juicioText), [juicioText]);
@@ -763,18 +755,15 @@ export default function RegistroPage() {
                       next[qIdx] = opt.archetype;
                       return next;
                     });
-                    const nextIdx = qIdx + 1;
-                    if (nextIdx >= QUESTIONS.length) setStep("resumen");
-                    else setQIdx(nextIdx);
                   }}
                   className={
                     isActive
-                      ? "w-full rounded-2xl bg-mint-cream ring-1 ring-gainsboro/70 px-4 py-4 text-left"
-                      : "w-full rounded-2xl bg-white ring-1 ring-gainsboro/70 px-4 py-4 text-left transition hover:bg-mint-cream/50"
+                      ? "w-full rounded-xl bg-outer-space px-4 py-3 text-left text-sm text-white"
+                      : "w-full rounded-xl bg-mint-cream/70 ring-1 ring-gainsboro/60 px-4 py-3 text-left text-sm text-outer-space/80 hover:bg-mint-cream"
                   }
                   aria-pressed={isActive}
                 >
-                  <div className="text-sm font-semibold tracking-tight text-outer-space">{opt.label}</div>
+                  {opt.label}
                 </button>
               );
             })}
@@ -782,7 +771,6 @@ export default function RegistroPage() {
 
           <div className="mt-6 flex items-center justify-between gap-3">
             <Button
-              variant="quiet"
               onClick={() => {
                 if (qIdx <= 0) {
                   setStep("r2");
@@ -792,7 +780,7 @@ export default function RegistroPage() {
               }}
               type="button"
             >
-              Atrás
+              Anterior
             </Button>
             <Button
               variant="primary"
@@ -954,7 +942,7 @@ export default function RegistroPage() {
                 className="mt-3 min-h-[160px]"
                 value={rechazoText}
                 onChange={(e) => setRechazoText(e.target.value)}
-                placeholder="Escribe aquí (mínimo 200 caracteres)."
+                placeholder="Escribe aquí (mínimo 80 caracteres)."
               />
             </div>
 
@@ -968,7 +956,7 @@ export default function RegistroPage() {
                 className="mt-3 min-h-[160px]"
                 value={envidiaText}
                 onChange={(e) => setEnvidiaText(e.target.value)}
-                placeholder="Escribe aquí (mínimo 200 caracteres)."
+                placeholder="Escribe aquí (mínimo 80 caracteres)."
               />
             </div>
 
@@ -982,7 +970,7 @@ export default function RegistroPage() {
                 className="mt-3 min-h-[160px]"
                 value={juicioText}
                 onChange={(e) => setJuicioText(e.target.value)}
-                placeholder="Escribe aquí (mínimo 200 caracteres)."
+                placeholder="Escribe aquí (mínimo 80 caracteres)."
               />
             </div>
           </div>

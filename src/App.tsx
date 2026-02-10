@@ -7,6 +7,7 @@ import BootPage from "./pages/BootPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import { AuthProvider, useAuth } from "./state/authStore";
 import RegistroPage from "./pages/RegistroPage";
+import LoginPage from "./pages/LoginPage";
 import ConsultorioPage from "./pages/ConsultorioPage";
 import MesaPage from "./pages/MesaPage";
 import ProcesoPage from "./pages/ProcesoPage";
@@ -45,6 +46,7 @@ function AuthedApp() {
           <Route index element={<BootPage />} />
           <Route path="inicio" element={<BootPage />} />
 
+          <Route path="login" element={<LoginPage />} />
           <Route path="onboarding" element={<OnboardingPage />} />
           <Route path="registro" element={<RegistroPage />} />
 
