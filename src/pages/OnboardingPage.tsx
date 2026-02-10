@@ -51,82 +51,91 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-[100svh] flex flex-col items-center justify-between px-8 pb-12 pt-16 bg-conzia-light overflow-hidden relative">
-      {/* Fondo con degradado sutil y profesional */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-[#F4F6F8] to-[#F4F6F8] opacity-100" />
+    <div className="min-h-[100svh] flex flex-col items-center justify-between px-8 pb-12 pt-20 bg-[#0b1220] overflow-hidden relative">
+      {/* Fondo Cinematográfico con degradados profundos */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0b1220] via-[#1E2A38] to-[#0b1220] opacity-100" />
       
-      {/* Elementos decorativos sutiles para transmitir paz */}
-      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-camel/5 rounded-full blur-[120px]" />
-      <div className="absolute bottom-[10%] left-[-10%] w-80 h-80 bg-conzia-muted/5 rounded-full blur-[100px]" />
+      {/* Textura de grano sutil para profundidad psicológica */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
+
+      {/* Elementos de luz sutiles */}
+      <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-[#DDB273]/5 rounded-full blur-[150px]" />
+      <div className="absolute bottom-[-10%] left-[-20%] w-[400px] h-[400px] bg-[#7F809D]/10 rounded-full blur-[120px]" />
 
       <div className="flex flex-col items-center z-10 w-full max-w-md">
-        {/* Logo Principal - Sutil y Profesional */}
+        {/* Logo - Minimalista y Elegante */}
         <motion.div 
-          initial={{ y: -10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="mb-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.8 }}
+          transition={{ duration: 2 }}
+          className="mb-20"
         >
           <img 
             src="/brand/conzia-logo.png" 
             alt="CONZIA Logo" 
-            className="w-32 h-auto object-contain opacity-90"
+            className="w-24 h-auto object-contain brightness-0 invert opacity-70"
           />
         </motion.div>
 
-        {/* Carrusel de Slides */}
-        <div className="relative w-full min-h-[380px] flex flex-col items-center">
+        {/* Carrusel de Slides - Estilo Cinematográfico */}
+        <div className="relative w-full min-h-[350px] flex flex-col items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -20, opacity: 0 }}
-              transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-col items-center text-center"
             >
-              <h2 className="text-2xl font-bold text-conzia-dark mb-8 tracking-tight">
+              <h2 className="text-xl font-light text-white/90 mb-10 uppercase tracking-[0.4em]">
                 {slides[currentSlide].title}
               </h2>
-              <div className="text-conzia-gray/80 text-base leading-relaxed font-light px-2 whitespace-pre-line">
+              <div className="text-white/60 text-base leading-[1.8] font-light px-4 whitespace-pre-line tracking-wide">
                 {slides[currentSlide].description}
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* Indicadores de Slide - Minimalistas */}
-        <div className="flex gap-2.5 mt-4">
+        {/* Indicadores - Minimalismo Extremo */}
+        <div className="flex gap-4 mt-8">
           {slides.map((_, index) => (
             <div 
               key={index}
-              className={`h-1 rounded-full transition-all duration-500 ${
-                index === currentSlide ? "w-6 bg-camel" : "w-1.5 bg-conzia-muted/20"
+              className={`h-[1px] transition-all duration-700 ${
+                index === currentSlide ? "w-12 bg-[#DDB273]" : "w-4 bg-white/10"
               }`}
             />
           ))}
         </div>
       </div>
 
-      {/* Botones de Acción - Claros y Amorosos */}
-      <div className="w-full max-w-sm space-y-4 z-10">
-        <Button
-          variant="primary"
-          className="w-full py-4.5 bg-camel hover:bg-camel/90 text-white font-bold rounded-2xl shadow-lg shadow-camel/10 transition-all active:scale-[0.99] text-base"
-          onClick={nextSlide}
+      {/* Botones de Acción - Elegancia y Respeto */}
+      <div className="w-full max-w-sm space-y-6 z-10">
+        <motion.div
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
         >
-          {slides[currentSlide].cta}
-        </Button>
+          <Button
+            variant="primary"
+            className="w-full py-4 bg-transparent border border-white/20 hover:border-[#DDB273]/50 text-white/90 font-light tracking-[0.2em] uppercase text-xs rounded-full transition-all duration-500"
+            onClick={nextSlide}
+          >
+            {slides[currentSlide].cta}
+          </Button>
+        </motion.div>
         
         <button 
           onClick={skipOnboarding}
-          className="w-full py-2 text-conzia-muted/60 hover:text-conzia-dark text-sm font-medium transition-colors"
+          className="w-full py-2 text-white/20 hover:text-white/40 text-[10px] uppercase tracking-[0.3em] font-light transition-colors"
         >
           {slides[currentSlide].secondaryCta}
         </button>
 
-        <div className="pt-8 text-center">
-          <p className="text-conzia-muted/30 text-[9px] tracking-[0.4em] uppercase font-bold">
-            Acompañamiento Consciente · 2026
+        <div className="pt-12 text-center">
+          <p className="text-white/10 text-[8px] tracking-[0.5em] uppercase font-light">
+            Introspección Consciente · 2026
           </p>
         </div>
       </div>
