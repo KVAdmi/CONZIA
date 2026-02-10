@@ -3,15 +3,11 @@ import { ConziaProvider } from "./state/conziaStore";
 import AppLayout from "./app/AppLayout";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import SesionPage from "./pages/SesionPage";
-import BootPage from "./pages/BootPage";
-import OnboardingPage from "./pages/OnboardingPage";
 import { AuthProvider, useAuth } from "./state/authStore";
-import RegistroPage from "./pages/RegistroPage";
 import ConsultorioPage from "./pages/ConsultorioPage";
 import MesaPage from "./pages/MesaPage";
 import ProcesoPage from "./pages/ProcesoPage";
 import ObservacionPage from "./pages/ObservacionPage";
-import ResultadosPage from "./pages/ResultadosPage";
 import DesahogoPage from "./pages/DesahogoPage";
 import CrisisPage from "./pages/CrisisPage";
 
@@ -35,20 +31,24 @@ function AuthedApp() {
     );
   }
 
+  // TEMPORALMENTE: Saltar autenticación y ir directo a la app
+  const isAuthenticated = true;
+  const entryPath = "/sesion";
+
   return (
     <ConziaProvider key={storageKey} storageKey={storageKey}>
       <Routes>
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
         <Route path="/" element={<AppLayout />}>
-          <Route index element={<BootPage />} />
-          <Route path="inicio" element={<BootPage />} />
+          {/* ✅ Entry point directo a la app */}
+          <Route index element={<Navigate to="/sesion" replace />} />
+          <Route path="inicio" element={<Navigate to="/sesion" replace />} />
 
-          <Route path="onboarding" element={<OnboardingPage />} />
-          <Route path="registro" element={<RegistroPage />} />
+          {/* TEMPORALMENTE DESHABILITADAS: onboarding, acceso, registro, resultados, planes */}
 
+          {/* ✅ Rutas principales de la app (sin guards) */}
           <Route path="sesion" element={<SesionPage />} />
-          <Route path="resultados" element={<ResultadosPage />} />
           <Route path="desahogo" element={<DesahogoPage />} />
           <Route path="crisis" element={<CrisisPage />} />
           <Route path="observacion" element={<ObservacionPage />} />
@@ -56,11 +56,7 @@ function AuthedApp() {
           <Route path="mesa" element={<MesaPage />} />
           <Route path="proceso" element={<ProcesoPage />} />
 
-          {/*
-            Rutas heredadas / Fase 1:
-            Se mantienen como redirect para evitar acceso a módulos fuera de alcance.
-          */}
-          <Route path="planes/elige" element={<Navigate to="/registro" replace />} />
+          {/* Redirects heredados */}
           <Route path="mapa" element={<Navigate to="/sesion" replace />} />
           <Route path="espejo" element={<Navigate to="/sesion" replace />} />
           <Route path="boveda" element={<Navigate to="/sesion" replace />} />
@@ -69,7 +65,9 @@ function AuthedApp() {
           <Route path="tests" element={<Navigate to="/sesion" replace />} />
           <Route path="perfil" element={<Navigate to="/sesion" replace />} />
           <Route path="configuracion" element={<Navigate to="/sesion" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+
+          {/* ✅ Catch-all consistente: no regresar a "/" */}
+          <Route path="*" element={<Navigate to={entryPath} replace />} />
         </Route>
       </Routes>
     </ConziaProvider>
