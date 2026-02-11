@@ -5,6 +5,34 @@
 
 export * from "./archetypeEngine";
 export * from "./resistanceEngine";
-export * from "./monthEngine";
 export * from "./challengeEngine";
-export * from "./memoryEngine";
+
+// Month engine exports (con alias para evitar conflicto)
+export {
+  determineCurrentMonth,
+  getSystemPrompt,
+  checkPhaseTransition,
+  validateProgramIntegrity,
+  getWelcomeMessage,
+  isFeatureUnlocked,
+  buildClaudeContext as buildMonthClaudeContext,
+  type UserMonthStatus,
+  type PhaseTransition,
+} from "./monthEngine";
+
+// Memory engine exports (con alias para evitar conflicto)
+export {
+  buildClaudeContext as buildMemoryClaudeContext,
+  buildSystemPromptContext,
+  detectNewPatterns,
+  detectTraumaNodes,
+  extractInsights,
+  estimateTokens,
+  trimContextIfNeeded,
+  type ClaudeContextPayload,
+  type DesahogoEntry,
+  type DetectedPattern,
+  type TraumaNode,
+  type AIMemory,
+  type CurrentChallenge,
+} from "./memoryEngine";
