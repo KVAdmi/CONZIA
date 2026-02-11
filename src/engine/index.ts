@@ -6,6 +6,9 @@
 export * from "./archetypeEngine";
 export * from "./resistanceEngine";
 export * from "./challengeEngine";
+export * from "./tokenManager";
+export * from "./temporalGuard";
+export * from "./crisisProtocol";
 
 // Month engine exports (con alias para evitar conflicto)
 export {
