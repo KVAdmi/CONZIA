@@ -23,6 +23,7 @@ export default function SesionPage() {
   const month = state.profile?.current_month || 1;
   const phaseName = month === 1 ? "Catarsis" : month === 2 ? "Elucidación" : "Integración";
   
+  // @ts-ignore - radar_scores es opcional y puede no existir en todos los perfiles
   const scores = state.profile?.radar_scores || { warrior: 50, lover: 50, king: 50, magician: 50 };
 
   return (
