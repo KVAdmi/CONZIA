@@ -34,6 +34,16 @@ const slides = [
   }
 ];
 
+const ONBOARDING_DONE_KEY = "conzia_v1_onboarding_done";
+
+function markOnboardingDone() {
+  try {
+    localStorage.setItem(ONBOARDING_DONE_KEY, "1");
+  } catch {
+    // ignore
+  }
+}
+
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -42,11 +52,13 @@ export default function OnboardingPage() {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
+      markOnboardingDone();
       navigate("/login");
     }
   };
 
   const skipOnboarding = () => {
+    markOnboardingDone();
     navigate("/login");
   };
 
@@ -63,18 +75,33 @@ export default function OnboardingPage() {
       <div className="absolute bottom-[-10%] left-[-20%] w-[400px] h-[400px] bg-[#7F809D]/10 rounded-full blur-[120px]" />
 
       <div className="flex flex-col items-center z-10 w-full max-w-md">
-        {/* Logo - Minimalista y Elegante */}
+        {/* Logo - Grande con presencia 3D */}
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.8 }}
-          transition={{ duration: 2 }}
-          className="mb-20"
+          initial={{ opacity: 0, scale: 0.8, y: -20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-16 relative"
         >
-          <img 
-            src="/brand/conzia-logo.png" 
-            alt="CONZIA Logo" 
-            className="w-24 h-auto object-contain brightness-0 invert opacity-70"
-          />
+          {/* Glow effect detrás del logo */}
+          <div className="absolute inset-0 blur-[60px] bg-[#DDB273]/20 scale-150" />
+          
+          {/* Logo con efecto 3D */}
+          <div className="relative">
+            {/* Sombra 3D - capa trasera */}
+            <img 
+              src="/brand/conzia-logo.png" 
+              alt="" 
+              className="w-44 h-auto object-contain brightness-0 invert opacity-10 absolute top-2 left-2 blur-sm"
+              aria-hidden="true"
+            />
+            
+            {/* Logo principal */}
+            <img 
+              src="/brand/conzia-logo.png" 
+              alt="CONZIA Logo" 
+              className="w-44 h-auto object-contain brightness-0 invert opacity-90 relative z-10 drop-shadow-[0_8px_32px_rgba(221,178,115,0.3)]"
+            />
+          </div>
         </motion.div>
 
         {/* Carrusel de Slides - Estilo Cinematográfico */}

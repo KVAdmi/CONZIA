@@ -47,8 +47,8 @@ function AuthedApp() {
           <Route index element={<BootPage />} />
           <Route path="inicio" element={<BootPage />} />
 
-          <Route path="login" element={<LoginPage />} />
           <Route path="onboarding" element={<OnboardingPage />} />
+          <Route path="login" element={<LoginPage />} />
           <Route path="registro" element={<RegistroPage />} />
           <Route path="pago" element={<PaymentPage />} />
 

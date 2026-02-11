@@ -25,7 +25,13 @@ export default function LoginPage() {
         // Por ahora a sesión, pero debería validar pago/status
         navigate("/sesion");
       } else {
-        setError(res.error.message || "Credenciales incorrectas");
+        // Si el error es de email no confirmado, dar instrucciones claras
+        const errorMsg = res.error.message || "Credenciales incorrectas";
+        if (errorMsg.toLowerCase().includes("email") && errorMsg.toLowerCase().includes("confirm")) {
+          setError("Esta cuenta fue creada con confirmación de email. Crea una nueva cuenta o contacta soporte.");
+        } else {
+          setError(errorMsg);
+        }
       }
     } catch (err) {
       setError("Ocurrió un error al conectar con el consultorio");

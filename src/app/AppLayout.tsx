@@ -37,8 +37,8 @@ export default function AppLayout() {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (onboardingDone && !phase2Ready && !pathname.startsWith("/registro") && !pathname.startsWith("/onboarding")) {
-    return <Navigate to="/registro" replace />;
+  if (onboardingDone && !phase2Ready && !pathname.startsWith("/registro") && !pathname.startsWith("/onboarding") && !pathname.startsWith("/login") && !pathname.startsWith("/pago")) {
+    return <Navigate to="/login" replace />;
   }
 
   const activeProcess = state.activeProcessId

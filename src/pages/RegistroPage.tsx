@@ -7,12 +7,15 @@ import Input from "../components/ui/Input";
 import Textarea from "../components/ui/Textarea";
 import { useConzia } from "../state/conziaStore";
 import type { ConziaProfile } from "../types/models";
+import { signUpWithPassword } from "../services/supabase/auth";
+import { getSupabaseConfig } from "../services/supabase/config";
 
 export default function RegistroPage() {
   const navigate = useNavigate();
   const { dispatch } = useConzia();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Datos de registro
   const [email, setEmail] = useState("");
@@ -37,13 +40,62 @@ export default function RegistroPage() {
 
   const handleFinalize = async () => {
     setLoading(true);
-    // Simulamos el proceso de registro y análisis
-    setTimeout(() => {
+    setError(null);
+    
+    try {
+      // 1. Crear usuario en Supabase Auth
+      const signupRes = await signUpWithPassword(email, password);
+      
+      if (!signupRes.ok) {
+        setError(signupRes.error.message || "Error al crear la cuenta");
+        setLoading(false);
+        return;
+      }
+
+      const userId = signupRes.data.user.id;
+      const session = signupRes.data.session;
+
+      // 2. Guardar perfil completo en tabla usuarios con las respuestas de proyección
+      const config = getSupabaseConfig();
+      const response = await fetch(`${config.url}/rest/v1/usuarios`, {
+        method: "POST",
+        headers: {
+          "apikey": config.anonKey,
+          "Authorization": `Bearer ${session?.access_token || config.anonKey}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          uuid: userId,
+          email: email,
+          nombre: nombre,
+          apodo: nombre,
+          tema_base: "arquetipos",
+          costo_dominante: "desconocido",
+          arquetipo_dominante: "guerrero",
+          arquetipo_secundario: "mago",
+          confianza: 5,
+          estilo_conduccion: "Directo",
+          shadow_mirror_text: `Q1: ${p1}\n\nQ2: ${p2}\n\nQ3: ${p3}`,
+          radar_completed_at: new Date().toISOString(),
+          registration_done: true,
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Error guardando perfil:", errorData);
+        setError("Error al guardar tu perfil. Intenta de nuevo.");
+        setLoading(false);
+        return;
+      }
+
+      // 3. Guardar en estado local
       const newProfile: ConziaProfile = {
         alias: nombre,
         email: email,
         tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        country: "MX", // Default o detectar
+        country: "MX",
         tema_base: "arquetipos",
         costo_dominante: "desconocido",
         arquetipo_dominante: "guerrero",
@@ -52,7 +104,7 @@ export default function RegistroPage() {
         estilo_conduccion: "Directo",
         registrationDone: true,
         current_month: 1,
-        shadow_mirror_text: p1 + " " + p2 + " " + p3
+        shadow_mirror_text: `Q1: ${p1}\n\nQ2: ${p2}\n\nQ3: ${p3}`
       };
 
       dispatch({ 
@@ -61,8 +113,12 @@ export default function RegistroPage() {
       });
       
       navigate("/pago");
+    } catch (err) {
+      console.error("Error en registro:", err);
+      setError("Ocurrió un error inesperado. Intenta de nuevo.");
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -133,6 +189,17 @@ export default function RegistroPage() {
                       className="mt-2 bg-[#F4F6F8]/30 border-[#1E2A38]/10 text-[#1E2A38] placeholder:text-[#1E2A38]/30 rounded-xl py-3.5 focus:ring-[#DDB273]/20"
                     />
                   </div>
+                  
+                  {error && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-red-500 text-xs mt-2 px-1 font-medium text-center bg-red-50 py-2 rounded-lg"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+                  
                   <Button
                     onClick={handleNext}
                     disabled={!canGoNext()}
@@ -206,12 +273,23 @@ export default function RegistroPage() {
                       {p3.length}/80 CARACTERES MÍN.
                     </p>
                   </div>
+                  
+                  {error && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-red-500 text-xs mt-2 px-1 font-medium text-center bg-red-50 py-3 rounded-lg"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+                  
                   <Button
                     onClick={handleNext}
                     disabled={!canGoNext() || loading}
                     className="w-full mt-4 py-4 bg-[#1E2A38] hover:bg-[#1E2A38]/90 text-white font-bold rounded-2xl shadow-lg shadow-[#1E2A38]/10 disabled:opacity-50 transition-all active:scale-[0.98]"
                   >
-                    {loading ? "Analizando..." : "Finalizar Diagnóstico"}
+                    {loading ? "Creando cuenta..." : "Finalizar Diagnóstico"}
                   </Button>
                 </div>
               </Card>
