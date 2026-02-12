@@ -67,7 +67,14 @@ export default function DashboardPage() {
 
       // Cargar estado del programa
       const status = await getUserProgramStatus(userId, accessToken);
-      setProgramStatus(status);
+      if (status) {
+        // Agregar campos faltantes con valores por defecto
+        setProgramStatus({
+          ...status,
+          total_entries: 0, // TODO: Obtener de la base de datos
+          completed_challenges: 0, // TODO: Obtener de la base de datos
+        });
+      }
 
     } catch (error) {
       console.error("Error loading dashboard:", error);
