@@ -54,8 +54,8 @@ export default function AuthCallbackPage() {
             <div className="text-sm font-medium text-outer-space">No se pudo completar</div>
             <div className="mt-1 text-sm text-outer-space/75">{error}</div>
             <div className="mt-4 flex justify-end">
-              <Button variant="primary" onClick={() => navigate("/acceso", { replace: true })}>
-                Volver a Acceso
+              <Button variant="primary" onClick={() => navigate("/login", { replace: true })}>
+                Volver a Login
               </Button>
             </div>
           </div>

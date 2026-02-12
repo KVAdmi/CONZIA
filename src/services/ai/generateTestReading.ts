@@ -1,7 +1,7 @@
 import type { ConziaTest } from "../../content/tests";
 import type { Pattern, Reading, ReadingContent } from "../../types/models";
-import { toISODateOnly } from "../../utils/dates";
-import { createId } from "../../utils/id";
+import { toISODateOnly } from "../../utils/dates.ts";
+import { createId } from "../../utils/id.ts";
 
 export type TestResult = {
   avg: number;

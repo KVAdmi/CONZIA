@@ -1,6 +1,6 @@
 import type { Entry, Reading, ReadingContent } from "../../types/models";
-import { toISODateOnly } from "../../utils/dates";
-import { createId } from "../../utils/id";
+import { toISODateOnly } from "../../utils/dates.ts";
+import { createId } from "../../utils/id.ts";
 
 type AiReflectionResponse =
   | { ok: true; reading: Reading }
@@ -78,4 +78,3 @@ export async function generateReflection(params: { entry: Entry; todayISO?: stri
     };
   }
 }
-

@@ -5,12 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "node --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && vite build",
     "build:android": "npm run typecheck && vite build --mode android",
     "android:sync": "node scripts/sync-android-assets.mjs",
     "android:prepare": "npm run build:android && npm run android:sync",
     "android:apk": "npm run android:prepare && cd android && ./gradlew assembleDebug",
+    "docs:function-map": "node scripts/generate-function-map.mjs",
+    "docs:test-questions": "node scripts/generate-test-questions.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

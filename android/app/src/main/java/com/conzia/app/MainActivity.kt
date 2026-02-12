@@ -11,11 +11,9 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
-import androidx.webkit.WebViewAssetLoader
 
 class MainActivity : ComponentActivity() {
   private lateinit var webView: WebView
-  private lateinit var assetLoader: WebViewAssetLoader
 
   @SuppressLint("SetJavaScriptEnabled")
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,17 +24,18 @@ class MainActivity : ComponentActivity() {
       WebView.setWebContentsDebuggingEnabled(true)
     }
 
-    assetLoader =
-      WebViewAssetLoader.Builder()
-        .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
-        .build()
-
     webView = WebView(this).apply {
       settings.javaScriptEnabled = true
       settings.domStorageEnabled = true
       settings.allowFileAccess = true
       settings.allowContentAccess = true
+      settings.allowFileAccessFromFileURLs = true
+      settings.allowUniversalAccessFromFileURLs = true
+      settings.databaseEnabled = true
       settings.cacheMode = WebSettings.LOAD_DEFAULT
+      settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+      settings.mediaPlaybackRequiresUserGesture = false
+      setBackgroundColor(android.graphics.Color.parseColor("#0b1220"))
 
       webChromeClient =
         object : WebChromeClient() {
@@ -48,13 +47,31 @@ class MainActivity : ComponentActivity() {
             return super.onConsoleMessage(consoleMessage)
           }
         }
-      webViewClient =
-        object : WebViewClient() {
-          override fun shouldInterceptRequest(view: WebView, request: android.webkit.WebResourceRequest) =
-            assetLoader.shouldInterceptRequest(request.url)
+      
+      webViewClient = object : WebViewClient() {
+        override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+          super.onPageStarted(view, url, favicon)
+          Log.d("CONZIAWebView", "Page started: $url")
         }
 
-      loadUrl("https://appassets.androidplatform.net/assets/www/index.html")
+        override fun onPageFinished(view: WebView?, url: String?) {
+          super.onPageFinished(view, url)
+          Log.d("CONZIAWebView", "Page loaded successfully: $url")
+        }
+
+        override fun onReceivedError(
+          view: WebView?,
+          errorCode: Int,
+          description: String?,
+          failingUrl: String?
+        ) {
+          Log.e("CONZIAWebView", "Error $errorCode: $description at $failingUrl")
+          super.onReceivedError(view, errorCode, description, failingUrl)
+        }
+      }
+
+      Log.d("CONZIAWebView", "Loading from file:///android_asset/index.html")
+      loadUrl("file:///android_asset/index.html")
     }
 
     setContentView(webView)

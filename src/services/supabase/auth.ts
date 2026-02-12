@@ -1,4 +1,4 @@
-import { getSupabaseConfig } from "./config";
+import { getSupabaseConfig } from "./config.ts";
 
 export type SupabaseUser = {
   id: string;

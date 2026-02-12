@@ -183,7 +183,7 @@ export default function Header() {
                     type="button"
                     onClick={() => {
                       setOpen(false);
-                      navigate("/acceso");
+                      navigate("/login");
                     }}
                     className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-outer-space transition hover:bg-mint-cream border-t border-gainsboro/70"
                     role="menuitem"

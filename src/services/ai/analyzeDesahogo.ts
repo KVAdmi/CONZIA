@@ -1,5 +1,5 @@
 import type { ConziaDesahogoAnalysis, ConziaDesahogoEmotion } from "../../types/models";
-import { inferPatternTag } from "../../ai/responseComposer";
+import { inferPatternTag } from "../../ai/responseComposer.ts";
 
 type AiDesahogoResponse =
   | { ok: true; reading: { content: ConziaDesahogoAnalysis } }

@@ -1,5 +1,5 @@
 import type { Entry, MirrorStory, Pattern } from "../../types/models";
-import { createId } from "../../utils/id";
+import { createId } from "../../utils/id.ts";
 
 type Template = {
   story: (name: string) => string;

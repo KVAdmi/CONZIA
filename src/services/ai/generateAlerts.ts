@@ -1,5 +1,5 @@
 import type { CheckIn, Entry, Intention, Pattern } from "../../types/models";
-import { parseISODate, toISODateOnly } from "../../utils/dates";
+import { parseISODate, toISODateOnly } from "../../utils/dates.ts";
 import type { Alert } from "./types";
 
 function withinDays(dateISO: string, anchorISO: string, days: number) {

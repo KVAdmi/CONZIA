@@ -1,5 +1,5 @@
 import type { Entry, Pattern, Trend } from "../../types/models";
-import { addDays, parseISODate, toISODateOnly } from "../../utils/dates";
+import { addDays, parseISODate, toISODateOnly } from "../../utils/dates.ts";
 
 function withinDays(dateISO: string, anchorISO: string, days: number) {
   const date = parseISODate(dateISO).getTime();
@@ -45,4 +45,3 @@ export function detectPatterns(params: {
     };
   });
 }
-

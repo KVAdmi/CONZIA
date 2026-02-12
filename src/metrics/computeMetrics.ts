@@ -1,6 +1,6 @@
 import type { ConziaDesahogoEmotion, ConziaEntry, ConziaPatternTag, ConziaSession } from "../types/models";
-import { addDays, toISODateOnly } from "../utils/dates";
-import { inferPatternTag } from "../ai/responseComposer";
+import { addDays, toISODateOnly } from "../utils/dates.ts";
+import { inferPatternTag } from "../ai/responseComposer.ts";
 
 export type PatternStatus = "Iniciando" | "Frecuente" | "En aumento" | "Recurrente";
 

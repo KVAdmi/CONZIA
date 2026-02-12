@@ -43,54 +43,62 @@ export default function RegistroPage() {
     setError(null);
     
     try {
-      // 1. Crear usuario en Supabase Auth
-      const signupRes = await signUpWithPassword(email, password);
-      
-      if (!signupRes.ok) {
-        setError(signupRes.error.message || "Error al crear la cuenta");
-        setLoading(false);
-        return;
-      }
-
-      const userId = signupRes.data.user.id;
-      const session = signupRes.data.session;
-
-      // 2. Guardar perfil completo en tabla usuarios con las respuestas de proyección
       const config = getSupabaseConfig();
-      const response = await fetch(`${config.url}/rest/v1/usuarios`, {
-        method: "POST",
-        headers: {
-          "apikey": config.anonKey,
-          "Authorization": `Bearer ${session?.access_token || config.anonKey}`,
-          "Content-Type": "application/json",
-          "Prefer": "return=minimal"
-        },
-        body: JSON.stringify({
-          uuid: userId,
-          email: email,
-          nombre: nombre,
-          apodo: nombre,
-          tema_base: "arquetipos",
-          costo_dominante: "desconocido",
-          arquetipo_dominante: "guerrero",
-          arquetipo_secundario: "mago",
-          confianza: 5,
-          estilo_conduccion: "Directo",
-          shadow_mirror_text: `Q1: ${p1}\n\nQ2: ${p2}\n\nQ3: ${p3}`,
-          radar_completed_at: new Date().toISOString(),
-          registration_done: true,
-        })
-      });
+      let userId: string;
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("Error guardando perfil:", errorData);
-        setError("Error al guardar tu perfil. Intenta de nuevo.");
-        setLoading(false);
-        return;
+      // Si Supabase está configurado, intentar crear usuario en la nube
+      if (config.configured) {
+        const signupRes = await signUpWithPassword(email, password);
+        
+        if (!signupRes.ok) {
+          setError(signupRes.error.message || "Error al crear la cuenta");
+          setLoading(false);
+          return;
+        }
+
+        userId = signupRes.data.user.id;
+        const session = signupRes.data.session;
+
+        // Guardar perfil completo en tabla usuarios
+        const response = await fetch(`${config.url}/rest/v1/usuarios`, {
+          method: "POST",
+          headers: {
+            "apikey": config.anonKey,
+            "Authorization": `Bearer ${session?.access_token || config.anonKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify({
+            uuid: userId,
+            email: email,
+            nombre: nombre,
+            apodo: nombre,
+            tema_base: "arquetipos",
+            costo_dominante: "desconocido",
+            arquetipo_dominante: "guerrero",
+            arquetipo_secundario: "mago",
+            confianza: 5,
+            estilo_conduccion: "Directo",
+            shadow_mirror_text: `Q1: ${p1}\n\nQ2: ${p2}\n\nQ3: ${p3}`,
+            radar_completed_at: new Date().toISOString(),
+            registration_done: true,
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Error guardando perfil:", errorData);
+          setError("Error al guardar tu perfil. Intenta de nuevo.");
+          setLoading(false);
+          return;
+        }
+      } else {
+        // Modo local: generar ID único sin Supabase
+        userId = `local-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        console.log("Modo local: Guardando perfil localmente con ID:", userId);
       }
 
-      // 3. Guardar en estado local
+      // Guardar en estado local (funciona tanto con Supabase como sin él)
       const newProfile: ConziaProfile = {
         alias: nombre,
         email: email,
@@ -102,6 +110,7 @@ export default function RegistroPage() {
         arquetipo_secundario: "mago",
         confianza: 5,
         estilo_conduccion: "Directo",
+        radar_completed_at: new Date().toISOString(),
         registrationDone: true,
         current_month: 1,
         shadow_mirror_text: `Q1: ${p1}\n\nQ2: ${p2}\n\nQ3: ${p3}`

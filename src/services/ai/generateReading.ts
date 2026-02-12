@@ -1,6 +1,6 @@
 import type { Entry, Pattern, Reading, ReadingContent, ReadingType } from "../../types/models";
-import { toISODateOnly } from "../../utils/dates";
-import { createId } from "../../utils/id";
+import { toISODateOnly } from "../../utils/dates.ts";
+import { createId } from "../../utils/id.ts";
 
 type AiReadingResponse =
   | { ok: true; reading: Reading }

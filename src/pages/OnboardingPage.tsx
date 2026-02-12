@@ -28,7 +28,7 @@ const slides = [
   {
     id: 4,
     title: "Tú tienes el control",
-    description: "Puedes pausar, omitir o retomar cuando lo necesites.\n\nNada se activa sin tu decisión. Nada se muestra sin tu permiso.\n\nEste espacio es tuyo.",
+    description: "Puedes pausar, omitir o retomar cuando lo necesites.\n\nNada se activa sin tu decisión. Nada se muestra sin tu permiso.\n\nEste espacio es tuyo.\n\nTransforma tu sombra en tu poder.",
     cta: "Entrar a CONZIA",
     secondaryCta: "Omitir y entrar"
   }

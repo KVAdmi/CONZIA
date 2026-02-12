@@ -15,10 +15,20 @@ android {
     versionName = "0.1.0"
   }
 
+  signingConfigs {
+    create("release") {
+      storeFile = file("../conzia-release-key.keystore")
+      storePassword = "conzia2026"
+      keyAlias = "conzia"
+      keyPassword = "conzia2026"
+    }
+  }
+
   buildTypes {
     release {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      signingConfig = signingConfigs.getByName("release")
     }
   }
 
