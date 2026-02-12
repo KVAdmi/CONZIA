@@ -14,13 +14,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@playwright/test": "^1.58.2",
+    "bullmq": "^5.68.0",
     "framer-motion": "^11.18.2",
     "lucide-react": "^0.469.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.27.0"
+    "react-router-dom": "^6.27.0",
+    "recharts": "^3.7.0",
+    "stripe": "^20.3.1",
+    "vitest": "^4.0.18"
   },
   "devDependencies": {
+    "@types/node": "^25.2.3",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",

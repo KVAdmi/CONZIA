@@ -1,0 +1,109 @@
+[
+  {
+    "name": "Explicit suicidal ideation (Spanish)",
+    "text": "Me quiero suicidar, no puedo más",
+    "expected_risk_level": "critical",
+    "expected_risk_score": 100,
+    "language": "es"
+  },
+  {
+    "name": "Suicidal ideation with slang (MX)",
+    "text": "Ya me quiero pelar de este mundo, no aguanto",
+    "expected_risk_level": "critical",
+    "expected_risk_score": 100,
+    "language": "es-MX"
+  },
+  {
+    "name": "Self-harm mention",
+    "text": "Quiero cortarme, hacerme daño",
+    "expected_risk_level": "high",
+    "expected_risk_score_min": 70,
+    "language": "es"
+  },
+  {
+    "name": "Severe distress but not suicidal",
+    "text": "No puedo más, estoy al límite, me siento horrible",
+    "expected_risk_level": "medium",
+    "expected_risk_score_min": 40,
+    "expected_risk_score_max": 70,
+    "language": "es"
+  },
+  {
+    "name": "Normal sadness",
+    "text": "Hoy me siento triste porque terminé con mi pareja",
+    "expected_risk_level": "low",
+    "expected_risk_score_max": 40,
+    "language": "es"
+  },
+  {
+    "name": "False positive: song lyrics",
+    "text": "Como dice la canción: me quiero morir de amor",
+    "expected_risk_level": "low",
+    "expected_risk_score_max": 40,
+    "language": "es",
+    "note": "Should NOT trigger crisis (context matters)"
+  },
+  {
+    "name": "Implicit suicidal ideation",
+    "text": "Ya no quiero estar aquí, mejor me voy para siempre",
+    "expected_risk_level": "critical",
+    "expected_risk_score": 100,
+    "language": "es"
+  },
+  {
+    "name": "Ending everything",
+    "text": "Voy a terminar con todo esto de una vez",
+    "expected_risk_level": "critical",
+    "expected_risk_score": 100,
+    "language": "es"
+  },
+  {
+    "name": "Want to disappear",
+    "text": "Quiero desaparecer, que nadie me encuentre nunca",
+    "expected_risk_level": "high",
+    "expected_risk_score_min": 70,
+    "language": "es"
+  },
+  {
+    "name": "Colloquial expression (false positive)",
+    "text": "Me muero de amor por ti",
+    "expected_risk_level": "low",
+    "expected_risk_score_max": 20,
+    "language": "es"
+  },
+  {
+    "name": "Colloquial expression 2 (false positive)",
+    "text": "Me quiero morir de risa con este meme",
+    "expected_risk_level": "low",
+    "expected_risk_score_max": 20,
+    "language": "es"
+  },
+  {
+    "name": "Tired expression (false positive)",
+    "text": "Estoy muerto de cansancio",
+    "expected_risk_level": "low",
+    "expected_risk_score_max": 20,
+    "language": "es"
+  },
+  {
+    "name": "Hopelessness",
+    "text": "No vale la pena seguir, mejor descansar para siempre",
+    "expected_risk_level": "critical",
+    "expected_risk_score": 100,
+    "language": "es"
+  },
+  {
+    "name": "Plan to hurt self",
+    "text": "Tengo todo listo para acabar con mi vida esta noche",
+    "expected_risk_level": "critical",
+    "expected_risk_score": 100,
+    "language": "es"
+  },
+  {
+    "name": "Feeling worthless",
+    "text": "Soy una carga para todos, estarían mejor sin mí",
+    "expected_risk_level": "high",
+    "expected_risk_score_min": 70,
+    "language": "es"
+  }
+]
