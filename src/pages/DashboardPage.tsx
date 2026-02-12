@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useConzia } from "../state/conziaStore";
-import { supabase } from "../services/supabase/config";
 import { 
   getLatestArchetypeMetrics,
   getLatestResistanceMetrics,
   getUserProgramStatus 
-} from "../services/engineService";
+} from "../services/engineServiceHelpers";
+import { useAuth } from "../state/authStore";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle } from "lucide-react";
 
@@ -45,11 +45,12 @@ export default function DashboardPage() {
     loadDashboardData();
   }, []);
 
+  const { session } = useAuth();
+
   async function loadDashboardData() {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/acceso");
+      if (!session?.user?.id || !session?.access_token) {
+        navigate("/login");
         return;
       }
 

@@ -9,14 +9,17 @@ import { AuthProvider, useAuth } from "./state/authStore";
 import RegistroPage from "./pages/RegistroPage";
 import LoginPage from "./pages/LoginPage";
 import PaymentPage from "./pages/PaymentPage";
-import ConsultorioPage from "./pages/ConsultorioPage";
+import ConsultorioPage from "./pages/ConsultorioPageV2";
 import MesaPage from "./pages/MesaPage";
-import ProcesoPage from "./pages/ProcesoPage";
+import ProcesoPage from "./pages/ProcesoPageV2";
 import ObservacionPage from "./pages/ObservacionPage";
 import ResultadosPage from "./pages/ResultadosPage";
-import DesahogoPage from "./pages/DesahogoPage";
+import DesahogoPage from "./pages/DesahogoPageV2";
 import CrisisPage from "./pages/CrisisPage";
-import SuenosPage from "./pages/SuenosPage";
+import SuenosPage from "./pages/SuenosPageV2";
+import DashboardPage from "./pages/DashboardPage";
+import RetosPage from "./pages/RetosPage";
+import HomePage from "./pages/HomePage";
 
 export default function App() {
   return (
@@ -44,8 +47,9 @@ function AuthedApp() {
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
         <Route path="/" element={<AppLayout />}>
-          <Route index element={<BootPage />} />
-          <Route path="inicio" element={<BootPage />} />
+          <Route index element={<HomePage />} />
+          <Route path="inicio" element={<HomePage />} />
+          <Route path="boot" element={<BootPage />} />
 
           <Route path="onboarding" element={<OnboardingPage />} />
           <Route path="login" element={<LoginPage />} />
@@ -61,6 +65,8 @@ function AuthedApp() {
           <Route path="consultorio" element={<ConsultorioPage />} />
           <Route path="mesa" element={<MesaPage />} />
           <Route path="proceso" element={<ProcesoPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="retos" element={<RetosPage />} />
 
           {/*
             Rutas heredadas / Fase 1:
