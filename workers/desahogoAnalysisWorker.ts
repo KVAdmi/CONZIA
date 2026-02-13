@@ -1,10 +1,10 @@
 import { Queue, Worker } from 'bullmq';
 import { createClient } from '@supabase/supabase-js';
+import { bullMQConnection } from './config/redis';
 import { analyzeDesahogoV2 } from '../src/services/ai/analyzeDesahogoV2';
 import { assessRisk, generateCrisisResponse } from '../src/engine/crisisProtocol';
 
-const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
-const REDIS_PORT = parseInt(process.env.REDIS_PORT || '6379');
+
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL!,
@@ -13,10 +13,7 @@ const supabase = createClient(
 
 // Cola para análisis de desahogo
 export const desahogoQueue = new Queue('desahogo-analysis', {
-  connection: {
-    host: REDIS_HOST,
-    port: REDIS_PORT,
-  },
+  connection: bullMQConnection,
 });
 
 // Worker para procesar análisis
@@ -100,10 +97,7 @@ export const desahogoWorker = new Worker(
 
 // Cola para alertas de crisis
 export const crisisAlertQueue = new Queue('crisis-alerts', {
-  connection: {
-    host: REDIS_HOST,
-    port: REDIS_PORT,
-  },
+  connection: bullMQConnection,
 });
 
 // Worker para enviar alertas de crisis

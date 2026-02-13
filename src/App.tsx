@@ -18,7 +18,8 @@ import DesahogoPage from "./pages/DesahogoPageV2";
 import CrisisPage from "./pages/CrisisPage";
 import SuenosPage from "./pages/SuenosPageV2";
 import DashboardPage from "./pages/DashboardPage";
-// import RetosPage from "./pages/RetosPage"; // Temporalmente deshabilitado por errores de compilación
+import RetosPage from "./pages/RetosPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 import HomePage from "./pages/HomePage";
 
 export default function App() {
@@ -66,7 +67,8 @@ function AuthedApp() {
           <Route path="mesa" element={<MesaPage />} />
           <Route path="proceso" element={<ProcesoPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
-          {/* <Route path="retos" element={<RetosPage />} /> */} {/* Temporalmente deshabilitado */}
+          <Route path="retos" element={<RetosPage />} />
+          <Route path="admin" element={<AdminDashboardPage />} />
 
           {/*
             Rutas heredadas / Fase 1:

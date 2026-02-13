@@ -30,11 +30,14 @@ import {
   type ArchetypeScores,
 } from "../engine/archetypeEngine";
 import {
-  generateChallenge,
+  generateChallenge as generateChallengeFromEngine,
   validateChallengeCompletion,
   extractDominantTheme,
   type GeneratedChallenge,
 } from "../engine/challengeEngine";
+
+// Re-exportar generateChallenge para uso externo
+export { generateChallengeFromEngine as generateChallenge };
 import {
   buildClaudeContext as buildMemoryContext,
   buildSystemPromptContext,
@@ -372,7 +375,7 @@ export async function generateAndSaveChallenge(
     : 50;
 
   // Generar reto
-  const challenge = generateChallenge(
+  const challenge = generateChallengeFromEngine(
     scores.shadow,
     theme,
     monthStatus.current_month,
